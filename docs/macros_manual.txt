@@ -253,22 +253,4 @@ Let's make it into a macro:
 Yes, it is ghastly! Incomprehensible.
 
 
-3. EScheme Initialization Explained
-
-EScheme inititialization consists of loading the boot escheme.scm and starting the rep-loop.
-
-What needs to be determined is the proper stategy for enabling the macro/expander during
-the boot sequence so that all escheme.scm resources can benefit from exansion.
-
-What about reloading the macro/expanding through itself?
-
-    macros.scm
-    qquote.scm
-
-3.1 File: escheme.scm
-
-3.2 File: macros.scm
-
-3.3 File: qquote.scm
-
 [EOD]
