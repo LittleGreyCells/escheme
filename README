@@ -1,0 +1,153 @@
+extensible-scheme v1.0
+
+R3RS extensible scheme interpreter utilizing an explicit control evaluator
+
+Introduction
+
+extensible-scheme (aka escheme) is an aspiring R3RS implementation of the 
+algorithmic language scheme, supporting approximately 90% of the standard. 
+Further, many additional functions are added to support environments, 
+input/output, the host OS (linux/unix) and access escheme internals.
+
+Abelson and Sussman's SICP* describes a meta-circular scheme interpreter (Ch4).
+A later chapter (Ch5) describes an approach for building a tail recursive 
+explicit control evalutor. That material provided the impetus for escheme.
+
+The escheme interpreter implementation takes the SICP model explicit 
+control evaluator and extends it beyond the scheme core, adding a number of 
+special forms (cond, while, access, let and letrec). The interpreter's
+modular implementation has resulted in a readily extensible system
+both in terms of language primitives and evaluator core.
+
+(*) Structure and Interpretation of Computer Programs (aka SICP)
+    by Harold Abelson and Gerald Sussman
+    MIT Press (1984)
+
+Implementation 
+
+escheme is implemented in C++11, using a modest set of language features
+exploiting class initialization/finalization semantics for deferred execution 
+and cleanup. Templates have proven beneficial in control stack and argument 
+stack implementation. Exceptions replace the standard library's setjmp/longjmp, 
+while honoring C++ block finalization.
+
+Highlights
+
+- escheme objects are created from a uniformly sized descriminated union type
+    (not from a class heirarchy)
+- escheme objects are allocated from a segmented memory pool
+- escheme uses a simple mark/sweep garbage collector
+- escheme uses array based stacks for its interpreter state stacks
+- escheme uses array based stack for its argument stack
+- escheme represents continuations as vectors of saved state
+   (more expensive than a link list implementation, but the decision
+    was made to favor a more efficient runtime for function calls)
+- escheme implements the global environment as a hash table (single instance)
+- escheme implements other environments as indexable "frames"
+- escheme uses a tail recursive evaluator (eceval) to interpret s-expressions
+- escheme uses a tail recursive evaluator (bceval) to evaluate compiled code
+
+C++11 Source Files
+
+  argstack.*xx   -- function argument stack
+  eceval.cxx     -- explicit control evaluator (interpreter)
+  error.*xx      -- error handler
+  escheme.cxx    -- system bootstrap
+  eval.*xx       -- evaluator base
+  framestore.hxx -- frames
+  func.*xx       -- general function library
+  funtab.*xx     -- function table
+  intstack.*xx	 -- execution state stack (integer valued)
+  ipcsoc.*xx     -- socket library
+  math.*xx       -- math library
+  memory.*xx     -- object allocator/garbage collector
+  pio.*xx        -- port I/O
+  tio.*xx        -- terminal I/O
+  printer.*xx    -- s-expression printer
+  reader.*xx     -- s-expression reader
+  regstack.*xx   -- execution state stack (s-expression valued)
+  rep.*xx	 -- read/eval/print loop and initial system definition
+  sexpr.*xx	 -- escheme object definitions
+  symtab.*xx	 -- global environmentt
+  tstack.*xx     -- stack template
+
+  cloc statistics:
+      42 text files.
+      42 unique files.                              
+      21 files ignored.
+
+http://cloc.sourceforge.net v 1.60  T=0.07 s (285.8 files/s, 112990.6 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+C++                             21           1289           1120           5893
+-------------------------------------------------------------------------------
+SUM:                            21           1289           1120           5893
+-------------------------------------------------------------------------------
+
+Escheme Source Files
+
+  escheme.scm        -- escheme bootstrap code
+  macros.scm         -- macro system
+  qquote.scm         -- quasiquote/backquote system
+
+  cloc statistics:
+       3 text files.
+       3 unique files.                              
+       0 files ignored.
+
+http://cloc.sourceforge.net v 1.60  T=0.01 s (447.1 files/s, 50523.0 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Lisp                             3             53             43            243
+-------------------------------------------------------------------------------
+SUM:                             3             53             43            243
+-------------------------------------------------------------------------------
+
+Miscellaneous Directories
+  
+  compiler  -- optimizer source; an attempt to improve interpreter
+                 performance by "compiling" s-expressions into
+                 s-expressions with various optimizations applied.
+  docs      -- documentation which may or may not be accurate
+  linenoise -- readline package
+  tests     -- files for escheme regression testing
+
+Other Files
+
+  README    -- this file
+
+
+Building
+
+In the root directory type 'make' to build the executable:
+
+   $make
+
+
+Running
+
+To run the interpreter, invoke escheme with no arguments. The banner 
+is printed and the linenoise prompt is displayed:
+
+   $./escheme
+   escheme v1.0
+
+   noise>
+
+To exit escheme, type ^D, ^C or exit function at the prompt:
+
+   noise> (exit)
+   $
+
+Initially macros are disabled. To enable macros edit the file escheme.scm and 
+set enable-macros to true:
+
+   (define enable-macros #t)
+
+Invoke escheme and a macro prepass is enabled for all subsequently typed 
+symbolic expressions.
+
+
+[EOF]

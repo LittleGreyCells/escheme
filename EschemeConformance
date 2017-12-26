@@ -1,0 +1,307 @@
+ece-scheme v2.0
+
+R3RS scheme interpreter and compilation system
+
+Introduction
+
+ece-scheme (aka escheme) is an aspiring R3RS implementation of the algorithmic 
+language scheme, supporting approximately 90% of the standard. Further, many 
+additional functions are added to support environments, input/output and unix.
+
+Energy has been directed initially at core implementation and robustness, 
+not in completing the set of standard functions. But that task is being
+addressed with time.
+
+For a complete description of the R3RS see:
+
+   https://practical-scheme.net/wiliki/schemexref.cgi?R3RS
+
+R3RS features supported(<s>) and not supported(<o>) by escheme:
+
+  Expressions
+    quote		<s>
+    lambda		<s>
+    if			<s>
+    set!		<s>
+    cond		<s>
+    case		<s> (macro)
+    and			<s>
+    or			<s>
+    let			<s>
+    let*		<s>
+    letrec		<s>
+    begin		<s>
+    do			<s> (macro)
+    delay		<s>
+    quasiquote		<s> (macro+qquote)
+
+  Programe Structure
+    define		<s>
+
+  Booleans
+    not			<s>
+    boolean?		<s>
+    nil			<s>
+    t			<s>
+
+  Equivalence Predicates
+    eqv?		<s>
+    eq?			<s>
+    equal?		<s>
+
+  Pairs and Lists
+    pair?		<s>
+    cons		<s>
+    car			<s>
+    cdr			<s>
+    set-car!		<s>
+    set-cdr!		<s>
+    null?		<s>
+    list		<s>
+    length		<s>
+    append		<s>
+    reverse		<s>
+    list-tail		<s>
+    list-ref		<s>
+    last-pair		<s>
+    memq		<s>
+    memv		<s>
+    member		<s>
+    assq		<s>
+    assv		<s>
+    assoc		<s>
+
+  Symbols
+    symbol?		<s>
+    string->symbol	<s>
+    symbol->string	<s>
+
+  Numbers
+    number?		<s>
+    complex?			<o>
+    real?		<s>
+    rational?			<o>
+    integer?		<s>
+    zero?		<s>
+    positive?		<s>
+    negative?		<s>
+    odd?		<s>
+    even?		<s>
+    exact?			<o>
+    inexact?			<o>
+    =			<s>
+    <			<s>
+    >			<s>
+    <=			<s>
+    >=			<s>
+    max			<s>
+    min			<s>
+    +			<s>
+    *			<s>
+    -			<s>
+    /			<s>
+    abs			<s>
+    quotient		<s>
+    remainder		<s>
+    modulo			<o>
+    numerator			<o>
+    denominator			<o>
+    gcd			<s>
+    lcm				<o>
+    floor		<s>
+    ceiling		<s>
+    truncate		<s>
+    round		<s>
+    rationalize			<o>
+    exp			<s>
+    log			<s>
+    sin			<s>
+    cos			<s>
+    tan			<s>
+    asin		<s>
+    acos		<s>
+    atan		<s>
+    sqrt		<s>
+    expt		<s>
+    make-rectangular		<o>
+    make-polar			<o>
+
+  Characters
+    char?		<s>
+    char=?		<s>
+    char<?		<s>
+    char>?		<s>
+    char>=?		<s>
+    char<=?		<s>
+    char-ci=?		<s>
+    char-ci<?		<s>
+    char-ci>?		<s>
+    char-ci<=?		<s>
+    char-ci>=?		<s>
+    char-alphabetic?	<s>
+    char-numeric?	<s>
+    char-whitespace?	<s>
+    char-upper-case?	<s>
+    char-lower-case?	<s>
+    char->integer	<s>
+    integer->char	<s>
+    char-upcase		<s>
+    char-downcase	<s>
+
+  Strings
+    string?		<s>
+    make-string		<s>
+    string-length	<s>
+    string-ref		<s>
+    string-set!		<s>
+    string=?		<s>
+    string<?		<s>
+    string>?		<s>
+    string<=?		<s>
+    string>=?		<s>
+    string-ci=?		<s>
+    string-ci<?		<s>
+    string-ci>?		<s>
+    string-ci<=?	<s>
+    string-ci>=?	<s>
+    substring		<s>
+    string-append	<s>
+    string->list	<s>
+    list->string	<s>
+    string-copy		<s>
+    string-fill!	<s>
+
+  Vector
+    vector?		<s>
+    make-vector		<s>
+    vector		<s>
+    vector-length	<s>
+    vector-ref		<s>
+    vector-set!		<s>
+    vector->list	<s>
+    list->vector	<s>
+    vector-fill!	<s>
+
+  Control Features
+    procedure?		<s>
+    apply		<s>
+    map			<s>
+    for-each		<s>
+    force		<s>
+    call/cc		<s>
+    call-with-input-file	<o>
+    call-with-output-file	<o>
+    input-port?		<s>
+    output-port?	<s>
+    current-input-port		<o>
+    current-output-port		<o>
+    with-input-from-file	<o>
+    with-output-to-file		<o>
+    open-input-file	<s>
+    open-output-file	<s>
+    close-input-port    <s>
+    close-output-port	<s>
+    read		<s>
+    read-char		<s>
+    char-ready?			<o>
+    eof-object?		<s>
+    write		<s>
+    display		<s>
+    newline		<s>
+    write-char		<s>
+    load		<s>
+    transcript-on	<s>
+    transcript-off	<s>
+
+escheme additions
+
+  Special Forms
+    access
+    cond
+    while
+
+  Numbers
+    logand
+    logior
+    logxor
+    lognot
+    shift-right
+    shift-lefth
+    shift-right-arithmetic
+
+  Unix/Linux
+    system
+    getargs
+    gettime
+
+  Environments
+    %make-environment
+    the-environment
+    procedure-environment
+    environment-bindings
+    environment-parent
+
+  Ports
+    open-input-string
+    open-output-string
+    get-output-string
+    open-append-file
+    open-update-file
+    close-port
+    flush-output
+
+  Symbols
+    gensym
+
+  Sockets
+    socket-read
+    socket-write
+    socket-recvfrom
+    socket-recv
+    socket-sendto
+    socket-create-tcp
+    socket-create-udp
+    socket-bind
+    socket-bind-address
+    socket-create-address
+    socket-listen
+    socket-accept
+    socket-connect
+    socket-disconnect
+    socket-close
+    read-select
+
+  Vectors
+    vector-copy!
+
+  Byte Vector
+    byte-vector
+    make-byte-vector
+    byte-vector-ref
+    byte-vector-set!
+    byte-vector-length
+
+  Internals
+    %closure-code
+    %closure-benv
+    %closure-vars
+    %closure-numv
+    %closure-rest
+    %make-closure
+    %parse-formals
+    %make-code
+    %get-bcodes
+    %get-sexprs
+    %car
+    %cdr
+    gc
+    gc-enable
+    gc-disable
+
+  Command History (linenoise integration)
+    add-history
+    show-history
+    clear-history
+    set-prompt
+
+[EOF]
