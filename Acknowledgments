@@ -1,0 +1,31 @@
+Acknowledgments
+
+escheme v1.0 would not be possible without the prior work of several software
+engineers I would like to recognize.
+
+1. David Betz
+
+Betz's contributions, XLISP and XSCHEME, are widely known in the industry.
+I used an early version of his XLISP interpreter in an AI course. That marked
+the beginning of my interest in LISP and LISP dialects. I have used his 
+XSCHEME system professionally for software simulation and test.
+
+It is the coherent organization of his systems' source code that is reflected
+in my own. The "one file scheme" approach does not make for an easily
+maintained and extensible system. However, one which is organized by functional
+domain enhances intelligibility and future growth.
+
+Although I have not used his interpreter or compiler as models, his otherwise
+excellent software organization is something I have stiven to imitate.
+
+2. Harold Abelson and Gerald Sussman
+
+While browsing The Aerospace Corporation library in the early 90s I discovered
+their seminal work "The Structure and Interpretation of Computer Programs"
+aka SICP.
+ 
+How I had wished this text had been used for my undergraduate work in computer
+science. I devoured the text and relished Chapters 4 and 5 which describe
+approaches to implementing an interpreter and compiler for scheme. I have used
+the explicit control evaluator described in Chapter 5 for escheme. It is 
+expanded to handle many more special forms for efficiency reasons.
