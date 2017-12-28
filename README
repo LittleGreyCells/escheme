@@ -116,38 +116,9 @@ Miscellaneous Directories
 
 Other Files
 
-  README    -- this file
-
-
-Building
-
-In the root directory type 'make' to build the executable:
-
-   $make
-
-
-Running
-
-To run the interpreter, invoke escheme with no arguments. The banner 
-is printed and the linenoise prompt is displayed:
-
-   $./escheme
-   escheme v1.0
-
-   noise>
-
-To exit escheme, type ^D, ^C or exit function at the prompt:
-
-   noise> (exit)
-   $
-
-Initially macros are disabled. To enable macros edit the file escheme.scm and 
-set enable-macros to true:
-
-   (define enable-macros #t)
-
-Invoke escheme and a macro prepass is enabled for all subsequently typed 
-symbolic expressions.
-
+  README             -- this file
+  Acknowledgments    -- shout out
+  BuildingAndRunning -- getting started
 
 [EOF]
+
