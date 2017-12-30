@@ -192,7 +192,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    else
 	    {
 	       PIO::put(outport, "#(");
-	       for (int i = 0; i < getbveclength(n);)
+	       for (UINT32 i = 0; i < getbveclength(n);)
 	       {
 		  const BYTE b = bvecref(n, i);
 		  SPRINTF( buffer, "%d", b );

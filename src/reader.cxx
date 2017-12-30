@@ -203,7 +203,7 @@ SEXPR READER::number( char* s )
 static void getsymbolname( SEXPR inport, char s[] )
 {
    int ch;
-   int i;
+   unsigned i;
 
    for (i = 0; (ch = PIO::get(inport)) != EOF && issym(ch); )
       if (i < MAX_SYMBOL_LENGTH-1)
@@ -234,7 +234,7 @@ SEXPR READER::read_string( SEXPR inport )
 {
    int ch;
    char s[MAX_STRING_LENGTH];
-   int i;
+   unsigned i;
 
    for (i = 0; ((ch = PIO::get(inport)) != EOF) && (ch != '"'); )
    {
@@ -250,13 +250,13 @@ SEXPR READER::read_string( SEXPR inport )
 SEXPR READER::read_vector( SEXPR inport, char terminator )
 {
    SEXPR s = read_list(inport, terminator);
-   auto n = ::list_length(s);
+   unsigned n = ::list_length(s);
 
    push(s);
    SEXPR v = MEMORY::vector(n);
    pop();
 
-   for (auto i = 0; i < n; ++i, s = cdr(s))
+   for (unsigned i = 0; i < n; ++i, s = cdr(s))
       vset(v, i, car(s));
    return v;
 }
@@ -387,7 +387,10 @@ SEXPR READER::read_special( SEXPR inport )
 	 else if (strcasecmp(s, "f") == 0)
 	    return SYMTAB::symbol_false;
 	 else
+	 {
 	    ERROR::severe("unknown special symbol");
+	    return null;
+	 }
       }
    }
 }

@@ -11,8 +11,10 @@
 (if #f
     (begin
      (load "./tests/escheme_test_suite.scm")
+
      (repeat dotest 1)
      (repeat dotest 100)
+
      (perform-timed-run 1)
      (perform-timed-run 10)
      (perform-timed-run 50)

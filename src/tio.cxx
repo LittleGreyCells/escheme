@@ -17,10 +17,10 @@ static const int history_max_length = 100;
 static std::string prompt = "> ";
 
 static std::string stdin_line;
-static int stdin_index = 0;
+static unsigned stdin_index = 0;
 
 static std::string term_line;
-static int term_index;
+static unsigned term_index;
 
 int TIO::getch()
 {
@@ -42,7 +42,7 @@ int TIO::getch()
    return stdin_line[stdin_index++];
 }
 
-void TIO::unget( int ch )
+void TIO::unget( int )
 {
    if ( stdin_index > 0 )
       stdin_index--;
@@ -75,7 +75,7 @@ int TIO::terminal_getch()
    return term_line[term_index++];
 }
 
-void TIO::terminal_unget( int ch )
+void TIO::terminal_unget( int )
 {
    if ( term_index > 0 )
       term_index -= 1;
@@ -105,7 +105,8 @@ void TIO::history_add( SEXPR sexpr )
    {
       char buffer[500];
       const char* s = fgets( buffer, sizeof(buffer), file );
-      text.append( buffer );
+      if ( s != NULL )
+	 text.append( s );
    }
    fclose( file );
    
@@ -136,8 +137,8 @@ void TIO::history_show()
       if ( feof(file) )
 	 break;
       
-      if ( strlen( buffer ) > 0 )
-	 printf( "%s", buffer );
+      if ( s != NULL && strlen( s ) > 0 )
+	 printf( "%s", s );
    }
 
    fclose( file );

@@ -47,8 +47,8 @@ inline bool positivep(const SEXPR s) { return getfixnum(guard(s, fixnump)) > 0; 
 inline bool negativep(const SEXPR s) { return getfixnum(guard(s, fixnump)) < 0; }
 inline bool oddp(const SEXPR s) { return (abs(getfixnum(guard(s, fixnump))) % 2) == 1; }
 inline bool evenp(const SEXPR s) { return (getfixnum(guard(s, fixnump)) % 2) == 0; }
-inline bool exactp(const SEXPR s) { return false; }
-inline bool inexactp(const SEXPR s) { return true; }
+inline bool exactp(const SEXPR) { return false; }
+inline bool inexactp(const SEXPR) { return true; }
 
 //
 // general
@@ -332,7 +332,7 @@ SEXPR FUNC::bvector_ref()
    const SEXPR bvindex = guard(iter.getlast(), fixnump);
    const int   index   = getfixnum(bvindex);
 
-   if (index < 0 || index >= getbveclength(bv))
+   if (index < 0 || index >= static_cast<int>(getbveclength(bv)))
       ERROR::severe("index out of range");
 
    return MEMORY::fixnum(bvecref(bv, index));
@@ -349,7 +349,7 @@ SEXPR FUNC::bvector_set()
    const SEXPR bvalue  = guard(iter.getlast(), fixnump);
    const int   index   = getfixnum(bvindex);
 
-   if (index < 0 || index >= getbveclength(bv))
+   if (index < 0 || index >= static_cast<int>(getbveclength(bv)))
       ERROR::severe("index out of range");
 
    bvecset( bv, index, getfixnum(bvalue) );
@@ -419,7 +419,7 @@ SEXPR FUNC::vector_ref()
    const SEXPR vindex = guard(iter.getlast(), fixnump);
    const int   index  = getfixnum(vindex);
 
-   if (index < 0 || index >= getvectorlength(v))
+   if (index < 0 || index >= static_cast<int>(getvectorlength(v)))
       ERROR::severe("index out of range");
 
    return vectorref( v, index );
@@ -436,7 +436,7 @@ SEXPR FUNC::vector_set()
    const SEXPR x      = iter.getlast();
    const int   index  = getfixnum(vindex);
 
-   if (index < 0 || index >= getvectorlength(v))
+   if (index < 0 || index >= static_cast<int>(getvectorlength(v)))
       ERROR::severe("index out of range");
 
    vectorset( v, index, x );
@@ -452,7 +452,7 @@ SEXPR FUNC::vector_fill()
    const SEXPR v      = guard(iter.getarg(), vectorp);
    const SEXPR x      = iter.getlast();
 
-   for ( int i = 0; i < getvectorlength(v); ++i )
+   for ( unsigned i = 0; i < getvectorlength(v); ++i )
       vectorset( v, i, x );
 
    return v;
@@ -470,7 +470,7 @@ SEXPR FUNC::vector_copy()
    int src_s;
    int src_e;
 
-   if ( dst_s >= getvectorlength(dst) )
+   if ( dst_s >= static_cast<int>(getvectorlength(dst)) )
       ERROR::severe( "dst-start > dst length" );
 
    if ( iter.more() )
@@ -478,9 +478,9 @@ SEXPR FUNC::vector_copy()
       src_s = getfixnum(guard(iter.getarg(), fixnump));
       src_e = getfixnum(guard(iter.getlast(), fixnump));
 
-      if ( src_s >= getvectorlength(src) )
+      if ( src_s >= static_cast<int>(getvectorlength(src)) )
 	 ERROR::severe( "src-start >= src length" );
-      if ( src_e > getvectorlength(src) )
+      if ( src_e > static_cast<int>(getvectorlength(src)) )
 	 ERROR::severe( "src-end > src length" );  
       if ( src_s >= src_e )
 	 ERROR::severe( "src-start >= src-end" );
@@ -491,7 +491,7 @@ SEXPR FUNC::vector_copy()
       src_e = getvectorlength(src);
    }
 
-   if ( dst_s + (src_e - src_s) > getvectorlength(dst) )
+   if ( dst_s + (src_e - src_s) > static_cast<int>(getvectorlength(dst)) )
       ERROR::severe( "dest not large enough for src" );
    
    int i = dst_s;
@@ -512,7 +512,7 @@ SEXPR FUNC::unsafe_vref()
    const SEXPR vindex = guard(iter.getlast(), fixnump);
    const int   index  = getfixnum(vindex);
 
-   if (index < 0 || index >= getvectorlength(v))
+   if (index < 0 || index >= static_cast<int>(getvectorlength(v)))
       ERROR::severe("index out of range");
 
    return vectorref( v, index );
@@ -529,7 +529,7 @@ SEXPR FUNC::unsafe_vset()
    const SEXPR x      = iter.getlast();
    const int   index  = getfixnum(vindex);
 
-   if (index < 0 || index >= getvectorlength(v))
+   if (index < 0 || index >= static_cast<int>(getvectorlength(v)))
       ERROR::severe("index out of range");
 
    vectorset( v, index, x );
@@ -561,7 +561,7 @@ SEXPR FUNC::find_index()
    int limit = getvectorlength(v);
    
    if ( iter.more() )
-      limit = std::min( limit, (int)getfixnum(guard(iter.getlast(), fixnump)) );
+      limit = std::min( limit, static_cast<int>(getfixnum(guard(iter.getlast(), fixnump))) );
 
    for ( int index = 0; index < limit; ++index )
    {
@@ -654,12 +654,12 @@ static bool equal( SEXPR e1, SEXPR e2 )
       {
 	 if (vectorp(e2))
 	 { 
-	    const int vlen = getvectorlength(e1);
+	    const unsigned vlen = getvectorlength(e1);
 
 	    if (vlen != getvectorlength(e2))
 	       return false;
 
-	    for ( int i = 0; i < vlen; ++i )
+	    for ( unsigned i = 0; i < vlen; ++i )
 	       if ( !equal(vectorref(e1, i), vectorref(e2, i)) )
 		  return false;
 
@@ -1492,7 +1492,7 @@ SEXPR FUNC::string_ref()
    SEXPR s = guard(iter.getarg(), stringp);
    const int n = getfixnum(guard(iter.getlast(), fixnump));
 
-   if (n >= 0 && n < getstringlength(s))
+   if (n >= 0 && n < static_cast<int>(getstringlength(s)))
       return MEMORY::character(getstringdata(s)[n]);
    else
       ERROR::severe("index out of string bounds");
@@ -1510,7 +1510,7 @@ SEXPR FUNC::string_set()
    const int n = getfixnum(guard(iter.getarg(), fixnump));
    const int ch = getcharacter(guard(iter.getlast(), charp));
 
-   if (n >= 0 && n < getstringlength(s))
+   if (n >= 0 && n < static_cast<int>(getstringlength(s)))
       getstringdata(s)[n] = ch;
    else
       ERROR::severe("index out of string bounds");
@@ -1528,8 +1528,8 @@ SEXPR FUNC::substring()
    const int start = getfixnum(guard(iter.getarg(), fixnump));
    const int end   = getfixnum(guard(iter.getlast(), fixnump));
 
-   if (start < getstringlength(s) &&
-       end <= getstringlength(s))
+   if (start < static_cast<int>(getstringlength(s)) &&
+       end <= static_cast<int>(getstringlength(s)))
    {
       if (start >= end)
 	 return MEMORY::string_null;
@@ -1543,7 +1543,10 @@ SEXPR FUNC::substring()
       }
    }
    else
+   {
       ERROR::severe("index out of string bounds");
+      return null;
+   }
 }
 
 SEXPR FUNC::string_fill()
@@ -1555,7 +1558,7 @@ SEXPR FUNC::string_fill()
    SEXPR s = guard(iter.getarg(), stringp);
    const int ch = getcharacter(guard(iter.getlast(), charp));
 
-   for ( int i = 0; i < getstringlength(s); ++i )
+   for ( unsigned i = 0; i < getstringlength(s); ++i )
       getstringdata(s)[i] = ch;
 
    return s;
@@ -1576,7 +1579,7 @@ SEXPR FUNC::string_copy()
    int src_s;
    int src_e;
 
-   if ( dst_s >= getstringlength(dst) )
+   if ( dst_s >= static_cast<int>(getstringlength(dst)) )
       ERROR::severe( "string dst-start > dst length" );
 
    if ( iter.more() )
@@ -1584,9 +1587,9 @@ SEXPR FUNC::string_copy()
       src_s = getfixnum(guard(iter.getarg(), fixnump));
       src_e = getfixnum(guard(iter.getlast(), fixnump));
 
-      if ( src_s >= getstringlength(src) )
+      if ( src_s >= static_cast<int>(getstringlength(src)) )
 	 ERROR::severe( "string src-start >= src length" );
-      if ( src_e > getstringlength(src) )
+      if ( src_e > static_cast<int>(getstringlength(src)) )
 	 ERROR::severe( "string src-end > src length" );  
       if ( src_s >= src_e )
 	 ERROR::severe( "string src-start >= src-end" );
@@ -1597,7 +1600,7 @@ SEXPR FUNC::string_copy()
       src_e = getstringlength(src);
    }
 
-   if ( dst_s + (src_e - src_s) > getstringlength(dst) )
+   if ( dst_s + (src_e - src_s) > static_cast<int>(getstringlength(dst)) )
       ERROR::severe( "string dest not large enough for src" );
    
    int i = dst_s;
@@ -1668,7 +1671,10 @@ static SEXPR string_compare( RelOp op, StrCmpFuncType compare )
       case GTop: return (compare(s1, s2) >  0) ? symbol_true : symbol_false;
       case GEop: return (compare(s1, s2) >= 0) ? symbol_true : symbol_false;
       default:
+      {
 	 ERROR::fatal("bad string comparison operator");
+	 return null;
+      }
    }
 }
 
@@ -1703,7 +1709,10 @@ static SEXPR char_compare( RelOp op, int ci )
       case GTop: return (c1 >  c2) ? symbol_true : symbol_false;
       case GEop: return (c1 >= c2) ? symbol_true : symbol_false;
       default:
+      {
 	 ERROR::fatal("bad character comparison operator");
+	 return null;
+      }
    }
 }
 

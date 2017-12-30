@@ -280,7 +280,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       int p = argstack.getfirstargindex();
      
       // BIND required
-      for (int i = 0; i < nactual; ++i)
+      for (unsigned i = 0; i < nactual; ++i)
 	 frameset(frame, i, argstack[p++]);
    }
    else
@@ -289,7 +289,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       //
       //   <fargs> := (a1 a2 ... aN-1 . aN)
       //
-      const int nrequired = nformal - 1;
+      const unsigned nrequired = nformal - 1;
 
       if (nactual < nrequired)
 	 arg_error( "too few arguments", nactual, nrequired );
@@ -297,12 +297,12 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       int p = argstack.getfirstargindex();
      
       // BIND required
-      for (int i = 0; i < nrequired; ++i)
+      for (unsigned i = 0; i < nrequired; ++i)
 	 frameset(frame, i, argstack[p++]);
 
       // BIND rest
       regstack.push(null);
-
+ 
       for (int i = p + (nactual - nformal); i >= p; --i)
 	 regstack.top() = cons(argstack[i], regstack.top());
      
@@ -314,6 +314,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
    return regstack.pop();
 }
 
+#if 0
 static void print_bindings( SEXPR env )
 {
    int depth = 0;
@@ -326,7 +327,7 @@ static void print_bindings( SEXPR env )
       {
 	 SEXPR vars = getframevars(frame);
 
-	 for ( int i = 0; i < getframenslots(frame); ++i )
+	 for ( int i = 0; i < static_cast<int>(getframenslots(frame)); ++i )
 	 {
 	    printf("slot[%d:%d]: ", depth, i);
 	    PRINTER::print( car(vars) );
@@ -342,6 +343,7 @@ static void print_bindings( SEXPR env )
       depth += 1;
    }
 }
+#endif
 
 SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
 {
@@ -612,7 +614,7 @@ SEXPR EVAL::transform_letstar( SEXPR exp )
 }
 
 
-
+#if 0
 #define CASEN(state, label) case state: return #label;
 
 static const char* image( EVSTATE state )
@@ -670,7 +672,7 @@ static const char* image( EVSTATE state )
 	 return "<unknown-evstate>";
    }
 }
-
+#endif
 
 void EVAL::check( int id, PREDICATE pred, SEXPR reg )
 {

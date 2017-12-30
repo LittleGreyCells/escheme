@@ -56,7 +56,9 @@ SEXPR EVAL::force()   { return null; }
 //   (see README file for discussion on efficiency)
 //
 
+#ifdef DO_CHECK
 static bool anyenvp( SEXPR n ) { return nullp(n) || envp(n); }
+#endif
 
 static int frameindex = 0;
 
@@ -77,8 +79,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
    argstack.flush();
    intstack.flush();
 
-   SEXPR lastexp = exp;
-   
    //
    // When analyzing forms *always* use the type-safe accessors:
    //   cons:   car, cdr 

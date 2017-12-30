@@ -58,14 +58,6 @@ static void soc_create_address( sockaddr_in& addr, const char* host_addr, int po
    addr.sin_port        = htons( port );
 }
 
-static void soc_create_address( sockaddr_in& addr, unsigned host_addr, int port )
-{
-   bzero( reinterpret_cast<char*>(&addr), sizeof(addr) );
-   addr.sin_family      = AF_INET;
-   addr.sin_addr.s_addr = htonl( host_addr );
-   addr.sin_port        = htons( port );
-}
-
 //
 //   TCP/connection-oriented socket function--accept.
 //
@@ -154,23 +146,16 @@ static int soc_bind_address( int fd, sockaddr_in& addr )
 }
 
 //
-//   Generic connect%
+//   Generic connect
 //
 
 static int soc_connect( int fd, const char* server_host_addr, int server_port, int numtries )
 {
    sockaddr_in serv_addr;
 
-#if 1
    soc_create_address( serv_addr, server_host_addr, server_port );
-#else
-   bzero( reinterpret_cast<char*>(&serv_addr), sizeof(serv_addr));
-   serv_addr.sin_family      = AF_INET;
-   serv_addr.sin_addr.s_addr = inet_addr(server_host_addr);
-   serv_addr.sin_port        = htons(server_port);
-#endif
 
-  try_again:
+   try_again:
 
    // CONNECT
    if ( ::connect( fd, reinterpret_cast<sockaddr*>(&serv_addr), sizeof(serv_addr)) < 0 )
@@ -219,27 +204,6 @@ static int soc_create_udp()
    return fd;
 }
 
-#define USE_READ_WRITE
-
-static int soc_read_buffer( int fd, const int buffer_length, char buffer[] )
-{
-
-#ifdef USE_READ_WRITE
-   return ::read( fd, buffer, buffer_length );
-#else
-   return ::recv( fd, buffer, buffer_length), 0 );
-#endif
-}
-
-static int soc_write_buffer( int fd, const int buffer_length, char buffer[] )
-{
-#ifdef USE_READ_WRITE
-   return ::write( fd, buffer, buffer_length );
-#else
-   return ::send( fd, buffer, buffer_length, 0 );
-#endif
-}
-
 ////////////////////////////////////////////////
 //
 // EScheme Bindings
@@ -261,27 +225,6 @@ inline SEXPR& top() { return regstack.top(); }
 //
 // Socket Bindings
 //
-
-static SEXPR address_to_vector( sockaddr_in* address )
-{
-   const int nelements = (sizeof(sockaddr_in) + 3) / 4;
-
-   SEXPR v = MEMORY::vector( nelements );
-
-   // protect it
-
-   push(v);
-
-   // copy every value in the address into a vector
-
-   const int* pa = reinterpret_cast<int*>(&address);
-
-   for ( int i = 0; i < nelements; ++i )
-      vectorset( v, i, MEMORY::fixnum( static_cast<FIXNUM>(pa[i]) ) );
-
-   // return the address vector
-   return pop();
-}
 
 const int MaxReadBufferSize = 5000;
 static unsigned char read_buffer[MaxReadBufferSize];

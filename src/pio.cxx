@@ -139,6 +139,7 @@ int PIO::get( SEXPR inport )
    else
    {
       ERROR::severe( "not an input port", inport );
+      return 0;
    }
 }
 
