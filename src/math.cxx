@@ -322,7 +322,7 @@ SEXPR MATH::abs()
    if (fixnump(a))
       return MEMORY::fixnum(std::abs(getfixnum(a)));
    else
-      return MEMORY::flonum(std::abs(getflonum(a)));
+      return MEMORY::flonum(std::fabs(getflonum(a)));
 }
 
 SEXPR MATH::gcd()
