@@ -20,6 +20,6 @@ namespace TIO
    void history_clear();
 
    void set_prompt( const char* prompt );
-};
+}
 
 #endif

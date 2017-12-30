@@ -57,7 +57,7 @@ namespace MEMORY
    void gc();
    void mark( SEXPR n );
    void mark( TSTACK<SEXPR>& s );
-};
+}
 
 struct GcSuspension
 {

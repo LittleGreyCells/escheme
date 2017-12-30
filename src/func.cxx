@@ -1395,42 +1395,42 @@ SEXPR FUNC::get_output_string()
 // syntax: (boolean? <exp>)
 // syntax: (promise? <exp>)
 //
-PRED_IMP(nullp);
-PRED_IMP(symbolp);
-PRED_IMP(fixnump);
-PRED_IMP(flonump);
-PRED_IMP(numberp);
-PRED_IMP(charp);
-PRED_IMP(stringp);
-PRED_IMP(vectorp);
-PRED_IMP(bvecp);
-PRED_IMP(consp);
-PRED_IMP(funcp);
-PRED_IMP(portp);
-PRED_IMP(inportp);
-PRED_IMP(outportp);
-PRED_IMP(stringportp);
-PRED_IMP(instringportp);
-PRED_IMP(outstringportp);
-PRED_IMP(closurep);
-PRED_IMP(contp);
-PRED_IMP(envp);
-PRED_IMP(listp);
-PRED_IMP(atomp);
-PRED_IMP(promisep);
+PRED_IMP(nullp)
+PRED_IMP(symbolp)
+PRED_IMP(fixnump)
+PRED_IMP(flonump)
+PRED_IMP(numberp)
+PRED_IMP(charp)
+PRED_IMP(stringp)
+PRED_IMP(vectorp)
+PRED_IMP(bvecp)
+PRED_IMP(consp)
+PRED_IMP(funcp)
+PRED_IMP(portp)
+PRED_IMP(inportp)
+PRED_IMP(outportp)
+PRED_IMP(stringportp)
+PRED_IMP(instringportp)
+PRED_IMP(outstringportp)
+PRED_IMP(closurep)
+PRED_IMP(contp)
+PRED_IMP(envp)
+PRED_IMP(listp)
+PRED_IMP(atomp)
+PRED_IMP(promisep)
 
-PRED_IMP(boundp);
-PRED_IMP(booleanp);
-PRED_IMP(notp);
-PRED_IMP(eof_objectp);
-PRED_IMP(default_objectp);
-PRED_IMP(zerop);
-PRED_IMP(positivep);
-PRED_IMP(negativep);
-PRED_IMP(oddp);
-PRED_IMP(evenp);
-PRED_IMP(exactp);
-PRED_IMP(inexactp);
+PRED_IMP(boundp)
+PRED_IMP(booleanp)
+PRED_IMP(notp)
+PRED_IMP(eof_objectp)
+PRED_IMP(default_objectp)
+PRED_IMP(zerop)
+PRED_IMP(positivep)
+PRED_IMP(negativep)
+PRED_IMP(oddp)
+PRED_IMP(evenp)
+PRED_IMP(exactp)
+PRED_IMP(inexactp)
 
 SEXPR FUNC::procedurep()
 {
@@ -1444,7 +1444,7 @@ inline int string_nullp(SEXPR s)
    return getstringlength(guard(s, stringp)) == 0;
 }
 
-PRED_IMP(string_nullp);
+PRED_IMP(string_nullp)
 
 SEXPR FUNC::string_length()
 {

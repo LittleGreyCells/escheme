@@ -42,6 +42,6 @@ namespace MATH
    SEXPR ars();
    SEXPR lsh();
 
-};
+}
 
 #endif

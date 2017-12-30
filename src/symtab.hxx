@@ -71,7 +71,7 @@ namespace SYMTAB
 
    // private
    unsigned hash( const char* s );
-};
+}
 
 using SYMTAB::symbol_true;
 using SYMTAB::symbol_false;

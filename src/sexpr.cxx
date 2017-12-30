@@ -9,9 +9,9 @@
 static void show( const char* s, const SEXPR n )
 {
    if (symbolp(n))
-      printf(" %s(%p) [%s]\n", s, n, getname(n));
+      printf(" %s(%p) [%s]\n", s, n->id(), getname(n));
    else
-      printf(" %s(%p)\n", s, n);
+      printf(" %s(%p)\n", s, n->id());
 }
 
 void show( const SEXPR n )

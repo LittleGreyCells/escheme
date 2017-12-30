@@ -37,6 +37,6 @@ namespace READER
    SEXPR number( char* s );
 
    int scan( SEXPR inport );
-};
+}
 
 #endif

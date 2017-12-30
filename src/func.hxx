@@ -271,7 +271,7 @@ namespace FUNC
    SEXPR history_clear();
    SEXPR history_show();
    SEXPR set_prompt();
-};
+}
 
 #endif
 

@@ -30,7 +30,8 @@ public:
 	 return frame;
       }
       
-      const size_t frameSize = sizeof(Frame) + sizeof(SEXPR) * nslots;   
+      const size_t frameSize = sizeof(Frame) + sizeof(SEXPR) * nslots 
+	 - sizeof(SEXPR);   
       FRAME frame = (FRAME) ::operator new (frameSize);
       
       setframenslots( frame, nslots );

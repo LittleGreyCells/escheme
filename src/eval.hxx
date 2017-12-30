@@ -128,7 +128,7 @@ namespace EVAL
    void restore_continuation( SEXPR continuation );
 
    void check( int id, PREDICATE pre, SEXPR reg );
-};
+}
 
 #endif
 

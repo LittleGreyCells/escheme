@@ -106,7 +106,7 @@ struct Frame
    FRAME next;
    SEXPR vars;
    UINT32 nslots;
-   SEXPR slot[0];        // varying numbers
+   SEXPR slot[1];        // varying numbers
 };
 
 struct ENVIRON
@@ -231,6 +231,8 @@ struct Node
 
    void setnext( SEXPR next ) { u.link.next = next; }
    SEXPR getnext() { return u.link.next; }
+
+   void* id() { return this; }
 };
 
 extern SEXPR null;

@@ -36,7 +36,8 @@ OBJS	= $(SRCS:.cxx=.o)
 DEBUG_FLAGS = -O
 
 #CFLAGS = $(DEBUG_FLAGS) -fno-operator-names -fpermissive -std=c++11
-CFLAGS = $(DEBUG_FLAGS) -Wall -Wextra -std=c++11
+#CFLAGS = $(DEBUG_FLAGS) -Wall -Wextra -std=c++11
+CFLAGS = $(DEBUG_FLAGS) -pedantic -std=c++11
 LFLAGS = $(DEBUG_FLAGS) -v -lm
 
 all 	: escheme

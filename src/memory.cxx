@@ -98,7 +98,7 @@ int MEMORY::suspensions = 0;
 static void badnode( SEXPR n )
 {
    char buffer[80];
-   SPRINTF(buffer, "bad node (%p,%d) during gc", n, nodekind(n));
+   SPRINTF(buffer, "bad node (%p,%d) during gc", n->id(), nodekind(n));
    ERROR::fatal(buffer);
 }
 

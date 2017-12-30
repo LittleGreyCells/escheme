@@ -159,34 +159,34 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	 case n_map:
 	 case n_foreach:
 	 case n_force:
-	    SPRINTF(buffer, "{ prim:%p }", n );
+	    SPRINTF(buffer, "{ prim:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_port:
-	    SPRINTF(buffer, "{ port:%p }", n );
+	    SPRINTF(buffer, "{ port:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_string_port:
-	    SPRINTF(buffer, "{ sport:%p }", n );
+	    SPRINTF(buffer, "{ sport:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_closure:
-	    SPRINTF(buffer, "{ closure:%p }", n );
+	    SPRINTF(buffer, "{ closure:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_continuation:
-	    SPRINTF(buffer, "{ cont:%p }", n );
+	    SPRINTF(buffer, "{ cont:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_bvec:
 	    if ( 0 )
 	    {
-	       SPRINTF(buffer, "{ bvec:%p }", n );
+	       SPRINTF(buffer, "{ bvec:%p }", n->id() );
 	       PIO::put(outport, buffer);
 	    }
 	    else
@@ -206,23 +206,23 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_environment:
-	    SPRINTF(buffer, "{ env:%p }", n );
+	    SPRINTF(buffer, "{ env:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_promise:
-	    SPRINTF(buffer, "{ promise:%p }", n );
+	    SPRINTF(buffer, "{ promise:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_free:
-	    SPRINTF(buffer, "{ free:%p }", n );
+	    SPRINTF(buffer, "{ free:%p }", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 default:
 	 {
-	    SPRINTF( buffer, "bad node (%p, %d)", n, nodekind(n));
+	    SPRINTF( buffer, "bad node (%p, %d)", n->id(), nodekind(n));
 	    error(buffer);
 	 }
 	 break;

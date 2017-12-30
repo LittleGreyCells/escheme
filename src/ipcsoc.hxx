@@ -44,6 +44,6 @@ namespace IPCSOC
    SEXPR close();
    
    SEXPR read_select();
-};
+}
 
 #endif
