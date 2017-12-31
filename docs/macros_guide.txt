@@ -1,8 +1,8 @@
-Scheme Macros -- A User's Manual
-================================
+Scheme Macros -- A User's Guide
+===============================
 
-1. Introduction
----------------
+1 Introduction
+--------------
 
 Macros are a powerful syntactic feature of LISP-like languages. Since programs are indistinguishable from
 data, they can be manipulated, constructed and reconstructed. Macros in Scheme work behind the scenes
@@ -18,8 +18,8 @@ xscheme and escheme have macro support through the following two files:
 The first (macros.scm) implements macros proper. The second provides a very useful and powerful quasi-quote
 expander.
 
-2. How to Write Macros
-----------------------
+2 How to Write Macros
+---------------------
 
 Use the "macro" secial form.
 
@@ -169,7 +169,7 @@ Yes, it is difficult to follow.
 Let's create another really useful macro: letrec. This macro will transform the special form letrec into
 the equivalent lambda expansions. It's a little more complex than let, but not much more. For example:
 
- //
+  //
   // letrec
   //     
   // (let ((<v1> <e1>) (<v2> <e2>) ... ) <body> ) ==>
@@ -190,7 +190,7 @@ the equivalent lambda expansions. It's a little more complex than let, but not m
 
 It's similar. However, the lambda parameters are initialized by set's before the body.
 
-Lets break it down.
+Let's break it down.
       1. we need to extract the list of symbols
       2. we need to extract the list of values
       3. assemble the symbols in the formal parameter list of the lambda
