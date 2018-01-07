@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <cstdlib>
-#include <math.h>
+#include <time.h>
 
 #include "math.hxx"
 #include "error.hxx"
@@ -323,7 +323,7 @@ SEXPR MATH::abs()
    if (fixnump(a))
       return MEMORY::fixnum(std::abs(getfixnum(a)));
    else
-      return MEMORY::flonum(fabs(getflonum(a)));
+      return MEMORY::flonum(std::abs(getflonum(a)));
 }
 
 SEXPR MATH::gcd()
@@ -351,7 +351,8 @@ SEXPR MATH::gcd()
    return MEMORY::fixnum(n);
 }
 
-static FIXNUM rseed = 1L;
+// seed with current time of system
+static FIXNUM rseed = time(NULL);
 
 static FIXNUM rand( FIXNUM n )
 {
