@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdlib>
+#include <math.h>
 #include <time.h>
 
 #include "math.hxx"
@@ -323,7 +324,7 @@ SEXPR MATH::abs()
    if (fixnump(a))
       return MEMORY::fixnum(std::abs(getfixnum(a)));
    else
-      return MEMORY::flonum(std::abs(getflonum(a)));
+      return MEMORY::flonum(fabs(getflonum(a)));
 }
 
 SEXPR MATH::gcd()

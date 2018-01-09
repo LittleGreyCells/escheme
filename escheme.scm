@@ -1,14 +1,8 @@
 ;;; -*- Mode: Lisp -*-
 (define *version* "v1.0")
 
-(define enable-macros #f)
-
-(if enable-macros (begin
-
 (load "macros.scm")
 (load "qquote.scm")
-
-))
 
 ;;
 ;; This file contains implementations of standard functions
@@ -61,20 +55,9 @@
       (apply array-set! (list* (vector-ref a i) v r))
       (vector-set! a i v)))
 
-;; mappers
-
-;; delayed evaluation (not implemented)
-
-;; input/output functions
-
-(define prin1 write)
-(define princ display)
-
 ;;
 ;; special forms macros
 ;;
-
-(if enable-macros (begin
 
 (macro case
   (lambda (form)
@@ -115,7 +98,5 @@
 	       ,@<steps>)
 	     ,@<results>)
 	  )))))
-
-))
 
 ;; [EOF]

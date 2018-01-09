@@ -4,7 +4,7 @@ Building
 
 In the root directory type 'make' to build the executable:
 
-   $make
+   $make [-f makefile]
 
 
 Running
@@ -21,14 +21,5 @@ To exit escheme, type ^D, ^C or exit function at the prompt:
 
    noise> (exit)
    $
-
-Initially macros are disabled. To enable macros edit the file escheme.scm and 
-set enable-macros to true:
-
-   (define enable-macros #t)
-
-Invoke escheme and a macro prepass is enabled for all subsequently entered 
-symbolic expressions.
-
 
 [EOF]
