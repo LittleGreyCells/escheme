@@ -1,13 +1,14 @@
+Syntax for Supported Primitive Functions and Special Forms
+
+Functions
+
 syntax: (exit)
-syntax: (gc) -> <vector>
 
 syntax: (cons <car> <cdr>)
 syntax: (car <cons>)
 syntax: (cdr <cons>)
 syntax: (set-car! <cons> <newcar>) -> <cons>
 syntax: (set-cdr! <cons> <newcdr>) -> <cons>
-syntax: (%car <any>)
-syntax: (%cdr <any>)
 syntax: (length <list>)
 
 syntax: (list {<sexpr>}*)
@@ -26,9 +27,6 @@ syntax: (vector-ref <vector> <index>)
 syntax: (vector-set! <vector> <index> <value>)
 syntax: (vector-fill! <vector> <value>) -> <vector>
 syntax: (vector-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
-syntax: (%vector-ref <any> <index>)
-syntax: (%vector-set! <any> <index> <value>)
-syntax: (%vector-length <any>)
 syntax: (find-index <item> <vector> [<limit>])
 
 syntax: (list->vector <list>) -> <vector>
@@ -60,11 +58,8 @@ syntax: (the-environment)
 syntax: (procedure-environment <closure>)
 syntax: (environment-parent <env>)
 syntax: (environment-bindings <env>) -> (<pair1> <pair2> ...)
-syntax: (%make-environment <pairs> <baseenv>)
 
-syntax: (%make-closure <code> <params> <env>)
-syntax: (%parse-formals <params>)
-
+syntax: (gc) -> <vector>
 syntax: (system <string>) -> <fixnum>
 syntax: (getargs) -> #(<string0> <string1> ... <stringc-1>)
 syntax: (gettime) -> (<seconds> . <nanoseconds>)
@@ -119,10 +114,6 @@ syntax: (string->list <string>) -> <list-of-chars>
 syntax: (integer->string <fixnum>) -> <string>
 syntax: (string->integer <string>) -> <fixnum>
 
-syntax: (%transform-let  <exp>) -> <exp>
-syntax: (%transform-let*  <exp>) -> <exp>
-syntax: (%transform-letrec  <exp>) -> <exp>
-
 syntax: (member <exp> <list>) -> <exp> or null
 syntax: (memv <exp> <list>) -> <exp> or null
 syntax: (memq <exp> <list>) -> <exp> or null
@@ -134,14 +125,6 @@ syntax: (append <list1> <list2> ... <listn>) -> <list>
 syntax: (reverse <list>) -> <list>
 syntax: (last-pair <list>) -> <pair> or null
 syntax: (list-tail <list> <n>) -> <list> or null
-
-syntax: (%gref <symbol>) -> <gref>
-syntax: (%fref <depth> <index>) -> <fref>
-syntax: (%closure-code <closure>) -> <list>
-syntax: (%closure-benv <closure>) -> <env>
-syntax: (%closure-vars <closure>) -> <list>
-syntax: (%closure-numv <closure>) -> <fixnum>
-syntax: (%closure-rest <closure>) -> <boolean>
 
 syntax: (history-add <sexpr>) -> #t
 syntax: (history-clear) -> #t
@@ -164,18 +147,9 @@ syntax: (call/cc <fn>)
 syntax: (map <fn> <list>)
 syntax: (foreach <fn> <list>)
 syntax: (force <promise>)
-syntax: (<fun-expr> <farg>...)
-syntax: (<primitive> ...)
-syntax: (call/cc <expr>)
-syntax: (apply <fn> <list>)
-syntax: (eval <expr> [<env>])
-syntax: (<continuation> [<value>])
-syntax: (<closure> ...)
-syntax: (map <func> <list>)
-syntax: (foreach <func> <list>)
-syntax: (force <promise>)
-syntax: (map <func> <list>)
-syntax: (foreach <func> <list>)
+
+Special Forms
+
 syntax: (begin <sequence>)
 syntax: (sequence <sequence>)
 syntax: (while <cond> <sequence>)
@@ -191,3 +165,22 @@ syntax: (or <sequence>)
 syntax: (let <bindings> <body>)
 syntax: (letrec <bindings> <body>)
 syntax: (let* <bindings> <sequence>)
+
+Unsafe Functions
+
+syntax: (%car <any>)
+syntax: (%cdr <any>)
+syntax: (%make-environment <pairs> <baseenv>)
+syntax: (%make-closure <code> <params> <env>)
+syntax: (%parse-formals <params>)
+syntax: (%transform-let  <exp>) -> <exp>
+syntax: (%transform-let*  <exp>) -> <exp>
+syntax: (%transform-letrec  <exp>) -> <exp>
+syntax: (%gref <symbol>) -> <gref>
+syntax: (%fref <depth> <index>) -> <fref>
+syntax: (%closure-code <closure>) -> <list>
+syntax: (%closure-benv <closure>) -> <env>
+syntax: (%closure-vars <closure>) -> <list>
+syntax: (%closure-numv <closure>) -> <fixnum>
+syntax: (%closure-rest <closure>) -> <boolean>
+
