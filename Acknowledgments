@@ -1,6 +1,6 @@
 Acknowledgments
 
-escheme v1.0 would not be possible without the prior work of two scheme
+escheme would not be possible without the prior work of two scheme
 engineering efforts I would like to recognize.
 
 1. XLISP and XSCHEME (David Betz)
@@ -29,3 +29,10 @@ science. I devoured the text and relished Chapters 4 and 5 which describe
 approaches to implementing interpreters and a compiler for scheme. I have 
 used the explicit control evaluator described in Chapter 5 as a starting
 point for escheme. It has been expanded to handle many more special forms.
+
+Addendum for extensible-scheme-compiled
+
+Although I started with SICP model compiler in Chapter 5, I have adapted it 
+to almost make it unrecognizable. The virtual machine I designed for byte code
+evaluation is far different from that described in SICP. The resulting compiler
+keeps pace.
