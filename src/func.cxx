@@ -548,6 +548,7 @@ SEXPR FUNC::unsafe_vlen()
 #endif
 
 static bool eq( SEXPR e1, SEXPR e2 );
+static bool eqv( SEXPR e1, SEXPR e2 );
 static bool equal( SEXPR e1, SEXPR e2 );
 
 SEXPR FUNC::find_index()
@@ -565,7 +566,7 @@ SEXPR FUNC::find_index()
 
    for ( int index = 0; index < limit; ++index )
    {
-      if ( eq( x, vectorref(v, index) ) )
+      if ( eqv( x, vectorref(v, index) ) )
 	 return MEMORY::fixnum(index);
    }
    return symbol_false;
