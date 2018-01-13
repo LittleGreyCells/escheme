@@ -8,24 +8,24 @@ engineering efforts I would like to recognize.
 Betz's contributions, XLISP and XSCHEME, were widely known in the industry
 during the 80s and 90s. I used an early version of his XLISP interpreter 
 in an AI course. That marked the beginning of my interest in LISP and 
-LISP dialects. I have used his XSCHEME compiler-based system to contruct
+LISP dialects. I have used his XSCHEME compiler-based system to construct
 frameworks for software simulation and test.
 
-His XSCHEME system is a coherent and understandable implemenation. I have
+His XSCHEME system has a coherent and understandable structure. I have
 borrowed heavily not only from its organization but also from many of its 
 solutions for primitive functions. However, the implemention of escheme 
-diverges in many areas, charting its own course. It is an interperter based
-system. And the implementation of the explicit control evaluator is due 
-to my own labors over a period of several years.
+diverges in many areas. Principally it is an interperter based system. 
+And the implementation of the explicit control evaluator is due 
+to my own protracted labors over a period of several years.
 
 2. SICP Explicit Control Evaluator (Harold Abelson and Gerald Sussman)
 
 While browsing The Aerospace Corporation library in the early 90s I discovered
-their seminal work "The Structure and Interpretation of Computer Programs"
+the seminal work "The Structure and Interpretation of Computer Programs"
 aka SICP.
  
 How I had wished this text had been used for my undergraduate work in computer
 science. I devoured the text and relished Chapters 4 and 5 which describe
-approaches to implementing an interpreters and compiler for scheme. I have 
-usedthe explicit control evaluator described in Chapter 5 as a starting
+approaches to implementing interpreters and a compiler for scheme. I have 
+used the explicit control evaluator described in Chapter 5 as a starting
 point for escheme. It has been expanded to handle many more special forms.
