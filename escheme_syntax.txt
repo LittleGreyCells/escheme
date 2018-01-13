@@ -1,0 +1,193 @@
+syntax: (exit)
+syntax: (gc) -> <vector>
+
+syntax: (cons <car> <cdr>)
+syntax: (car <cons>)
+syntax: (cdr <cons>)
+syntax: (set-car! <cons> <newcar>) -> <cons>
+syntax: (set-cdr! <cons> <newcdr>) -> <cons>
+syntax: (%car <any>)
+syntax: (%cdr <any>)
+syntax: (length <list>)
+
+syntax: (list {<sexpr>}*)
+syntax: (list* {<sexpr>}*)
+
+syntax: (byte-vector <e1> <e2> ...)
+syntax: (make-byte-vector <size>)
+syntax: (byte-vector-ref <vector> <index>)
+syntax: (byte-vector-set! <vector> <index> <value>)
+syntax: (byte-vector-length <byte-vector>)
+
+syntax: (vector <e1> <e2> ...)
+syntax: (make-vector <size>)
+syntax: (vector-length <vector>)
+syntax: (vector-ref <vector> <index>)
+syntax: (vector-set! <vector> <index> <value>)
+syntax: (vector-fill! <vector> <value>) -> <vector>
+syntax: (vector-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
+syntax: (%vector-ref <any> <index>)
+syntax: (%vector-set! <any> <index> <value>)
+syntax: (%vector-length <any>)
+syntax: (find-index <item> <vector> [<limit>])
+
+syntax: (list->vector <list>) -> <vector>
+syntax: (vector->list <vector>) -> <list>
+
+syntax: (eq? <exp1> <exp2>)
+syntax: (eqv? <exp1> <exp2>)
+syntax: (equal? <exp1> <exp2>)
+
+syntax: (string->symbol <str>) -> symbol
+syntax: (symbol->string <sym>)
+syntax: (gensym [<sym>|<str>|<fix>]) -> symbol
+syntax: (symbol-value <sym-expr>)
+syntax: (set-symbol-value! <sym-expr> <value>)
+syntax: (symbol-plist <sym-expr>)
+syntax: (set-symbol-plist! <sym-expr> <plist>)
+syntax: (get <sym> <prop>)
+syntax: (put <sym> <prop> <value>)
+
+syntax: (read [<inport>])
+syntax: (print <sexpr> [<outport>]) -> #t
+syntax: (write <sexpr> [<outport>]) -> #t
+syntax: (display <sexpr> [<outport>]) -> #t
+syntax: (newline [<outport>]) -> #t
+syntax: (read-char [<inport>])
+syntax: (write-char <sexpr> [<outport>]) -> #t
+
+syntax: (the-environment)
+syntax: (procedure-environment <closure>)
+syntax: (environment-parent <env>)
+syntax: (environment-bindings <env>) -> (<pair1> <pair2> ...)
+syntax: (%make-environment <pairs> <baseenv>)
+
+syntax: (%make-closure <code> <params> <env>)
+syntax: (%parse-formals <params>)
+
+syntax: (system <string>) -> <fixnum>
+syntax: (getargs) -> #(<string0> <string1> ... <stringc-1>)
+syntax: (gettime) -> (<seconds> . <nanoseconds>)
+
+syntax: (open-input-file <str>)
+syntax: (open-output-file <str>)
+syntax: (open-append-file <str>)
+syntax: (open-update-file <str>)
+syntax: (close-port <port>) -> #t
+syntax: (close-input-port <port>) -> #t
+syntax: (close-output-port <port>) -> #t
+syntax: (set-file-position <port> <pos>) -> #t
+syntax: (get-file-position <port>)
+syntax: (flush-output [<outport>]) -> #t
+syntax: (open-input-string <str>)
+syntax: (open-output-string)
+syntax: (open-output-string <stringport>)
+
+syntax: (null? <exp>)
+syntax: (symbol? <exp>)
+syntax: (integer? <exp>)
+syntax: (real? <exp>)
+syntax: (number? <exp>)
+syntax: (string? <exp>)
+syntax: (vector? <exp>)
+syntax: (pair? <exp>)
+syntax: (port? <exp>)
+syntax: (input-port? <exp>)
+syntax: (output-port? <exp>)
+syntax: (string-port? <exp>)
+syntax: (input-string-port? <exp>)
+syntax: (output-string-port? <exp>)
+syntax: (closure? <exp>)
+syntax: (procedure? <exp>)
+syntax: (continuation? <exp>)
+syntax: (environment? <exp>)
+syntax: (list? <exp>)
+syntax: (atom? <exp>)
+syntax: (bound? <exp>)
+syntax: (boolean? <exp>)
+syntax: (promise? <exp>)
+
+syntax: (string-append <s1> <s2> ... <sn>) -> <string>
+syntax: (string-ref <s> <index>) -> <char>
+syntax: (string-set! <s> <index> <ch>) -> <string>
+syntax: (substring <s> <start> <end>) -> <string>
+syntax: (string-fill! <s> <ch>) -> <string>
+syntax: (string-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
+
+syntax: (list->string <list-of-chars>) -> <string>
+syntax: (string->list <string>) -> <list-of-chars>
+syntax: (integer->string <fixnum>) -> <string>
+syntax: (string->integer <string>) -> <fixnum>
+
+syntax: (%transform-let  <exp>) -> <exp>
+syntax: (%transform-let*  <exp>) -> <exp>
+syntax: (%transform-letrec  <exp>) -> <exp>
+
+syntax: (member <exp> <list>) -> <exp> or null
+syntax: (memv <exp> <list>) -> <exp> or null
+syntax: (memq <exp> <list>) -> <exp> or null
+syntax: (assoc <exp> <alist>) -> (<exp> . <value>) or null
+syntax: (assv <exp> <alist>) -> (<exp> . <value>) or null
+syntax: (assq <exp> <alist>) -> (<exp> . <value>) or null
+
+syntax: (append <list1> <list2> ... <listn>) -> <list>
+syntax: (reverse <list>) -> <list>
+syntax: (last-pair <list>) -> <pair> or null
+syntax: (list-tail <list> <n>) -> <list> or null
+
+syntax: (%gref <symbol>) -> <gref>
+syntax: (%fref <depth> <index>) -> <fref>
+syntax: (%closure-code <closure>) -> <list>
+syntax: (%closure-benv <closure>) -> <env>
+syntax: (%closure-vars <closure>) -> <list>
+syntax: (%closure-numv <closure>) -> <fixnum>
+syntax: (%closure-rest <closure>) -> <boolean>
+
+syntax: (history-add <sexpr>) -> #t
+syntax: (history-clear) -> #t
+syntax: (history-show) -> #t
+syntax: (set-prompt <string>) -> #t
+
+syntax: (char-alphabetic? <char>) -> <boolean>
+syntax: (char-numeric? <char>) -> <boolean>
+syntax: (char-whitespace? <char>) -> <boolean>
+syntax: (char-upper-case? <char>) -> <boolean>
+syntax: (char-lower-case? <char>) -> <boolean>
+syntax: (char-upcase <char>) -> <char>
+syntax: (char-downcase <char>) -> <char>
+syntax: (char->integer <char>) -> <fixnum>
+syntax: (integer->char <integer>) -> <char>
+
+syntax: (eval <expr> [<env>])
+syntax: (apply <fn> <arglist>)
+syntax: (call/cc <fn>)
+syntax: (map <fn> <list>)
+syntax: (foreach <fn> <list>)
+syntax: (force <promise>)
+syntax: (<fun-expr> <farg>...)
+syntax: (<primitive> ...)
+syntax: (call/cc <expr>)
+syntax: (apply <fn> <list>)
+syntax: (eval <expr> [<env>])
+syntax: (<continuation> [<value>])
+syntax: (<closure> ...)
+syntax: (map <func> <list>)
+syntax: (foreach <func> <list>)
+syntax: (force <promise>)
+syntax: (map <func> <list>)
+syntax: (foreach <func> <list>)
+syntax: (begin <sequence>)
+syntax: (sequence <sequence>)
+syntax: (while <cond> <sequence>)
+syntax: (set! <var> <exp>)
+syntax: (set! (access <var> <env>) <exp>)
+syntax: (access <symbol> <env>)
+syntax: (define <var> <exp>>
+syntax: (lambda <fargs> <sequence>)
+syntax: (cond (<exp> <sequence>)...)
+syntax: (if <expr> <then-expr> <else-expr>)
+syntax: (and <sequence>)
+syntax: (or <sequence>)
+syntax: (let <bindings> <body>)
+syntax: (letrec <bindings> <body>)
+syntax: (let* <bindings> <sequence>)
