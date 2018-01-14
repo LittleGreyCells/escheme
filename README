@@ -71,18 +71,15 @@ C++11 Source Files
   symtab.*xx	 -- global environmentt
   tstack.*xx     -- stack template
 
-  cloc statistics:
-      42 text files.
-      42 unique files.                              
-      21 files ignored.
+      40 text files.
+      40 unique files.                              
+      20 files ignored.
 
-http://cloc.sourceforge.net v 1.60  T=0.07 s (285.8 files/s, 112990.6 lines/s)
+http://cloc.sourceforge.net v 1.60  T=0.06 s (318.5 files/s, 122993.8 lines/s)
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-C++                             21           1289           1120           5893
--------------------------------------------------------------------------------
-SUM:                            21           1289           1120           5893
+C++                             20           1182           1040           5502
 -------------------------------------------------------------------------------
 
 Escheme Source Files
@@ -96,13 +93,11 @@ Escheme Source Files
        3 unique files.                              
        0 files ignored.
 
-http://cloc.sourceforge.net v 1.60  T=0.01 s (447.1 files/s, 50523.0 lines/s)
+http://cloc.sourceforge.net v 1.60  T=0.01 s (386.4 files/s, 41988.1 lines/s)
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Lisp                             3             53             43            243
--------------------------------------------------------------------------------
-SUM:                             3             53             43            243
+Lisp                             3             46             43            237
 -------------------------------------------------------------------------------
 
 Miscellaneous Directories
@@ -119,6 +114,7 @@ Other Files
   README             -- this file
   Acknowledgments    -- shout out
   BuildingAndRunning -- getting started
+  escheme_syntax.txt -- syntax for escheme functions and special forms
 
 [EOF]
 
