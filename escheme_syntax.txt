@@ -1,24 +1,35 @@
 Syntax for Supported Primitive Functions and Special Forms
 
-Functions
+Primitive Functions
 
 syntax: (exit)
 
-syntax: (cons <car> <cdr>)
-syntax: (car <cons>)
-syntax: (cdr <cons>)
+syntax: (gc) -> <vector>
+syntax: (system <string>) -> <fixnum>
+syntax: (getargs) -> #(<string0> <string1> ... <stringc-1>)
+syntax: (gettime) -> (<seconds> . <nanoseconds>)
+
+syntax: (history) -> #t
+syntax: (add-history <sexpr>) -> #t
+syntax: (clear-history) -> #t
+syntax: (set-prompt <string>) -> #t
+
+syntax: (transcript-on <str>) -> #t
+syntax: (transcript-off) -> #t
+
+syntax: (cons <car> <cdr>) -> <cons>
+syntax: (car <cons>) -> <exp>
+syntax: (cdr <cons>) -> <exp>
 syntax: (set-car! <cons> <newcar>) -> <cons>
 syntax: (set-cdr! <cons> <newcdr>) -> <cons>
-syntax: (length <list>)
+syntax: (length <list>) -> <fixnum>
 
-syntax: (list {<sexpr>}*)
-syntax: (list* {<sexpr>}*)
+syntax: (cxxr <cons>) -> <exp>
+syntax: (cxxxr <cons>) -> <exp>
+syntax: (cxxxxr <cons>) -> <exp>
 
-syntax: (byte-vector <e1> <e2> ...)
-syntax: (make-byte-vector <size>)
-syntax: (byte-vector-ref <vector> <index>)
-syntax: (byte-vector-set! <vector> <index> <value>)
-syntax: (byte-vector-length <byte-vector>)
+syntax: (list {<sexpr>}*) -> <list>
+syntax: (list* {<sexpr>}*) -> <list>
 
 syntax: (vector <e1> <e2> ...)
 syntax: (make-vector <size>)
@@ -32,82 +43,89 @@ syntax: (find-index <item> <vector> [<limit>])
 syntax: (list->vector <list>) -> <vector>
 syntax: (vector->list <vector>) -> <list>
 
-syntax: (eq? <exp1> <exp2>)
-syntax: (eqv? <exp1> <exp2>)
-syntax: (equal? <exp1> <exp2>)
+syntax: (byte-vector <e1> <e2> ...)
+syntax: (make-byte-vector <size>)
+syntax: (byte-vector-ref <vector> <index>)
+syntax: (byte-vector-set! <vector> <index> <value>)
+syntax: (byte-vector-length <byte-vector>)
 
-syntax: (string->symbol <str>) -> symbol
-syntax: (symbol->string <sym>)
-syntax: (gensym [<sym>|<str>|<fix>]) -> symbol
-syntax: (symbol-value <sym-expr>)
+syntax: (eq? <exp1> <exp2>) -> <boolean>
+syntax: (eqv? <exp1> <exp2>) -> <boolean>
+syntax: (equal? <exp1> <exp2>) -> <boolean>
+
+syntax: (string->symbol <str>) -> <symbol>
+syntax: (symbol->string <sym>) -> <str>
+syntax: (gensym [<sym>|<str>|<fix>]) -> <symbol>
+syntax: (symbol-value <sym-expr>) -> <exp>
 syntax: (set-symbol-value! <sym-expr> <value>)
-syntax: (symbol-plist <sym-expr>)
+syntax: (symbol-plist <sym-expr>) -> <plist>
 syntax: (set-symbol-plist! <sym-expr> <plist>)
-syntax: (get <sym> <prop>)
-syntax: (put <sym> <prop> <value>)
+syntax: (get <sym> <prop>) -> <exp>
+syntax: (put <sym> <prop> <value>) -> <prop>
 
-syntax: (read [<inport>])
+syntax: (read [<inport>]) -> <exp>
 syntax: (print <sexpr> [<outport>]) -> #t
 syntax: (write <sexpr> [<outport>]) -> #t
 syntax: (display <sexpr> [<outport>]) -> #t
 syntax: (newline [<outport>]) -> #t
-syntax: (read-char [<inport>])
+syntax: (read-char [<inport>]) -> <char>
 syntax: (write-char <sexpr> [<outport>]) -> #t
 
-syntax: (the-environment)
-syntax: (procedure-environment <closure>)
-syntax: (environment-parent <env>)
+syntax: (the-environment) -> <env>
+syntax: (procedure-environment <closure>) -> <env>
+syntax: (environment-parent <env>) -> <env>
 syntax: (environment-bindings <env>) -> (<pair1> <pair2> ...)
 
-syntax: (gc) -> <vector>
-syntax: (system <string>) -> <fixnum>
-syntax: (getargs) -> #(<string0> <string1> ... <stringc-1>)
-syntax: (gettime) -> (<seconds> . <nanoseconds>)
-
-syntax: (open-input-file <str>)
-syntax: (open-output-file <str>)
-syntax: (open-append-file <str>)
-syntax: (open-update-file <str>)
+syntax: (open-input-file <str>) -> <port>
+syntax: (open-output-file <str>) -> <port>
+syntax: (open-append-file <str>) -> <port>
+syntax: (open-update-file <str>) -> <port>
 syntax: (close-port <port>) -> #t
 syntax: (close-input-port <port>) -> #t
 syntax: (close-output-port <port>) -> #t
 syntax: (set-file-position <port> <pos>) -> #t
 syntax: (get-file-position <port>)
 syntax: (flush-output [<outport>]) -> #t
-syntax: (open-input-string <str>)
-syntax: (open-output-string)
+syntax: (open-input-string <str>) -> <stringport>
+syntax: (open-output-string) -> <stringport>
 syntax: (open-output-string <stringport>)
 
+syntax: (not <exp>) -> <boolean>, etc.          
+syntax: (bound? <exp>)
 syntax: (null? <exp>)
-syntax: (symbol? <exp>)
-syntax: (integer? <exp>)
-syntax: (real? <exp>)
+syntax: (atom? <exp>)
+syntax: (list? <exp>)
 syntax: (number? <exp>)
+syntax: (boolean? <exp>)
+syntax: (pair? <exp>)
+syntax: (symbol? <exp>)
+syntax: (complex? <exp>)
+syntax: (real? <exp>)
+syntax: (rational? <exp>)
+syntax: (integer? <exp>)
+syntax: (char? <exp>)
 syntax: (string? <exp>)
 syntax: (vector? <exp>)
-syntax: (pair? <exp>)
+syntax: (byte-vector? <exp>)
+syntax: (closure? <exp>)
+syntax: (procedure? <exp>)
+syntax: (environment? <exp>)
 syntax: (port? <exp>)
 syntax: (input-port? <exp>)
 syntax: (output-port? <exp>)
 syntax: (string-port? <exp>)
 syntax: (input-string-port? <exp>)
 syntax: (output-string-port? <exp>)
-syntax: (closure? <exp>)
-syntax: (procedure? <exp>)
-syntax: (continuation? <exp>)
-syntax: (environment? <exp>)
-syntax: (list? <exp>)
-syntax: (atom? <exp>)
-syntax: (bound? <exp>)
-syntax: (boolean? <exp>)
+syntax: (eof-object? <exp>)
+syntax: (default-object? <exp>)
+syntax: (zero? <exp>)
+syntax: (positive? <exp>)
+syntax: (negative? <exp>)
+syntax: (odd? <exp>)
+syntax: (even? <exp>)
+syntax: (exact? <exp>)
+syntax: (inexact? <exp>)
 syntax: (promise? <exp>)
-
-syntax: (string-append <s1> <s2> ... <sn>) -> <string>
-syntax: (string-ref <s> <index>) -> <char>
-syntax: (string-set! <s> <index> <ch>) -> <string>
-syntax: (substring <s> <start> <end>) -> <string>
-syntax: (string-fill! <s> <ch>) -> <string>
-syntax: (string-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
 
 syntax: (list->string <list-of-chars>) -> <string>
 syntax: (string->list <string>) -> <list-of-chars>
@@ -126,10 +144,69 @@ syntax: (reverse <list>) -> <list>
 syntax: (last-pair <list>) -> <pair> or null
 syntax: (list-tail <list> <n>) -> <list> or null
 
-syntax: (history-add <sexpr>) -> #t
-syntax: (history-clear) -> #t
-syntax: (history-show) -> #t
-syntax: (set-prompt <string>) -> #t
+syntax: (+ <number>...) -> <number>
+syntax: (- <number>...) -> <number>
+syntax: (* <number>...) -> <number>
+syntax: (/ <number>...) -> <number>
+
+syntax: (= <number>...) -> <number>
+syntax: (< <number>...) -> <number>
+syntax: (<= <number>...) -> <number>
+syntax: (> <number>...) -> <number>
+syntax: (>= <number>...) -> <number>
+
+syntax: (truncate <number>) -> <fixnum>
+syntax: (floor <number>) -> <fixnum>
+syntax: (ceiling <number>) -> <fixnum>
+syntax: (round <number>) -> <fixnum>
+syntax: (1+ <number>) -> <fixnum>
+syntax: (-1+ <number>) -> <fixnum>
+syntax: (inc <number>) -> <fixnum>
+syntax: (dec <number>) -> <fixnum>
+syntax: (abs <number>) -> <fixnum>
+syntax: (gcd <fixnum>...) -> <fixnum>
+syntax: (random <fixnum>) -> <fixnum>
+syntax: (quotient <fixnum>...) -> <fixnum>
+syntax: (remainder <fixnum>...) -> <fixnum>
+syntax: (min <number>...) -> <number>
+syntax: (max <number>...) -> <number>
+syntax: (logand <fixnum>...) -> <fixnum>
+syntax: (logior <fixnum>...) -> <fixnum>
+syntax: (logxor <fixnum>...) -> <fixnum>
+syntax: (shift-right <fixnum> <fixnum>) -> <fixnum>
+syntax: (shift-left <fixnum> <fixnum>) -> <fixnum>
+syntax: (shift-right-arithmetic <fixnum> <fixnum>) -> <fixnum>
+
+syntax: (string-null? <str>) -> <boolean>
+syntax: (string-length <str>) -> <fixnum>
+syntax: (string-append <s1> <s2> ... <sn>) -> <string>
+syntax: (string-ref <s> <index>) -> <char>
+syntax: (string-set! <s> <index> <ch>) -> <string>
+syntax: (substring <s> <start> <end>) -> <string>
+syntax: (string-fill! <s> <ch>) -> <string>
+syntax: (string-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
+
+syntax: (string=? <str> <str>)
+syntax: (string<? <str> <str>)
+syntax: (string<=? <str> <str>)
+syntax: (string>? <str> <str>)
+syntax: (string>=? <str> <str>)
+syntax: (string-ci=? <str> <str>)
+syntax: (string-ci<? <str> <str>)
+syntax: (string-ci<=? <str> <str>)
+syntax: (string-ci>? <str> <str>)
+syntax: (string-ci>=? <str> <str>)
+
+syntax: (char=? <char> <char>)
+syntax: (char<? <char> <char>)
+syntax: (char<=? <char> <char>)
+syntax: (char>? <char> <char>)
+syntax: (char>=? <char> <char>)
+syntax: (char-ci=? <char> <char>)
+syntax: (char-ci<? <char> <char>)
+syntax: (char-ci<=? <char> <char>)
+syntax: (char-ci>? <char> <char>)
+syntax: (char-ci>=? <char> <char>)
 
 syntax: (char-alphabetic? <char>) -> <boolean>
 syntax: (char-numeric? <char>) -> <boolean>
@@ -138,6 +215,7 @@ syntax: (char-upper-case? <char>) -> <boolean>
 syntax: (char-lower-case? <char>) -> <boolean>
 syntax: (char-upcase <char>) -> <char>
 syntax: (char-downcase <char>) -> <char>
+
 syntax: (char->integer <char>) -> <fixnum>
 syntax: (integer->char <integer>) -> <char>
 
@@ -166,16 +244,19 @@ syntax: (let <bindings> <body>)
 syntax: (letrec <bindings> <body>)
 syntax: (let* <bindings> <sequence>)
 
-Unsafe Functions
+Let->Lambda Transformers
 
-syntax: (%car <any>)
-syntax: (%cdr <any>)
-syntax: (%make-environment <pairs> <baseenv>)
-syntax: (%make-closure <code> <params> <env>)
-syntax: (%parse-formals <params>)
-syntax: (%transform-let  <exp>) -> <exp>
-syntax: (%transform-let*  <exp>) -> <exp>
-syntax: (%transform-letrec  <exp>) -> <exp>
+syntax: (%transform-let <exp>) -> <exp>
+syntax: (%transform-let* <exp>) -> <exp>
+syntax: (%transform-letrec <exp>) -> <exp>
+
+Unchecked Functions
+
+syntax: (%car <any>) -> <exp>
+syntax: (%cdr <any>) -> <exp>
+syntax: (%make-environment <pairs> <baseenv>) -> <env>
+syntax: (%make-closure <code> <params> <env>) -> <closure>
+syntax: (%parse-formals <params>) -> <vector>
 syntax: (%gref <symbol>) -> <gref>
 syntax: (%fref <depth> <index>) -> <fref>
 syntax: (%closure-code <closure>) -> <list>
@@ -183,4 +264,12 @@ syntax: (%closure-benv <closure>) -> <env>
 syntax: (%closure-vars <closure>) -> <list>
 syntax: (%closure-numv <closure>) -> <fixnum>
 syntax: (%closure-rest <closure>) -> <boolean>
+
+Compiled Escheme
+
+syntax: (code? <exp>)
+syntax: (compile <exp> [<env>]) -> <code>
+syntax: (%closure-code <closure>) -> <code>
+
+
 
