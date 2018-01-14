@@ -244,12 +244,6 @@ syntax: (let <bindings> <body>)
 syntax: (letrec <bindings> <body>)
 syntax: (let* <bindings> <sequence>)
 
-Let->Lambda Transformers
-
-syntax: (%transform-let <exp>) -> <exp>
-syntax: (%transform-let* <exp>) -> <exp>
-syntax: (%transform-letrec <exp>) -> <exp>
-
 Unchecked Functions
 
 syntax: (%car <any>) -> <exp>
