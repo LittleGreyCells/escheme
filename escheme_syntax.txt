@@ -219,32 +219,32 @@ syntax: (char-downcase <char>) -> <char>
 syntax: (char->integer <char>) -> <fixnum>
 syntax: (integer->char <integer>) -> <char>
 
-syntax: (eval <expr> [<env>])
-syntax: (apply <fn> <arglist>)
-syntax: (call/cc <fn>)
-syntax: (map <fn> <list>)
-syntax: (foreach <fn> <list>)
-syntax: (force <promise>)
+syntax: (eval <exp> [<env>]) -> <exp-evaluated>
+syntax: (apply <fn> <arglist>) -> <exp-fn-result>
+syntax: (call/cc <fn>) -> <exp-fn-result>
+syntax: (map <fn> <list>) -> <list-of-fn-results>
+syntax: (foreach <fn> <list>) -> nil
+syntax: (force <promise>) -> <promise-evaluated>
 
 Special Forms
 
-syntax: (begin <sequence>)
-syntax: (sequence <sequence>)
-syntax: (while <cond> <sequence>)
-syntax: (set! <var> <exp>)
-syntax: (set! (access <var> <env>) <exp>)
-syntax: (access <symbol> <env>)
-syntax: (define <var> <exp>>
-syntax: (lambda <fargs> <sequence>)
-syntax: (cond (<exp> <sequence>)...)
-syntax: (if <expr> <then-expr> <else-expr>)
-syntax: (and <sequence>)
-syntax: (or <sequence>)
-syntax: (let <bindings> <body>)
-syntax: (letrec <bindings> <body>)
-syntax: (let* <bindings> <sequence>)
+syntax: (begin <sequence>) -> <evaluated-tail-in-sequence>
+syntax: (sequence <sequence>) -> <evaluated-tail-in-sequence>
+syntax: (while <cond> <sequence>) -> #f
+syntax: (set! <var> <exp>) -> <exp-evaluated>
+syntax: (set! (access <var> <env>) <exp>) -> <exp-evaluated>
+syntax: (access <symbol> <env>) -> <symbol-value>
+syntax: (define <var> <exp>) -> <var>
+syntax: (lambda <fargs> <sequence>) -> <closure>
+syntax: (cond (<exp> <sequence>)...) -> #f | <evaluated-tail-in-sequence>
+syntax: (if <expr> <then-exp> <else-exp>) -> <evaluated-tail-in-exp>
+syntax: (and <sequence>) -> #t | <evaluated-exp-in-sequence>
+syntax: (or <sequence>) -> #f | <non-false-evaluated-exp-in-sequence>
+syntax: (let <bindings> <sequence>) ->  <evaluated-tail-in-sequence>
+syntax: (letrec <bindings> <sequence>) -> <evaluated-tail-in-sequence>
+syntax: (let* <bindings> <sequence>) -> <evaluated-tail-in-sequence>
 
-Unchecked Functions
+Escheme Custom Functions
 
 syntax: (%make-environment <pairs> <baseenv>) -> <env>
 syntax: (%make-closure <code> <params> <env>) -> <closure>
