@@ -12,12 +12,6 @@
 #define CHECK( id, pred, reg )
 #endif
 
-#define DO_NEW_LET
-//#undef DO_NEW_LET
-#define DO_NEW_LETREC
-//#undef DO_NEW_LETREC
-
-
 /////////////////////////////////////////////////////////////
 //
 //           Explicit Control Evaluator (ECE)
@@ -956,30 +950,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    }
 	    break;
 	 }
-
-#ifndef DO_NEW_LET
-	 //
-	 // syntax: (let <bindings> <body>)
-       	 //
-	 case EV_LET:
-	 {
-	    exp = transform_let(exp);
-	    next = EVAL_DISPATCH;
-	    break;
-	 }
-#endif
-	    
-#ifndef DO_NEW_LETREC
-	 //
-	 // syntax: (letrec <bindings> <body>)
-	 //
-	 case EV_LETREC:
-	 {
-	    exp = transform_letrec(exp);
-	    next = EVAL_DISPATCH;
-	    break;
-	 }
-#endif
 	    
 	 //
 	 // syntax: (let* <bindings> <sequence>)
@@ -991,7 +961,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    break;
 	 }
 	    
-#if defined(DO_NEW_LET) || defined(DO_NEW_LETREC)
 	 //
 	 // syntax: (let <bindings> <body>)
 	 // syntax: (letrec <bindings> <body>)
@@ -1000,12 +969,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //   the essential difference is when the new env
 	 //   is assigned -- before or after arg evaluation.
 	 //
-#ifdef DO_NEW_LET
 	 case EV_LET:
-#endif
-#ifdef DO_NEW_LETREC
 	 case EV_LETREC:
-#endif
 	 {
 	    save_evs(cont);
 	    const SEXPR cdr_exp = cdr(exp);
@@ -1081,7 +1046,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    next = EVAL_SEQUENCE;
 	    break;
 	 }
-#endif
 
 	 case EV_DONE:
 	 {

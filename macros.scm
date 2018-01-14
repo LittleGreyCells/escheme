@@ -1,6 +1,10 @@
 ;;; -*- Mode: Lisp -*-
 
 ;;
+;; The following code is adapted from xscheme macros.s
+;;
+
+;;
 ;; 10/18/2013  LMJ Adopted for escheme
 ;;
 

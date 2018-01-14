@@ -109,8 +109,6 @@ namespace EVAL
    void statistics();
    SEXPR get_evaluator_state();
 
-   SEXPR transform_let( SEXPR exp );
-   SEXPR transform_letrec( SEXPR exp );
    SEXPR transform_letstar( SEXPR exp );
 
    SEXPR lookup( SEXPR var, SEXPR env );

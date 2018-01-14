@@ -15,8 +15,6 @@ namespace FUNC
    SEXPR cons();
    SEXPR car();
    SEXPR cdr();
-   SEXPR unsafe_car();
-   SEXPR unsafe_cdr();
    SEXPR length();
    SEXPR list();
    SEXPR liststar();
@@ -62,11 +60,6 @@ namespace FUNC
    SEXPR vector_length();
    SEXPR vector_fill();
    SEXPR vector_copy();
-#if 0
-   SEXPR unsafe_vref();
-   SEXPR unsafe_vset();
-   SEXPR unsafe_vlen();
-#endif
 
    // other vector
    SEXPR find_index();
@@ -150,8 +143,6 @@ namespace FUNC
    SEXPR get_output_string();
 
    // syntax
-   SEXPR transform_let();
-   SEXPR transform_letrec();
    SEXPR transform_letstar();
 
    // predicates

@@ -120,26 +120,6 @@ SEXPR FUNC::set_cdr()
    return cons;
 }
 
-SEXPR FUNC::unsafe_car()
-{
-   // *
-   // syntax: (%car <any>)
-   //
-   ArgstackIterator iter;
-   const SEXPR n = iter.getlast();
-   return getcar(n);
-}
-
-SEXPR FUNC::unsafe_cdr()
-{
-   // *
-   // syntax: (%cdr <any>)
-   //
-   ArgstackIterator iter;
-   const SEXPR n = iter.getlast();
-   return getcdr(n);
-}
-
 SEXPR FUNC::length()
 {
    // *
@@ -500,52 +480,6 @@ SEXPR FUNC::vector_copy()
 
    return dst;
 }
-
-#if 0
-SEXPR FUNC::unsafe_vref()
-{
-   // * 
-   // syntax: (%vector-ref <any> <index>)
-   //
-   ArgstackIterator iter;
-   const SEXPR v      = iter.getarg();
-   const SEXPR vindex = guard(iter.getlast(), fixnump);
-   const int   index  = getfixnum(vindex);
-
-   if (index < 0 || index >= static_cast<int>(getvectorlength(v)))
-      ERROR::severe("index out of range");
-
-   return vectorref( v, index );
-}
-
-SEXPR FUNC::unsafe_vset()
-{
-   // *
-   // syntax: (%vector-set! <any> <index> <value>)
-   //
-   ArgstackIterator iter;
-   const SEXPR v      = iter.getarg();
-   const SEXPR vindex = guard(iter.getarg(), fixnump);
-   const SEXPR x      = iter.getlast();
-   const int   index  = getfixnum(vindex);
-
-   if (index < 0 || index >= static_cast<int>(getvectorlength(v)))
-      ERROR::severe("index out of range");
-
-   vectorset( v, index, x );
-   return x;
-}
-
-SEXPR FUNC::unsafe_vlen()
-{
-   // *
-   // syntax: (%vector-length <any>)
-   //
-   ArgstackIterator iter;
-   const SEXPR v = iter.getlast();
-   return MEMORY::fixnum(getvectorlength(v));
-}
-#endif
 
 static bool eq( SEXPR e1, SEXPR e2 );
 static bool eqv( SEXPR e1, SEXPR e2 );
@@ -1757,27 +1691,10 @@ SEXPR FUNC::string_to_integer()
 }
 
 //
-// let transformers
+// let transformer(s)
 //
-//   let
 //   let*
-//   letrec
-//   letrec2
 //
-
-SEXPR FUNC::transform_let()
-{
-   //
-   // syntax: (%transform-let  <exp>) -> <exp>
-   //
-   ArgstackIterator iter;
-   SEXPR exp = iter.getlast();
-
-   if (!(consp(exp) && ::car(exp) == LET))
-      ERROR::severe( "not a let expression", exp );
-
-   return EVAL::transform_let( exp );
-}
 
 SEXPR FUNC::transform_letstar()
 {
@@ -1791,20 +1708,6 @@ SEXPR FUNC::transform_letstar()
       ERROR::severe( "not a let* expression", exp );
 
    return EVAL::transform_letstar( exp );
-}
-
-SEXPR FUNC::transform_letrec()
-{
-   //
-   // syntax: (%transform-letrec  <exp>) -> <exp>
-   //
-   ArgstackIterator iter;
-   SEXPR exp = iter.getlast();
-
-   if (!(consp(exp) && ::car(exp) == LETREC))
-      ERROR::severe( "not a letrec expression", exp );
-
-   return EVAL::transform_letrec( exp );
 }
 
 

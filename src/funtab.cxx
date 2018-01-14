@@ -97,9 +97,7 @@ static std::vector<Function> funtab =
    { "eqv?",                 FUNC::eqv          , n_func },
    { "equal?",               FUNC::equal        , n_func },
 
-   { "%transform-let",       FUNC::transform_let     , n_func },
    { "%transform-let*",      FUNC::transform_letstar , n_func },
-   { "%transform-letrec",    FUNC::transform_letrec  , n_func },
 
    { "string->symbol",       FUNC::string_to_symbol , n_func },
    { "symbol->string",       FUNC::symbol_to_string , n_func },
@@ -118,14 +116,6 @@ static std::vector<Function> funtab =
    { "newline",		     FUNC::newline	, n_func },
    { "read-char",            FUNC::read_char    , n_func },
    { "write-char",           FUNC::write_char   , n_func },
-
-   { "%car",		     FUNC::unsafe_car	, n_func },
-   { "%cdr",		     FUNC::unsafe_cdr	, n_func },
-#if 0
-   { "%vector-ref",	     FUNC::unsafe_vref	, n_func },
-   { "%vector-set!",	     FUNC::unsafe_vset	, n_func },
-   { "%vector-length",	     FUNC::unsafe_vlen	, n_func },
-#endif
 
    { "gc",		     FUNC::gc		, n_func },
 

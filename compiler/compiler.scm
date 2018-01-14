@@ -256,14 +256,10 @@
     (%make-environment (make-empty-bindings x) env)))
 
 ;;
-;; transformers
+;; transformer(s)
 ;;
-;;    let->lambda
-;;    letrec->let
 ;;    let*->let
 ;;
-(define (let->lambda exp) (%transform-let exp))
-(define (letrec->let exp) (%transform-letrec exp))
 (define (let*->let exp)   (%transform-let* exp))
 
 ;;
