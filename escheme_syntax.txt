@@ -4,10 +4,10 @@ Primitive Functions
 
 syntax: (exit)
 
-syntax: (gc) -> <vector>
-syntax: (system <string>) -> <fixnum>
-syntax: (getargs) -> #(<string0> <string1> ... <stringc-1>)
-syntax: (gettime) -> (<seconds> . <nanoseconds>)
+syntax: (gc) -> <vector-gc-statistics>
+syntax: (system <string>) -> <fixnum-return-code>
+syntax: (getargs) -> #(<string0> <string1> ... )
+syntax: (gettime) -> (<fixnum-seconds> . <fixnum-nanoseconds>)
 
 syntax: (history) -> #t
 syntax: (add-history <sexpr>) -> #t
@@ -17,21 +17,21 @@ syntax: (set-prompt <string>) -> #t
 syntax: (transcript-on <str>) -> #t
 syntax: (transcript-off) -> #t
 
-syntax: (cons <car> <cdr>) -> <cons>
-syntax: (car <cons>) -> <exp>
-syntax: (cdr <cons>) -> <exp>
-syntax: (set-car! <cons> <newcar>) -> <cons>
-syntax: (set-cdr! <cons> <newcdr>) -> <cons>
+syntax: (cons <car> <cdr>) -> <pair>
+syntax: (car <pair>) -> <exp>
+syntax: (cdr <pair>) -> <exp>
+syntax: (set-car! <pair> <newcar>) -> <pair>
+syntax: (set-cdr! <pair> <newcdr>) -> <pair>
 syntax: (length <list>) -> <fixnum>
 
-syntax: (cxxr <cons>) -> <exp>
-syntax: (cxxxr <cons>) -> <exp>
-syntax: (cxxxxr <cons>) -> <exp>
+syntax: (cxxr <pair>) -> <exp>
+syntax: (cxxxr <pair>) -> <exp>
+syntax: (cxxxxr <pair>) -> <exp>
 
-syntax: (list {<sexpr>}*) -> <list>
-syntax: (list* {<sexpr>}*) -> <list>
+syntax: (list {<exp>}*) -> <list>
+syntax: (list* {<exp>}*) -> <list>
 
-syntax: (vector <e1> <e2> ...)
+syntax: (vector {<exp>}*)
 syntax: (make-vector <size>)
 syntax: (vector-length <vector>)
 syntax: (vector-ref <vector> <index>)
@@ -43,7 +43,7 @@ syntax: (find-index <item> <vector> [<limit>])
 syntax: (list->vector <list>) -> <vector>
 syntax: (vector->list <vector>) -> <list>
 
-syntax: (byte-vector <e1> <e2> ...)
+syntax: (byte-vector {<exp>}*)
 syntax: (make-byte-vector <size>)
 syntax: (byte-vector-ref <vector> <index>)
 syntax: (byte-vector-set! <vector> <index> <value>)
@@ -132,17 +132,17 @@ syntax: (string->list <string>) -> <list-of-chars>
 syntax: (integer->string <fixnum>) -> <string>
 syntax: (string->integer <string>) -> <fixnum>
 
-syntax: (member <exp> <list>) -> <exp> or null
-syntax: (memv <exp> <list>) -> <exp> or null
-syntax: (memq <exp> <list>) -> <exp> or null
-syntax: (assoc <exp> <alist>) -> (<exp> . <value>) or null
-syntax: (assv <exp> <alist>) -> (<exp> . <value>) or null
-syntax: (assq <exp> <alist>) -> (<exp> . <value>) or null
+syntax: (member <exp> <list>) -> <exp> | nil
+syntax: (memv <exp> <list>) -> <exp> | nil
+syntax: (memq <exp> <list>) -> <exp> | nil
+syntax: (assoc <exp> <alist>) -> (<exp> . <value>) | nil
+syntax: (assv <exp> <alist>) -> (<exp> . <value>) | nil
+syntax: (assq <exp> <alist>) -> (<exp> . <value>) | nil
 
 syntax: (append <list1> <list2> ... <listn>) -> <list>
 syntax: (reverse <list>) -> <list>
-syntax: (last-pair <list>) -> <pair> or null
-syntax: (list-tail <list> <n>) -> <list> or null
+syntax: (last-pair <list>) -> <pair> | nil
+syntax: (list-tail <list> <n>) -> <list> | nil
 
 syntax: (+ <number>...) -> <number>
 syntax: (- <number>...) -> <number>
@@ -246,8 +246,6 @@ syntax: (let* <bindings> <sequence>)
 
 Unchecked Functions
 
-syntax: (%car <any>) -> <exp>
-syntax: (%cdr <any>) -> <exp>
 syntax: (%make-environment <pairs> <baseenv>) -> <env>
 syntax: (%make-closure <code> <params> <env>) -> <closure>
 syntax: (%parse-formals <params>) -> <vector>
