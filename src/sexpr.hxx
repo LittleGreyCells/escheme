@@ -218,8 +218,6 @@ struct Node
       FREF fref;
    } u;
 
-   SEXPR copy;
-
    Node()
    {}
 

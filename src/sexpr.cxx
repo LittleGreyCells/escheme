@@ -166,7 +166,7 @@ bool contp( const SEXPR n ) { return n->kind == n_continuation; }
 bool envp( const SEXPR n ) { return n->kind == n_environment; }
 bool bvecp( const SEXPR n ) { return n->kind == n_bvec; }
 bool listp( const SEXPR n ) { return nullp(n) || n->kind == n_cons; }
-bool atomp( const SEXPR n ) { return nullp(n) || n->kind != n_cons; }
+bool atomp( const SEXPR n ) { return nullp(n) || !(n->kind == n_cons || n->kind == n_vector); }
 
 bool inportp( const SEXPR n ) { return portp(n) && (getmode(n) & pm_input); }
 bool outportp( const SEXPR n ) { return portp(n) && (getmode(n) & pm_output); }

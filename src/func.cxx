@@ -2208,3 +2208,12 @@ SEXPR FUNC::integer_to_char()
    return MEMORY::character((CHAR)getfixnum(num));
 }
 
+SEXPR FUNC::objaddr()
+{
+   //
+   // syntax: (%object-address <object>) -> <fixnum>
+   //
+   ArgstackIterator iter;
+   const SEXPR obj = iter.getlast();
+   return MEMORY::fixnum((FIXNUM)obj);
+}

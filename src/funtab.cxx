@@ -299,6 +299,7 @@ static std::vector<Function> funtab =
    { "%closure-numv",         FUNC::closure_numv , n_func },
    { "%closure-rest",         FUNC::closure_rest , n_func },
 
+
    { "socket-read",           IPCSOC::read           , n_func },
    { "socket-write",          IPCSOC::write          , n_func },
    { "socket-recvfrom",       IPCSOC::recvfrom       , n_func },
@@ -315,6 +316,8 @@ static std::vector<Function> funtab =
    { "socket-disconnect",     IPCSOC::disconnect     , n_func },
    { "socket-close",          IPCSOC::close          , n_func },
    { "read-select",           IPCSOC::read_select    , n_func },
+
+   { "%object-address",       FUNC::objaddr          , n_func },
 };
 
 
