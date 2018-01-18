@@ -317,7 +317,7 @@
   (assert (atom? 1.0))
   (assert (atom? "string"))
   (assert (atom? #\a))
-  (assert (not (atom? #())))
+  (assert (atom? #()))
   (assert (not (atom? (list 1))))
   
   (assert (list? ()))
