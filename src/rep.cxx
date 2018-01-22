@@ -92,9 +92,6 @@ void rep_loop()
 
    SEXPR exp = getvalue( SYMTAB::enter(SYSTEM_REPLOOP) );
 
-   const int maxerrors = 10;
-   int nerrors = 0;
-
    while (true)
    {
       try
@@ -108,12 +105,6 @@ void rep_loop()
 	 {
 	    case ERROR::Severe:
 	    {
-	       if ( ++nerrors > maxerrors )
-	       {
-		  printf( "exceeded max allowable errors (%d)\n", maxerrors );
-		  return;
-	       }
-
 	       exp = SYMTAB::enter(TOPLEVEL);
 
 	       const SEXPR val = getvalue(exp);
