@@ -318,6 +318,9 @@ static std::vector<Function> funtab =
    { "read-select",           IPCSOC::read_select    , n_func },
 
    { "%object-address",       FUNC::objaddr          , n_func },
+
+   { "chdir",                 FUNC::change_dir       , n_func },
+   { "getcwd",                FUNC::current_dir      , n_func },
 };
 
 

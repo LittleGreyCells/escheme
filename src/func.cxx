@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <algorithm>
+#include <unistd.h>
 
 #include "sexpr.hxx"
 #include "func.hxx"
@@ -2216,4 +2217,29 @@ SEXPR FUNC::objaddr()
    ArgstackIterator iter;
    const SEXPR obj = iter.getlast();
    return MEMORY::fixnum((FIXNUM)obj);
+}
+
+SEXPR FUNC::change_dir()
+{
+   //
+   // syntax: (chdir <string>) -> <fixnum>
+   //
+   ArgstackIterator iter;
+   const SEXPR path = guard(iter.getlast(), stringp);
+   const int result = ::chdir( getstringdata(path) );
+   return MEMORY::fixnum((FIXNUM)result);
+}
+
+SEXPR FUNC::current_dir()
+{
+   //
+   // syntax: (getcwd) -> <string>
+   //
+   argstack.noargs();
+   char buffer[200];
+   const char* result = ::getcwd( buffer, sizeof(buffer) );
+   if ( result == NULL )
+      return null;
+   else
+      return MEMORY::string( buffer );
 }

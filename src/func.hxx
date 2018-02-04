@@ -265,6 +265,10 @@ namespace FUNC
 
    // object address
    SEXPR objaddr();
+
+   // unistd
+   SEXPR change_dir();
+   SEXPR current_dir();
 }
 
 #endif
