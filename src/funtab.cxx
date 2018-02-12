@@ -87,6 +87,7 @@ static std::vector<Function> funtab =
    { "byte-vector-length",   FUNC::bvector_length , n_func },
 
    { "find-index",           FUNC::find_index     , n_func },
+   { "rank",                 FUNC::rank           , n_func },
 
    { "list->vector",         FUNC::list_to_vector , n_func },
    { "vector->list",         FUNC::vector_to_list , n_func },

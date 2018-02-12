@@ -507,6 +507,34 @@ SEXPR FUNC::find_index()
    return symbol_false;
 }
 
+SEXPR FUNC::rank()
+{
+   // *
+   // syntax: (rank <item> <list>) -> fixnum | nil
+   //
+   ArgstackIterator iter;
+   const SEXPR x = guard(iter.getarg(), symbolp);
+   SEXPR y = guard(iter.getlast(), listp);
+   int n = 0;
+
+   while ( true )
+   {
+      if ( nullp(y) )
+      {
+	 return null;
+      }
+      else if ( eq( x, car(y) ) )
+      {
+	 return MEMORY::fixnum(n);
+      }
+      else
+      {
+	 n += 1;
+	 y = cdr(y);
+      }
+   }
+}
+
 SEXPR FUNC::list_to_vector()
 {
    // *
@@ -1038,9 +1066,23 @@ SEXPR FUNC::make_environment()
 
    for (int i = 0; anyp(pairs); ++i)
    {
-      SEXPR pair = ::car(pairs);   // ( <var> . <val> )
-      setcdr( a, MEMORY::cons(::car(pair), null) );
-      frameset(frame, i, ::cdr(pair));
+      SEXPR x = ::car(pairs);   
+      if (consp(x))
+      {
+	 // ( <var> . <val> )
+	 setcdr( a, MEMORY::cons(::car(x), null) );
+	 frameset(frame, i, ::cdr(x));
+      }
+      else if (symbolp(x))
+      {
+	 // <var>
+	 setcdr( a, MEMORY::cons(x, null) );
+	 frameset(frame, i, null);
+      }
+      else
+      {
+	 ERROR::severe( "expected a symbol or (symbol . val)", x );
+      }
       a = getcdr(a);
       pairs = ::cdr(pairs);
    }
