@@ -26,6 +26,7 @@ static void define_system()
    const char* system = "\
 (begin\
    (define *version* \"<interpreter>\")\
+   (set-prompt \"noise> \")	       \
    (let ((x 0))\
      (call/cc (lambda (cc) (set! *toplevel* cc)))\
      (if (= x 0)\
@@ -38,7 +39,6 @@ static void define_system()
      (newline)\
      (newline)\
      (flush-output)\
-     (set-prompt \"noise> \")\
      (call/cc (lambda (cc) (set! *toplevel* cc)))\
      (while #t\
        (let ((sexpr (read *terminal*)))\

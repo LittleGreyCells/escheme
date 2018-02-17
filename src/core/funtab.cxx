@@ -10,6 +10,9 @@
 #include "eval.hxx"
 #include "error.hxx"
 #include "ipcsoc.hxx"
+#ifdef BCE_COMPILER
+#include "assem.hxx"
+#endif
 
 struct Function
 {
@@ -172,6 +175,11 @@ static std::vector<Function> funtab =
 
    { "%make-closure",         FUNC::make_closure      , n_func },
    { "%parse-formals",        FUNC::parse_formals     , n_func },
+#ifdef BCE_COMPILER
+   { "%make-code",            FUNC::make_code         , n_func },
+   { "%get-bcodes",           FUNC::get_bcodes        , n_func },
+   { "%get-sexprs",           FUNC::get_sexprs        , n_func },
+#endif
 
    { "system",                FUNC::unix_system       , n_func },
    { "getargs",               FUNC::unix_getargs      , n_func },
@@ -212,6 +220,7 @@ static std::vector<Function> funtab =
    { "closure?"  ,            PRED_FUN(closurep) , n_func },
    { "procedure?",            FUNC::procedurep , n_func },
    { "environment?",	      PRED_FUN(envp) , n_func },
+   { "continuation?",	      PRED_FUN(contp) , n_func },
    { "port?",                 PRED_FUN(portp) , n_func },
    { "input-port?",           PRED_FUN(inportp) , n_func },
    { "output-port?",          PRED_FUN(outportp) , n_func },
@@ -229,6 +238,9 @@ static std::vector<Function> funtab =
    { "exact?",                PRED_FUN(exactp) , n_func },
    { "inexact?",              PRED_FUN(inexactp) , n_func },
    { "promise?",              PRED_FUN(promisep) , n_func },
+#ifdef BCE_COMPILER
+   { "code?",                 PRED_FUN(codep) , n_func },
+#endif
 
    { "string-null?",          PRED_FUN(string_nullp) , n_func },
    { "string-length",         FUNC::string_length , n_func },
@@ -299,7 +311,9 @@ static std::vector<Function> funtab =
    { "%closure-vars",         FUNC::closure_vars , n_func },
    { "%closure-numv",         FUNC::closure_numv , n_func },
    { "%closure-rest",         FUNC::closure_rest , n_func },
-
+#ifdef BCE_COMPILER
+   { "%closure-code-set!",    FUNC::closure_code_set , n_func },
+#endif
 
    { "socket-read",           IPCSOC::read           , n_func },
    { "socket-write",          IPCSOC::write          , n_func },
@@ -317,6 +331,11 @@ static std::vector<Function> funtab =
    { "socket-disconnect",     IPCSOC::disconnect     , n_func },
    { "socket-close",          IPCSOC::close          , n_func },
    { "read-select",           IPCSOC::read_select    , n_func },
+
+#ifdef BCE_COMPILER
+   { "assemble",              ASSEM::encode , n_func },
+   { "disassemble",           ASSEM::decode , n_func },
+#endif
 
    { "%object-address",       FUNC::objaddr          , n_func },
 

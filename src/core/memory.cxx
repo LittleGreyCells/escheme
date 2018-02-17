@@ -19,7 +19,7 @@ SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
 
 #ifdef GC_STATISTICS_DETAILED
-array<UINT32, NUMKINDS> MEMORY::NodeCounts;
+array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
 #endif
 
 FrameStore frameStore;
@@ -31,13 +31,20 @@ void MEMORY::register_marker( Marker marker )
    markers.push_back( marker );
 }
 
+//////////////////////////////////////////
 //
-// Node Pool
+// Node Block Pool
 //
+//////////////////////////////////////////
 
 long  MEMORY::TotalNodeCount  = 0;
 long  MEMORY::FreeNodeCount   = 0;
 int   MEMORY::CollectionCount = 0;
+
+#define freename(n)        delete getname(n)
+#define freestringdata(n)  delete getstringdata(n)
+#define freevectordata(n)  delete getvectordata(n)
+#define freebvecdata(n)    delete getbvecdata(n)
 
 static SEXPR FreeNodeList;
 
@@ -74,6 +81,10 @@ static void NewNodeBlock()
 }
 
 //
+// End NodeBlockPool
+//
+
+//
 // Garbage Collection
 //
 //   GC consists of mark and sweep phases. The mark phase marks all nodes
@@ -105,6 +116,9 @@ static void badnode( SEXPR n )
 //
 // Mark this node and all reachable substructures
 //
+
+// marking Functions
+
 #define markedp(n) ((n)->mark)
 #define setmark(n) ((n)->mark = 1)
 #define resetmark(n) ((n)->mark = 0)
@@ -122,8 +136,14 @@ void MEMORY::mark( SEXPR n )
       case n_cons:
       case n_promise:
 	 setmark(n);
-	 mark( getcar(n) );
-	 mark( getcdr(n) );
+	 mark(getcar(n));
+	 mark(getcdr(n));
+	 break;
+    
+      case n_code:
+	 setmark(n);
+	 mark(code_getbcodes(n));
+	 mark(code_getsexprs(n));
 	 break;
     
       case n_environment:
@@ -133,19 +153,19 @@ void MEMORY::mark( SEXPR n )
 	 FRAME frame = getenvframe(n);
 	 if (frame != nullptr)
 	 {
-	    mark( frame->vars );
+	    mark(frame->vars);
 	    const int nslots = getframenslots(frame);
 	    for (int i = 0; i < nslots; ++i)
-	       mark( frameref(frame, i) );
+	       mark(frameref(frame, i));
 	 }
 	 // mark the base env
-	 mark( getenvbase(n) );
+	 mark(getenvbase(n));
 	 break;
       }
   
       case n_string_port:
 	 setmark(n);
-	 mark( getstringportstring(n) );
+	 mark(getstringportstring(n));
 	 break;
     
       case n_continuation:
@@ -154,22 +174,22 @@ void MEMORY::mark( SEXPR n )
 	 setmark(n);
 	 const UINT32 length = getvectorlength(n);
 	 for (UINT32 i = 0; i < length; ++i)
-	    mark( vectorref(n, i) );
+	    mark(vectorref(n, i));
 	 break;
       }
   
       case n_symbol:
 	 setmark(n);
-	 mark( getvalue(n) );
-	 mark( getplist(n) );
+	 mark(getvalue(n));
+	 mark(getplist(n));
 	 break;
     
       case n_closure:
       {
 	 setmark(n);
-	 mark( getclosurecode(n) );
-	 mark( getclosurebenv(n) );
-	 mark( getclosurevars(n) );
+	 mark(getclosurecode(n));
+	 mark(getclosurebenv(n));
+	 mark(getclosurevars(n));
 	 break;
       }
 
@@ -191,7 +211,7 @@ void MEMORY::mark( SEXPR n )
 
       case n_gref:
 	 setmark(n);
-	 mark( gref_getsymbol(n) );
+	 mark(gref_getsymbol(n));
 	 break;
 
       case n_fref:
@@ -212,7 +232,7 @@ void MEMORY::mark( TSTACK<SEXPR>& stack )
 {
    const int depth = stack.getdepth();
    for (int i = 0; i < depth; ++i)
-      mark( stack[i] );
+      mark(stack[i]);
 }
 
 //
@@ -220,17 +240,12 @@ void MEMORY::mark( TSTACK<SEXPR>& stack )
 //   This should be called after all reachable nodes are marked
 //   All unmarked nodes are collected into the free node list
 //
-#define freename(n)        delete getname(n)
-#define freestringdata(n)  delete getstringdata(n)
-#define freevectordata(n)  delete getvectordata(n)
-#define freebvecdata(n)    delete getbvecdata(n)
-
 static void sweep()
 {
    FreeNodeList = null;
    MEMORY::FreeNodeCount = 0;
 
-   for ( auto& count : MEMORY::NodeCounts ) 
+   for ( auto& count : MEMORY::ReclamationCounts ) 
       count = 0;
 
    for ( auto block : blocks )
@@ -275,7 +290,7 @@ static void sweep()
 
 	    MEMORY::FreeNodeCount += 1;
 #ifdef GC_STATISTICS_DETAILED
-	    MEMORY::NodeCounts[nodekind(p)] += 1;
+	    MEMORY::ReclamationCounts[nodekind(p)] += 1;
 #endif
 	    // minimal reinitialization
 	    new (p) Node( n_free, FreeNodeList );
@@ -531,6 +546,14 @@ SEXPR MEMORY::promise( SEXPR exp )
    SEXPR n = newnode(n_promise);
    setcar(n, exp);
    setcdr(n, null);
+   return n;
+}
+
+SEXPR MEMORY::code( SEXPR bcodes, SEXPR sexprs )
+{
+   SEXPR n = newnode(n_code);
+   code_setbcodes(n, bcodes);
+   code_setsexprs(n, sexprs);
    return n;
 }
 

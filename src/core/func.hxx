@@ -61,7 +61,7 @@ namespace FUNC
    SEXPR vector_fill();
    SEXPR vector_copy();
 
-   // other search
+   // search
    SEXPR find_index();
    SEXPR rank();
 
@@ -120,6 +120,13 @@ namespace FUNC
    // closure
    SEXPR make_closure();
    SEXPR parse_formals();
+
+#ifdef BCE_COMPILER
+   // code
+   SEXPR make_code();
+   SEXPR get_bcodes();
+   SEXPR get_sexprs();
+#endif
 
    // unix
    SEXPR unix_system();
@@ -184,6 +191,10 @@ namespace FUNC
    PRED_DCL(evenp);
    PRED_DCL(exactp);
    PRED_DCL(inexactp);
+
+#ifdef BCE_COMPILER
+   PRED_DCL(codep);
+#endif
 
    SEXPR procedurep();
 
@@ -253,6 +264,9 @@ namespace FUNC
    SEXPR closure_vars();
    SEXPR closure_numv();
    SEXPR closure_rest();
+#ifdef BCE_COMPILER
+   SEXPR closure_code_set();
+#endif
 
    // transcript
    SEXPR transcript_on();
@@ -263,6 +277,11 @@ namespace FUNC
    SEXPR history_clear();
    SEXPR history_show();
    SEXPR set_prompt();
+
+   // equality
+   bool eq( SEXPR e1, SEXPR e2 );
+   bool eqv( SEXPR e1, SEXPR e2 );
+   bool equal( SEXPR e1, SEXPR e2 );
 
    // object address
    SEXPR objaddr();

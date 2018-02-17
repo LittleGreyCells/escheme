@@ -4,31 +4,33 @@ CC   = gcc
 
 CWD = $(shell pwd)
 
-SRCLOC = ./src
-LNLOC  = ./linenoise
-INCLUDES = $(CWD)/$(LNLOC)
+SRCLOC = $(CWD)/src
+EVAL   = $(SRCLOC)/eval
+CORE   = $(SRCLOC)/core
+NOISE  = $(CWD)/linenoise
+INCLUDES = -I$(NOISE) -I$(CORE) -I$(EVAL)
 
 SRCS	= \
-	$(SRCLOC)/escheme.cxx \
-	$(SRCLOC)/rep.cxx \
-	$(SRCLOC)/error.cxx \
-	$(SRCLOC)/tstack.cxx \
-	$(SRCLOC)/argstack.cxx \
-	$(SRCLOC)/regstack.cxx \
-	$(SRCLOC)/intstack.cxx \
-	$(SRCLOC)/reader.cxx \
-	$(SRCLOC)/printer.cxx \
-	$(SRCLOC)/symtab.cxx \
-	$(SRCLOC)/eval.cxx \
-	$(SRCLOC)/eceval.cxx \
-	$(SRCLOC)/funtab.cxx \
-	$(SRCLOC)/func.cxx \
-	$(SRCLOC)/math.cxx \
-	$(SRCLOC)/memory.cxx \
-	$(SRCLOC)/pio.cxx \
-	$(SRCLOC)/tio.cxx \
-	$(SRCLOC)/ipcsoc.cxx \
-	$(SRCLOC)/sexpr.cxx
+	$(EVAL)/eval.cxx \
+	$(EVAL)/eceval.cxx \
+	$(CORE)/sexpr.cxx \
+	$(CORE)/escheme.cxx \
+	$(CORE)/rep.cxx \
+	$(CORE)/error.cxx \
+	$(CORE)/tstack.cxx \
+	$(CORE)/argstack.cxx \
+	$(CORE)/regstack.cxx \
+	$(CORE)/intstack.cxx \
+	$(CORE)/reader.cxx \
+	$(CORE)/printer.cxx \
+	$(CORE)/symtab.cxx \
+	$(CORE)/funtab.cxx \
+	$(CORE)/func.cxx \
+	$(CORE)/math.cxx \
+	$(CORE)/memory.cxx \
+	$(CORE)/pio.cxx \
+	$(CORE)/tio.cxx \
+	$(CORE)/ipcsoc.cxx \
 
 OBJS	= $(SRCS:.cxx=.o)
 
@@ -42,17 +44,18 @@ LFLAGS = $(DEBUG_FLAGS) -v -lm
 
 all 	: escheme
 
-escheme	: $(OBJS) $(LNLOC)/linenoise.o
-	$(CXXC) -o escheme $(OBJS) $(LNLOC)/linenoise.o $(LFLAGS)
-	rm $(SRCLOC)/*.o
-	rm $(LNLOC)/*.o
+escheme	: $(OBJS) $(NOISE)/linenoise.o
+	$(CXXC) -o escheme $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
+	rm $(EVAL)/*.o
+	rm $(CORE)/*.o
+	rm $(NOISE)/*.o
 
 %.o	: %.cxx
-	$(CXXC) -I$(INCLUDES) -c $(CFLAGS) $< -o $@
+	$(CXXC) $(INCLUDES) -c $(CFLAGS) $< -o $@
 
-$(LNLOC)/linenoise.o : $(LNLOC)/linenoise.c
+$(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 	gcc -Wall -W -Os -c $< -o $@
 
 clean 	:
-	rm -f $(SRCLOC)/*.o $(LNLOC)/*.o *~ escheme
+	rm -f $(EVAL)/*.o $(CORE)/*.o $(NOISE)/*.o *~ escheme
 

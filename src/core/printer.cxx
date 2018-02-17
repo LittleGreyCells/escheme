@@ -143,12 +143,12 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_gref:
-	    sprintf(buffer, "{ gref:%s }", getname(gref_getsymbol(n)) );
+	    sprintf(buffer, "{gref:%s}", getname(gref_getsymbol(n)) );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_fref:
-	    sprintf(buffer, "{ fref:%d,%d }", fref_getdepth(n),  fref_getindex(n) );
+	    sprintf(buffer, "{fref:%d,%d}", fref_getdepth(n),  fref_getindex(n) );
 	    PIO::put(outport, buffer);
 	    break;
 
@@ -159,34 +159,34 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	 case n_map:
 	 case n_foreach:
 	 case n_force:
-	    SPRINTF(buffer, "{ prim:%p }", n->id() );
+	    SPRINTF(buffer, "{prim:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_port:
-	    SPRINTF(buffer, "{ port:%p }", n->id() );
+	    SPRINTF(buffer, "{port:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_string_port:
-	    SPRINTF(buffer, "{ sport:%p }", n->id() );
+	    SPRINTF(buffer, "{sport:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_closure:
-	    SPRINTF(buffer, "{ closure:%p }", n->id() );
+	    SPRINTF(buffer, "{closure:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_continuation:
-	    SPRINTF(buffer, "{ cont:%p }", n->id() );
+	    SPRINTF(buffer, "{cont:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_bvec:
 	    if ( 0 )
 	    {
-	       SPRINTF(buffer, "{ bvec:%p }", n->id() );
+	       SPRINTF(buffer, "{bvec:%p}", n->id() );
 	       PIO::put(outport, buffer);
 	    }
 	    else
@@ -206,17 +206,22 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_environment:
-	    SPRINTF(buffer, "{ env:%p }", n->id() );
+	    SPRINTF(buffer, "{env:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_promise:
-	    SPRINTF(buffer, "{ promise:%p }", n->id() );
+	    SPRINTF(buffer, "{promise:%p}", n->id() );
+	    PIO::put(outport, buffer);
+	    break;
+
+	 case n_code:
+	    SPRINTF(buffer, "{code:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_free:
-	    SPRINTF(buffer, "{ free:%p }", n->id() );
+	    SPRINTF(buffer, "{free:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 

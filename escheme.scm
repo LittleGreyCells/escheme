@@ -1,5 +1,6 @@
 ;;; -*- Mode: Lisp -*-
 (define *version* "v1.0")
+(set-prompt "ece> ")
 
 (load "macros.scm")
 (load "qquote.scm")

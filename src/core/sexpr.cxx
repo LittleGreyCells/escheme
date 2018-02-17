@@ -46,6 +46,7 @@ void show( const SEXPR n )
 	 case n_fref:           show("fref", n); break;
 	 case n_promise:        show("promise", n); break;
 	 case n_force:          show("force", n); break;
+	 case n_code:           show("code", n); break;
 	 default: 		show("<unknown>", n); break;	
       }
    }
@@ -158,9 +159,9 @@ bool closurep( const SEXPR n ) { return n->kind == n_closure; }
 bool specialp( const SEXPR n ) { return n->kind == n_eval || 
                                         n->kind == n_callcc || 
                                         n->kind == n_apply || 
-                                        n->kind == n_force || 
                                         n->kind == n_map ||
-                                        n->kind == n_foreach; }
+                                        n->kind == n_foreach ||
+                                        n->kind == n_force; }
 
 bool contp( const SEXPR n ) { return n->kind == n_continuation; }
 bool envp( const SEXPR n ) { return n->kind == n_environment; }
@@ -177,6 +178,7 @@ bool anyoutportp( const SEXPR n ) { return outportp(n) || outstringportp(n); }
 
 bool lastp( SEXPR n )  { return nullp(cdr(n)); }
 bool promisep( SEXPR n )  { return n->kind == n_promise; }
+bool codep( const SEXPR n ) { return n->kind == n_code; }
 
 struct PredMap { PREDICATE pred; const char* name; };
 
@@ -208,6 +210,7 @@ std::vector<PredMap> pmap =
    { anyoutportp, "any output port" },
    { lastp, "last argument" },
    { promisep, "promise" },
+   { codep, "code object" },
 };
 
 SEXPR guard( SEXPR s, PREDICATE predicate )

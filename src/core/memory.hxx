@@ -16,7 +16,7 @@ namespace MEMORY
    extern int  CollectionCount;
 
 #ifdef GC_STATISTICS_DETAILED
-   extern array<UINT32, NUMKINDS> NodeCounts;
+   extern array<UINT32, NUMKINDS> ReclamationCounts;
 #endif
 
    extern SEXPR string_null;
@@ -44,28 +44,31 @@ namespace MEMORY
    SEXPR gref( SEXPR symbol );
    SEXPR fref( int depth, int index );
    SEXPR promise( SEXPR exp );
+   SEXPR code( SEXPR bcodes, SEXPR sexprs );
 
    // modifier(s)
    SEXPR string_resize( SEXPR string, UINT32 delta );
   
    // garbage collection
+
    typedef void (*Marker)();
    void register_marker( Marker );
 
    extern int suspensions;
-
    void gc();
+
    void mark( SEXPR n );
    void mark( TSTACK<SEXPR>& s );
 }
 
+
 struct GcSuspension
 {
+   const char* name;
    void suspend_gc() { MEMORY::suspensions += 1; }
    void resume_gc() { MEMORY::suspensions -= 1; }
 
-   const char* name;
-   GcSuspension( const char* s ) : name(s) { suspend_gc(); }
+   GcSuspension( const char* n ) : name(n) { suspend_gc(); }
    ~GcSuspension() { resume_gc(); }
 };
 

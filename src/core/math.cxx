@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <cstdlib>
-#include <math.h>
 #include <time.h>
+#include <math.h>
 
 #include "math.hxx"
 #include "error.hxx"

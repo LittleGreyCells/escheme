@@ -59,6 +59,7 @@ enum NodeKind
    n_force,        // 22
    n_gref,         // 23
    n_fref,         // 24
+   n_code,         // 25
 
    NUMKINDS        // keep me last
 };
@@ -179,6 +180,12 @@ struct FREF
    UINT32 index;
 };
 
+struct CODE
+{
+   SEXPR bcodes;
+   SEXPR sexprs;
+};
+
 //
 // Forematter
 //
@@ -198,7 +205,6 @@ struct Node
    BYTE recu;
    BYTE aux1;
    BYTE aux2;
-
    union
    {
       LINKAGE link;
@@ -216,6 +222,7 @@ struct Node
       CLOSURE closure;
       GREF gref;
       FREF fref;
+      CODE code;
    } u;
 
    Node()
@@ -301,6 +308,7 @@ bool anyinportp( const SEXPR n );
 bool anyoutportp( const SEXPR n );
 bool lastp( const SEXPR n );
 bool promisep( const SEXPR n );
+bool codep( const SEXPR n );
 
 #define _symbolp(n) ((n)->kind == n_symbol)
 #define _fixnump(n) ((n)->kind == n_fixnum)
@@ -313,6 +321,9 @@ bool promisep( const SEXPR n );
 
 #define _funcp(n) ((n)->kind == n_func)
 #define _closurep(n) ((n)->kind == n_closure)
+#define _codep(n) ((n)->kind == n_code)
+#define _compiledp(n) _codep(getclosurecode(n))
+#define _compiled_closurep(n) (_closurep(n) && _compiledp(n))
 
 SEXPR guard( SEXPR s, PREDICATE predicate );
 
@@ -431,5 +442,11 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define fref_getindex(n) ((n)->u.fref.index)
 #define fref_setdepth(n,d) (fref_getdepth(n) = (d))
 #define fref_setindex(n,i) (fref_getindex(n) = (i))
+
+// code
+#define code_getbcodes(n) ((n)->u.code.bcodes)
+#define code_getsexprs(n) ((n)->u.code.sexprs)
+#define code_setbcodes(n,x) code_getbcodes(n) = (x)
+#define code_setsexprs(n,x) code_getsexprs(n) = (x)
 
 #endif

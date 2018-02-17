@@ -2,8 +2,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include <algorithm>
 #include <unistd.h>
+#include <algorithm>
 
 #include "sexpr.hxx"
 #include "func.hxx"
@@ -482,10 +482,6 @@ SEXPR FUNC::vector_copy()
    return dst;
 }
 
-static bool eq( SEXPR e1, SEXPR e2 );
-static bool eqv( SEXPR e1, SEXPR e2 );
-static bool equal( SEXPR e1, SEXPR e2 );
-
 SEXPR FUNC::find_index()
 {
    // *
@@ -574,12 +570,12 @@ SEXPR FUNC::vector_to_list()
 // Equality precidates: eq?, eqv?, equal?
 //
 
-static bool eq( SEXPR e1, SEXPR e2 )
+bool FUNC::eq( SEXPR e1, SEXPR e2 )
 {
    return e1 == e2;
 }
 
-static bool eqv( SEXPR e1, SEXPR e2 )
+bool FUNC::eqv( SEXPR e1, SEXPR e2 )
 {
    if ( eq(e1, e2) )
       return true;
@@ -607,7 +603,7 @@ static bool eqv( SEXPR e1, SEXPR e2 )
    return false;
 }
 
-static bool equal( SEXPR e1, SEXPR e2 )
+bool FUNC::equal( SEXPR e1, SEXPR e2 )
 {
    if ( eqv(e1, e2) )
       return true;
@@ -664,7 +660,7 @@ SEXPR FUNC::eqv()
    ArgstackIterator iter;
    const SEXPR e1 = iter.getarg();
    const SEXPR e2 = iter.getlast();
-   return ::eqv(e1, e2) ? symbol_true : symbol_false;
+   return eqv(e1, e2) ? symbol_true : symbol_false;
 }
 
 SEXPR FUNC::equal()
@@ -675,7 +671,7 @@ SEXPR FUNC::equal()
    ArgstackIterator iter;
    const SEXPR e1 = iter.getarg();
    const SEXPR e2 = iter.getlast();
-   return ::equal(e1, e2) ? symbol_true : symbol_false;
+   return equal(e1, e2) ? symbol_true : symbol_false;
 }
 
 //
@@ -947,11 +943,11 @@ SEXPR FUNC::gc()
    vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
 
 #ifdef GC_STATISTICS_DETAILED
-   const int N = MEMORY::NodeCounts.size();
+   const int N = MEMORY::ReclamationCounts.size();
    SEXPR v = MEMORY::vector(N);
 
    for (int i = 0; i < N; ++i)
-      vectorset( v, i, MEMORY::fixnum( MEMORY::NodeCounts[i]) );
+      vectorset( v, i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
 
    vectorset( top_reg(), 3, v );
 #endif
@@ -1066,7 +1062,7 @@ SEXPR FUNC::make_environment()
 
    for (int i = 0; anyp(pairs); ++i)
    {
-      SEXPR x = ::car(pairs);   
+      SEXPR x = ::car(pairs);
       if (consp(x))
       {
 	 // ( <var> . <val> )
@@ -1142,6 +1138,44 @@ SEXPR FUNC::parse_formals()
 
    return pop_reg();
 }
+
+#ifdef BCE_COMPILER
+
+SEXPR FUNC::make_code()
+{
+   //
+   // syntax: (%make-code <bvec> <vec>)
+   //
+   ArgstackIterator iter;
+   SEXPR bcodes = guard(iter.getarg(), bvecp);
+   SEXPR sexprs = guard(iter.getlast(), vectorp);
+
+   return MEMORY::code( bcodes, sexprs );
+}
+
+SEXPR FUNC::get_bcodes()
+{
+   //
+   // syntax: (%get-bcodes <code>)
+   //
+   ArgstackIterator iter;
+   SEXPR code = guard(iter.getlast(), codep);
+
+   return code_getbcodes(code);
+}
+
+SEXPR FUNC::get_sexprs()
+{
+   //
+   // syntax: (%get-sexprs <code>)
+   //
+   ArgstackIterator iter;
+   SEXPR code = guard(iter.getlast(), codep);
+
+   return code_getsexprs(code);
+}
+
+#endif
 
 //
 // unix
@@ -1396,6 +1430,9 @@ PRED_IMP(envp)
 PRED_IMP(listp)
 PRED_IMP(atomp)
 PRED_IMP(promisep)
+#ifdef BCE_COMPILER
+PRED_IMP(codep)
+#endif
 
 PRED_IMP(boundp)
 PRED_IMP(booleanp)
@@ -1785,7 +1822,7 @@ SEXPR FUNC::member()
    ArgstackIterator iter;
    const SEXPR exp = iter.getarg();
    const SEXPR list = guard(iter.getlast(), listp);
-   return member_search( ::equal, exp, list );
+   return member_search( equal, exp, list );
 }
 
 SEXPR FUNC::memv()
@@ -1796,7 +1833,7 @@ SEXPR FUNC::memv()
    ArgstackIterator iter;
    const SEXPR exp = iter.getarg();
    const SEXPR list = guard(iter.getlast(), listp);
-   return member_search( ::eqv, exp, list );
+   return member_search( eqv, exp, list );
 }
 
 SEXPR FUNC::memq()
@@ -1807,7 +1844,7 @@ SEXPR FUNC::memq()
    ArgstackIterator iter;
    const SEXPR exp = iter.getarg();
    const SEXPR list = guard(iter.getlast(), listp);
-   return member_search( ::eq, exp, list );
+   return member_search( eq, exp, list );
 }
 
 //
@@ -1847,7 +1884,7 @@ SEXPR FUNC::assoc()
    ArgstackIterator iter;
    const SEXPR exp = iter.getarg();
    const SEXPR list = guard(iter.getlast(), listp);
-   return assoc_search( ::equal, exp, list );
+   return assoc_search( equal, exp, list );
 }
 
 SEXPR FUNC::assv()
@@ -1858,7 +1895,7 @@ SEXPR FUNC::assv()
    ArgstackIterator iter;
    const SEXPR exp = iter.getarg();
    const SEXPR list = guard(iter.getlast(), listp);
-   return assoc_search( ::eqv, exp, list );
+   return assoc_search( eqv, exp, list );
 }
 
 SEXPR FUNC::assq()
@@ -1869,7 +1906,7 @@ SEXPR FUNC::assq()
    ArgstackIterator iter;
    const SEXPR exp = iter.getarg();
    const SEXPR list = guard(iter.getlast(), listp);
-   return assoc_search( ::eq, exp, list );
+   return assoc_search( eq, exp, list );
 }
 
 
@@ -2054,6 +2091,22 @@ SEXPR FUNC::closure_code()
    SEXPR closure = guard(iter.getlast(), closurep);
    return getclosurecode(closure);
 }
+
+#ifdef BCE_COMPILER
+
+SEXPR FUNC::closure_code_set()
+{
+   //
+   // syntax: (%closure-code-set! <closure> <code>) -> <closure>
+   //
+   ArgstackIterator iter;
+   SEXPR closure = guard(iter.getarg(), closurep);
+   SEXPR code = guard(iter.getlast(), codep);
+   setclosurecode( closure, code );
+   return closure;
+}
+
+#endif
 
 SEXPR FUNC::closure_benv()
 {

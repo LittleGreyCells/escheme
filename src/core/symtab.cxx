@@ -139,6 +139,7 @@ void SYMTAB::initialize()
    symbol_letstar   	 = enter("let*");
    symbol_access  	 = enter("access");
 
+   enter("t", symbol_true);
    enter("nil", null);
    enter("*symbol-table*", table);
 
