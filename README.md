@@ -3,7 +3,7 @@ extensible-scheme v1.0
 
 R3RS extensible scheme interpreter utilizing an explicit control evaluator
 
-# Introduction
+## Introduction
 
 extensible-scheme (aka escheme) is an aspiring R3RS implementation of the 
 algorithmic language scheme, supporting approximately 90% of the standard. 
@@ -21,7 +21,7 @@ special forms (cond, while, access, let and letrec).
     by Harold Abelson and Gerald Sussman
     MIT Press (1984)
 
-# Implementation 
+## Implementation 
 
 escheme is implemented in C++11, using a modest set of language features
 exploiting class initialization/finalization semantics for deferred execution 
@@ -45,60 +45,20 @@ while honoring C++ block finalization.
 - escheme uses a tail recursive evaluator (eceval) to interpret s-expressions
 - escheme uses a tail recursive evaluator (bceval) to evaluate compiled code
 
-## C++11 Source Files
-
-| File             | Description                                        |
-| ---------------- | ---------------------------------------------------|
-|  [evaluator]     |                                                    |
-|    eval.*xx      | evaluator base                                     |
-|    eceval.cxx    | explicit control evaluator (interpreter)           |
-|  [core]          |                                                    |
-|    argstack.*xx  | function argument stack                            |
-|    error.*xx     | error handler                                      |
-|    escheme.cxx   | system bootstrap                                   |
-|    framestore.hxx| frames                                             |
-|    func.*xx      | general function library                           |
-|    funtab.*xx    | function table                                     |
-|    intstack.*xx  | execution state stack (integer valued)             |
-|    ipcsoc.*xx    | socket library                                     |
-|    math.*xx      | math library                                       |
-|    memory.*xx    | object allocator/garbage collector                 |
-|    pio.*xx       | port I/O                                           |
-|    tio.*xx       | terminal I/O                                       |
-|    printer.*xx   | s-expression printer                               |
-|    reader.*xx    | s-expression reader                                |
-|    regstack.*xx  | execution state stack (s-expression valued)        |
-|    rep.*xx	   | read/eval/print loop and initial system definition |
-|    sexpr.*xx	   | escheme object definitions                         |
-|    symtab.*xx	   | global environment                                 |
-|    tstack.*xx    | stack template                                     | 
-
-## Escheme Source Files
-
-| File             | Description                                        |
-| ---------------- | ---------------------------------------------------|
-|  escheme.scm     |   escheme bootstrap code
-|  [macros]||
-|    macros.scm    |    macro system|
-|    qquote.scm    |     quasiquote/backquote system|
-
-# Miscellaneous Directories
+## Content
   
 | Directory        | Description                                        |
 | ---------------- | ---------------------------------------------------|
-|  compiler  | optimizer source; an attempt to improve interpreter
-                 performance by "compiling" s-expressions into
-                 s-expressions with various optimizations applied.|
+|  compiler  | optimizer source|
 |  docs |      documentation which may or may not be accurate|
 |  linenoise  readline package|
 |  macros     macro and quasiquote|
 |  src        evaluator and core sourses|
 |  tests      files for escheme regression testing|
 
-# Other Files
+## Other Files
 
--README             -- this file
--Acknowledgments    -- shout out
--BuildingAndRunning -- getting started
+- Acknowledgments    -- shout out
+- BuildingAndRunning -- getting started
 
 
