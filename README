@@ -12,12 +12,9 @@ input/output, the host OS (linux/unix) and access escheme internals.
 Abelson and Sussman's SICP* describes a meta-circular scheme interpreter (Ch4).
 A later chapter (Ch5) describes an approach for building a tail recursive 
 explicit control evalutor. That material provided the impetus for escheme.
-
 The escheme interpreter implementation takes the SICP model explicit 
 control evaluator and extends it beyond the scheme core, adding a number of 
-special forms (cond, while, access, let and letrec). The interpreter's
-modular implementation has resulted in a readily extensible system
-both in terms of language primitives and evaluator core.
+special forms (cond, while, access, let and letrec).
 
 (*) Structure and Interpretation of Computer Programs (aka SICP)
     by Harold Abelson and Gerald Sussman
