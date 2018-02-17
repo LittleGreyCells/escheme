@@ -4,6 +4,7 @@ CC   = gcc
 
 CWD = $(shell pwd)
 
+TARGET = escheme
 SRCLOC = $(CWD)/src
 EVAL   = $(SRCLOC)/eval
 CORE   = $(SRCLOC)/core
@@ -42,10 +43,10 @@ DEBUG_FLAGS = -O
 CFLAGS = $(DEBUG_FLAGS) -pedantic -std=c++11
 LFLAGS = $(DEBUG_FLAGS) -v -lm
 
-all 	: escheme
+all 	: $(TARGET)
 
-escheme	: $(OBJS) $(NOISE)/linenoise.o
-	$(CXXC) -o escheme $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
+$(TARGET) : $(OBJS) $(NOISE)/linenoise.o
+	$(CXXC) -o $(TARGET) $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
 	rm $(EVAL)/*.o
 	rm $(CORE)/*.o
 	rm $(NOISE)/*.o
@@ -57,5 +58,5 @@ $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 	gcc -Wall -W -Os -c $< -o $@
 
 clean 	:
-	rm -f $(EVAL)/*.o $(CORE)/*.o $(NOISE)/*.o *~ escheme
+	rm -f $(EVAL)/*.o $(CORE)/*.o $(NOISE)/*.o *~ $(TARGET)
 

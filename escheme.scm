@@ -2,8 +2,8 @@
 (define *version* "v1.0")
 (set-prompt "ece> ")
 
-(load "macros.scm")
-(load "qquote.scm")
+(load "./macros/macros.scm")
+(load "./macros/qquote.scm")
 
 ;;
 ;; This file contains implementations of standard functions
