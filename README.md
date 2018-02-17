@@ -1,8 +1,9 @@
 extensible-scheme v1.0
+======================
 
 R3RS extensible scheme interpreter utilizing an explicit control evaluator
 
-Introduction
+# Introduction
 
 extensible-scheme (aka escheme) is an aspiring R3RS implementation of the 
 algorithmic language scheme, supporting approximately 90% of the standard. 
@@ -20,7 +21,7 @@ special forms (cond, while, access, let and letrec).
     by Harold Abelson and Gerald Sussman
     MIT Press (1984)
 
-Implementation 
+# Implementation 
 
 escheme is implemented in C++11, using a modest set of language features
 exploiting class initialization/finalization semantics for deferred execution 
@@ -28,7 +29,7 @@ and cleanup. Templates have proven beneficial in control stack and argument
 stack implementation. Exceptions replace the standard library's setjmp/longjmp, 
 while honoring C++ block finalization.
 
-Highlights
+## Highlights
 
 - escheme objects are created from a uniformly sized descriminated union type
     (not from a class heirarchy)
@@ -44,31 +45,33 @@ Highlights
 - escheme uses a tail recursive evaluator (eceval) to interpret s-expressions
 - escheme uses a tail recursive evaluator (bceval) to evaluate compiled code
 
-C++11 Source Files
+## C++11 Source Files
 
-  [evaluator]
-    eval.*xx       -- evaluator base
-    eceval.cxx     -- explicit control evaluator (interpreter)
-  [core]
-    argstack.*xx   -- function argument stack
-    error.*xx      -- error handler
-    escheme.cxx    -- system bootstrap
-    framestore.hxx -- frames
-    func.*xx       -- general function library
-    funtab.*xx     -- function table
-    intstack.*xx	 -- execution state stack (integer valued)
-    ipcsoc.*xx     -- socket library
-    math.*xx       -- math library
-    memory.*xx     -- object allocator/garbage collector
-    pio.*xx        -- port I/O
-    tio.*xx        -- terminal I/O
-    printer.*xx    -- s-expression printer
-    reader.*xx     -- s-expression reader
-    regstack.*xx   -- execution state stack (s-expression valued)
-    rep.*xx	 -- read/eval/print loop and initial system definition
-    sexpr.*xx	 -- escheme object definitions
-    symtab.*xx	 -- global environmentt
-    tstack.*xx     -- stack template
+| File             | Description                                        |
+| ---------------- | ---------------------------------------------------|
+|  [evaluator]     |                                                    |
+|    eval.*xx      | evaluator base                                     |
+|    eceval.cxx    | explicit control evaluator (interpreter)           |
+|  [core]          |                                                    |
+|    argstack.*xx  | function argument stack                            |
+|    error.*xx     | error handler                                      |
+|    escheme.cxx   | system bootstrap                                   |
+|    framestore.hxx| frames                                             |
+|    func.*xx      | general function library                           |
+|    funtab.*xx    | function table                                     |
+|    intstack.*xx  | execution state stack (integer valued)             |
+|    ipcsoc.*xx    | socket library                                     |
+|    math.*xx      | math library                                       |
+|    memory.*xx    | object allocator/garbage collector                 |
+|    pio.*xx       | port I/O                                           |
+|    tio.*xx       | terminal I/O                                       |
+|    printer.*xx   | s-expression printer                               |
+|    reader.*xx    | s-expression reader                                |
+|    regstack.*xx  | execution state stack (s-expression valued)        |
+|    rep.*xx	   | read/eval/print loop and initial system definition |
+|    sexpr.*xx	   | escheme object definitions                         |
+|    symtab.*xx	   | global environment                                 |
+|    tstack.*xx    | stack template                                     | 
 
 larry@dax ~/Github/extensible-scheme $ cloc src
       40 text files.
@@ -82,14 +85,14 @@ Language                     files          blank        comment           code
 C++                             20           1203           1072           5628
 -------------------------------------------------------------------------------
 
-Escheme Source Files
+## Escheme Source Files
 
   escheme.scm        -- escheme bootstrap code
   [macros]
     macros.scm         -- macro system
     qquote.scm         -- quasiquote/backquote system
 
-Miscellaneous Directories
+# Miscellaneous Directories
   
   compiler  -- optimizer source; an attempt to improve interpreter
                  performance by "compiling" s-expressions into
@@ -100,12 +103,10 @@ Miscellaneous Directories
   src       -- evaluator and core sourses
   tests     -- files for escheme regression testing
 
-Other Files
+# Other Files
 
   README             -- this file
   Acknowledgments    -- shout out
   BuildingAndRunning -- getting started
-  escheme_syntax.txt -- syntax for escheme functions and special forms
 
-[EOF]
 
