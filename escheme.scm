@@ -1,6 +1,6 @@
 ;;; -*- Mode: Lisp -*-
 (define *version* "v1.0")
-(set-prompt "ece> ")
+(set-prompt "rep> ")
 
 (load "./macros/macros.scm")
 (load "./macros/qquote.scm")
