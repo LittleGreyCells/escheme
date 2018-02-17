@@ -12,8 +12,8 @@
     (begin
      (load "./tests/escheme_test_suite.scm")
 
-     (repeat dotest 1)
-     (repeat dotest 100)
+     (repeat run-the-test 1)
+     (repeat run-the-test 100)
 
      (perform-timed-run 1)
      (perform-timed-run 10)
@@ -596,9 +596,6 @@
 ;;   sockets
 ;;
 
-(define (dotest)
-  (run-the-test))
-
 (define (repeat f n)
    (while (> n 0)
       (f)
@@ -629,7 +626,7 @@
       etime
     )))
 
-(define (test1) (repeat dotest 10))
+(define (test1) (repeat run-the-test 10))
 (define (timed-test) (time-it test1))
 
 (define (run-n-times f n)

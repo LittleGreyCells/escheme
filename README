@@ -73,6 +73,7 @@ C++11 Source Files
     symtab.*xx	 -- global environmentt
     tstack.*xx     -- stack template
 
+larry@dax ~/Github/extensible-scheme $ cloc src
       40 text files.
       40 unique files.                              
       20 files ignored.

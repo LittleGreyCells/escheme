@@ -12,8 +12,8 @@
     (begin
      (load "./tests/escheme_test_suite2.scm")
 
-     (repeat dotest 1)
-     (repeat dotest 500)
+     (repeat run-the-test 1)
+     (repeat run-the-test 500)
 
      (perform-timed-run 10)
      (perform-timed-run 100)
@@ -204,7 +204,7 @@
 ;; Done
 ;;
 
-(define (dotest)
+(define (run-the-test)
   (set! count 0)
   (set! failures 0)
   (test-driver)
@@ -244,7 +244,7 @@
       etime
     )))
 
-(define (test1) (repeat dotest 200))
+(define (test1) (repeat run-the-test 200))
 (define (timed-test) (time-it test1))
 
 (define (run-n-times f n)
