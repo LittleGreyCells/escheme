@@ -21,6 +21,11 @@ special forms (cond, while, access, let and letrec).
     by Harold Abelson and Gerald Sussman
     MIT Press (1984)
 
+## First Things
+
+- Acknowledgments    -- shout out
+- BuildingAndRunning -- getting started
+
 ## Implementation 
 
 escheme is implemented in C++11, using a modest set of language features
@@ -29,7 +34,7 @@ and cleanup. Templates have proven beneficial in control stack and argument
 stack implementation. Exceptions replace the standard library's setjmp/longjmp, 
 while honoring C++ block finalization.
 
-## Highlights
+### Highlights
 
 - escheme objects are created from a uniformly sized descriminated union type
     (not from a class heirarchy)
@@ -45,20 +50,14 @@ while honoring C++ block finalization.
 - escheme uses a tail recursive evaluator (eceval) to interpret s-expressions
 - escheme uses a tail recursive evaluator (bceval) to evaluate compiled code
 
-## Content
+### Content
   
 | Directory        | Description                                        |
 | ---------------- | ---------------------------------------------------|
-|  compiler  | optimizer source|
 |  docs |      documentation which may or may not be accurate|
-|  linenoise  readline package|
-|  macros     macro and quasiquote|
-|  src        evaluator and core sourses|
-|  tests      files for escheme regression testing|
-
-## Other Files
-
-- Acknowledgments    -- shout out
-- BuildingAndRunning -- getting started
+|  linenoise|  readline package|
+|  macros   |  macro and quasiquote|
+|  src    |    evaluator and core sourses|
+|  tests  |    files for escheme regression testing|
 
 
