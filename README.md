@@ -33,14 +33,13 @@ while honoring C++ block finalization.
 
 ### Highlights
 
-- escheme objects are created from a uniformly sized descriminated union type
+- escheme objects are created from a uniformly sized descriminated union
     (not from a class heirarchy)
 - escheme uses a simple mark/sweep garbage collector
 - escheme uses array based stacks for its interpreter state stacks
-- escheme uses array based stack for its argument stack
+- escheme uses an array based stack for its argument stack
 - escheme represents continuations as vectors of saved state
-   (more expensive than a link list implementation, but the decision
-    was made to favor a more efficient runtime for function calls)
+   (more expensive than a link list implementation, but favors a more efficient runtime for function calls)
 - escheme implements the global environment as a hash table (single instance)
 - escheme implements other environments as indexable "frames"
 
@@ -52,7 +51,8 @@ while honoring C++ block finalization.
   
 | Directory        | Description                                        |
 | ---------------- | ---------------------------------------------------|
-|  src    |    evaluator and core sourses|
+|  src/eval    |    evaluator|
+|  src/core    |    core sourses|
 |  macros   |  macro and quasiquote|
 |  linenoise|  readline package|
 |  tests  |    files for escheme regression testing|
