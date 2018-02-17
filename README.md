@@ -21,11 +21,6 @@ special forms (cond, while, access, let and letrec).
     by Harold Abelson and Gerald Sussman
     MIT Press (1984)
 
-## First Things
-
-- Acknowledgments    -- shout out
-- BuildingAndRunning -- getting started
-
 ## Implementation 
 
 escheme is implemented in C++11, using a modest set of language features
@@ -54,10 +49,18 @@ while honoring C++ block finalization.
   
 | Directory        | Description                                        |
 | ---------------- | ---------------------------------------------------|
-|  docs |      documentation which may or may not be accurate|
-|  linenoise|  readline package|
-|  macros   |  macro and quasiquote|
 |  src    |    evaluator and core sourses|
+|  macros   |  macro and quasiquote|
+|  linenoise|  readline package|
 |  tests  |    files for escheme regression testing|
+|  docs |      documentation which may or may not be accurate|
+
+## Getting Started
+
+- BuildingAndRunning -- getting started
+
+## Shout Out
+
+- Acknowledgments    -- shout out
 
 
