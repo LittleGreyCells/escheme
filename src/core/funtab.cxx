@@ -10,7 +10,7 @@
 #include "eval.hxx"
 #include "error.hxx"
 #include "ipcsoc.hxx"
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
 #include "assem.hxx"
 #endif
 
@@ -175,7 +175,7 @@ static std::vector<Function> funtab =
 
    { "%make-closure",         FUNC::make_closure      , n_func },
    { "%parse-formals",        FUNC::parse_formals     , n_func },
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
    { "%make-code",            FUNC::make_code         , n_func },
    { "%get-bcodes",           FUNC::get_bcodes        , n_func },
    { "%get-sexprs",           FUNC::get_sexprs        , n_func },
@@ -238,7 +238,7 @@ static std::vector<Function> funtab =
    { "exact?",                PRED_FUN(exactp) , n_func },
    { "inexact?",              PRED_FUN(inexactp) , n_func },
    { "promise?",              PRED_FUN(promisep) , n_func },
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
    { "code?",                 PRED_FUN(codep) , n_func },
 #endif
 
@@ -311,7 +311,7 @@ static std::vector<Function> funtab =
    { "%closure-vars",         FUNC::closure_vars , n_func },
    { "%closure-numv",         FUNC::closure_numv , n_func },
    { "%closure-rest",         FUNC::closure_rest , n_func },
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
    { "%closure-code-set!",    FUNC::closure_code_set , n_func },
 #endif
 
@@ -332,7 +332,7 @@ static std::vector<Function> funtab =
    { "socket-close",          IPCSOC::close          , n_func },
    { "read-select",           IPCSOC::read_select    , n_func },
 
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
    { "assemble",              ASSEM::encode , n_func },
    { "disassemble",           ASSEM::decode , n_func },
 #endif

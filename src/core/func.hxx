@@ -121,7 +121,7 @@ namespace FUNC
    SEXPR make_closure();
    SEXPR parse_formals();
 
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
    // code
    SEXPR make_code();
    SEXPR get_bcodes();
@@ -192,7 +192,7 @@ namespace FUNC
    PRED_DCL(exactp);
    PRED_DCL(inexactp);
 
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
    PRED_DCL(codep);
 #endif
 
@@ -264,7 +264,7 @@ namespace FUNC
    SEXPR closure_vars();
    SEXPR closure_numv();
    SEXPR closure_rest();
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
    SEXPR closure_code_set();
 #endif
 

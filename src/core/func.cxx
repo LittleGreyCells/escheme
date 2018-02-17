@@ -1139,7 +1139,7 @@ SEXPR FUNC::parse_formals()
    return pop_reg();
 }
 
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
 
 SEXPR FUNC::make_code()
 {
@@ -1430,7 +1430,7 @@ PRED_IMP(envp)
 PRED_IMP(listp)
 PRED_IMP(atomp)
 PRED_IMP(promisep)
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
 PRED_IMP(codep)
 #endif
 
@@ -2092,7 +2092,7 @@ SEXPR FUNC::closure_code()
    return getclosurecode(closure);
 }
 
-#ifdef BCE_COMPILER
+#ifdef BYTE_CODE_EVALUATOR
 
 SEXPR FUNC::closure_code_set()
 {
