@@ -58,6 +58,12 @@ while honoring C++ block finalization.
 |  tests  |    files for escheme regression testing|
 |  docs |      documentation which may or may not be accurate|
 
+## Extending escheme
+
+The utility of an extensible, lightweight, embedded dynamic language cannot be over-emphasized. One has the full scope of the underlying operating system and applications base to choose from for adding capabities to escheme. Applications can be enhanced. Disparate applications and be integrated utilizing a scheme REP loop opened on a socket or secure tunnel. Data types and structuring are solved (s-expressions). Values can be communicated. Programs as values can get sent and evaluated at their target location -- something more than RPC.
+
+See docs/bindings_guide.txt to learn how to extend escheme with ones own primitive functions implemented in C or C++. It covers both passing escheme values and constructing simple or structured objects (lists and vectors) back to escheme.
+
 ## Getting Started
 
 Consult the file _BuildingAndRunning_ to build the interpreter.
