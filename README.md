@@ -57,10 +57,9 @@ while honoring C++ block finalization.
 
 ## Getting Started
 
-- BuildingAndRunning -- getting started
+Consult the file _BuildingAndRunning_ to build the interpreter.
 
-## Shout Out
+For a complete list of escheme functions consult _escheme_syntax.txt_ in the root directory.
 
-- Acknowledgments    -- shout out
 
 
