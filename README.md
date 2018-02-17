@@ -73,40 +73,32 @@ while honoring C++ block finalization.
 |    symtab.*xx	   | global environment                                 |
 |    tstack.*xx    | stack template                                     | 
 
-larry@dax ~/Github/extensible-scheme $ cloc src
-      40 text files.
-      40 unique files.                              
-      20 files ignored.
-
-http://cloc.sourceforge.net v 1.60  T=0.06 s (318.5 files/s, 122993.8 lines/s)
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-C++                             20           1203           1072           5628
--------------------------------------------------------------------------------
-
 ## Escheme Source Files
 
-  escheme.scm        -- escheme bootstrap code
-  [macros]
-    macros.scm         -- macro system
-    qquote.scm         -- quasiquote/backquote system
+| File             | Description                                        |
+| ---------------- | ---------------------------------------------------|
+|  escheme.scm     |   escheme bootstrap code
+|  [macros]||
+|    macros.scm    |    macro system|
+|    qquote.scm    |     quasiquote/backquote system|
 
 # Miscellaneous Directories
   
-  compiler  -- optimizer source; an attempt to improve interpreter
+| Directory        | Description                                        |
+| ---------------- | ---------------------------------------------------|
+|  compiler  | optimizer source; an attempt to improve interpreter
                  performance by "compiling" s-expressions into
-                 s-expressions with various optimizations applied.
-  docs      -- documentation which may or may not be accurate
-  linenoise -- readline package
-  macros    -- macro and quasiquote
-  src       -- evaluator and core sourses
-  tests     -- files for escheme regression testing
+                 s-expressions with various optimizations applied.|
+|  docs |      documentation which may or may not be accurate|
+|  linenoise  readline package|
+|  macros     macro and quasiquote|
+|  src        evaluator and core sourses|
+|  tests      files for escheme regression testing|
 
 # Other Files
 
-  README             -- this file
-  Acknowledgments    -- shout out
-  BuildingAndRunning -- getting started
+-README             -- this file
+-Acknowledgments    -- shout out
+-BuildingAndRunning -- getting started
 
 
