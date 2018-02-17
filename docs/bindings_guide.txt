@@ -202,8 +202,8 @@ See file funtab.cxx and the function table funtab.
 ------------------
 
 The set of socket bindings for escheme is a classic example of writing a 
-non-trivial extension to escheme. See src/ipcsoc.hxx and src/ipcsoc.cxx 
-for those bindings.
+non-trivial extension to escheme. See src/core/ipcsoc.hxx and 
+/core/ipcsoc.cxx.
 
 
 [EOF]
