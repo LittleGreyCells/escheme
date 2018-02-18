@@ -1,4 +1,3 @@
-;;; -*- Mode: Lisp -*-
 (define *version* "v1.0")
 (set-prompt "rep> ")
 
