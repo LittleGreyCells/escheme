@@ -43,10 +43,6 @@ while honoring C++ block finalization.
 - escheme implements the global environment as a hash table (single instance)
 - escheme implements other environments as indexable "frames"
 
-### Versions
-- escheme v1.0 uses an explicit control evaluator (eceval) to interpret s-expressions
-- escheme v2.0 incorporates a compiler and byte code evaluator (bceval)
-
 ### Content
   
 | Directory        | Description                                        |
