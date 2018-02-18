@@ -302,7 +302,6 @@ static std::vector<Function> funtab =
 
    { "add-history",	      FUNC::history_add   , n_func },
    { "show-history",	      FUNC::history_show  , n_func },
-   { "history",	              FUNC::history_show  , n_func },
    { "clear-history",	      FUNC::history_clear , n_func },
    { "set-prompt",	      FUNC::set_prompt    , n_func },
 

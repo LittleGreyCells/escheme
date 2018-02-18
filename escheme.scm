@@ -55,6 +55,10 @@
       (apply array-set! (list* (vector-ref a i) v r))
       (vector-set! a i v)))
 
+;; terminal/history
+
+(define history show-history)
+
 ;;
 ;; special forms macros
 ;;
