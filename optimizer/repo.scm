@@ -1,19 +1,19 @@
 ;;
-;; bootstraping the ece/compilation system
+;; bootstrap the optimization system
 ;;
 
-(load "compiler.scm")
+(load "./optimizer/optimizer.scm")
 
 (define eval-backup eval)
 
 (define (eval exp . env)
   (if (null? env)
-      (eval-backup (compile exp '()))
-      (eval-backup (compile exp (car env)))))
+      (eval-backup (optimize exp '()))
+      (eval-backup (optimize exp (car env)))))
 
 (define (rep)
   (while #t
-     (display "ecc> ")
+     (display "repo> ")
      (flush-output)
      (let ((sexpr (read)))
        (print (eval sexpr)))))

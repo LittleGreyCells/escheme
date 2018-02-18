@@ -1,5 +1,5 @@
-This "compiler" endeavors to opitizime symbolic expressions with more efficient 
-subsitutions.
+This "optimizer" endeavors to transform symbolic expressions into more 
+efficient forms which utilize new primitives: LREF, GREF, CLAMBDA.
 
 1. symbol references -- dynamic lookups are replaced with "addresses" 
       local references:  LREF -- [framedepth, index]

@@ -1,5 +1,3 @@
-;;; -*- Mode: Lisp -*-
-
 (define verbose #t)
 (define enable-clambda #f)
 (define enable-grs #f)
@@ -8,7 +6,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;;                         C o m p i l e r
+;;                        O p t i m i z e r
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,37 +25,34 @@
 
 (define ca closure-attributes)
 
-;;
-;; escheme compiler
-;;
 
-(define (compile exp env)
-  (if verbose (trace "compile:" exp env))
+(define (optimize exp env)
+  (if verbose (trace "optimize:" exp env))
   (cond ((symbol? exp) 
-	 (compile-symbol exp env))
+	 (optimize-symbol exp env))
 	((atom? exp) 
 	 exp)
 	((pair? exp) 
 	 (let ((x (car exp)))
 	   (cond ((eq? x 'quote)  exp)
-		 ((eq? x 'if)     (compile-if exp env))
-		 ((eq? x 'cond)   (compile-cond exp env))
-		 ((eq? x 'while)  (compile-while exp env))
-		 ((eq? x 'lambda) (compile-lambda exp env))
-		 ((eq? x 'set!)   (compile-set! exp env))
-		 ((eq? x 'define) (compile-define (normalize-define exp) env))
-		 ((eq? x 'let)    (compile-let exp env))
-		 ((eq? x 'letrec) (compile-letrec exp env))
-		 ((eq? x 'let*)   (compile (let*->let exp) env))
-		 ((eq? x 'access) (compile-access exp env))
-		 ((eq? x 'delay)  (compile-delay exp env))
+		 ((eq? x 'if)     (optimize-if exp env))
+		 ((eq? x 'cond)   (optimize-cond exp env))
+		 ((eq? x 'while)  (optimize-while exp env))
+		 ((eq? x 'lambda) (optimize-lambda exp env))
+		 ((eq? x 'set!)   (optimize-set! exp env))
+		 ((eq? x 'define) (optimize-define (normalize-define exp) env))
+		 ((eq? x 'let)    (optimize-let exp env))
+		 ((eq? x 'letrec) (optimize-letrec exp env))
+		 ((eq? x 'let*)   (optimize (let*->let exp) env))
+		 ((eq? x 'access) (optimize-access exp env))
+		 ((eq? x 'delay)  (optimize-delay exp env))
 		 ((or (eq? x 'and)
 		      (eq? x 'or)
 		      (eq? x 'begin)
 		      (eq? x 'sequence)) 
-		  (cons x (compile-list (cdr exp) env)))
+		  (cons x (optimize-list (cdr exp) env)))
 		 (else 
-		  (compile-application exp env)))))
+		  (optimize-application exp env)))))
 	(else
 	 (error "unrecognized expression" exp))
 	))
@@ -87,8 +82,8 @@
 ;;   <symbol> -> (%gref <symbol>)
 ;;   <symbol> -> (%fref <depth> <index>)
 ;;
-(define (compile-symbol exp env)
-  (if verbose (trace "compile-symbol:" exp env))
+(define (optimize-symbol exp env)
+  (if verbose (trace "optimize-symbol:" exp env))
   (if enable-grs
       (lookup-symbol exp env 0)
     exp))
@@ -96,50 +91,50 @@
 ;;
 ;; if
 ;;
-(define (compile-if exp env)
-  (list 'if (compile (cadr exp) env) 
-	(compile (caddr exp) env) (compile (cadddr exp) env)))
+(define (optimize-if exp env)
+  (list 'if (optimize (cadr exp) env) 
+	(optimize (caddr exp) env) (optimize (cadddr exp) env)))
 
 ;;
 ;; cond
 ;;
-(define (compile-cond exp env)
+(define (optimize-cond exp env)
   ;; (cond <cond-clauses>)
   (if verbose (trace "cond:" exp env))
-  (cons 'cond (compile-cond-clauses (cdr exp) env)))
+  (cons 'cond (optimize-cond-clauses (cdr exp) env)))
 
-(define (compile-cond-clauses exp env)
+(define (optimize-cond-clauses exp env)
   ;; (<cond-clause> <cond-clause> ...)
   (if verbose (trace "cond-clauses:" exp env))
   (if (pair? exp)
-      (cons (compile-cond-clause (car exp) env) (compile-cond-clauses (cdr exp) env))
+      (cons (optimize-cond-clause (car exp) env) (optimize-cond-clauses (cdr exp) env))
     nil))
 
-(define (compile-cond-clause exp env)
+(define (optimize-cond-clause exp env)
   ;; <test> <list> |
   ;; else <list>
   (if verbose (trace "cond-clause:" exp env))
   (if (eq? (car exp) 'else)
-      (cons 'else (compile-list (cdr exp) env))
-    (compile-list exp env)))
+      (cons 'else (optimize-list (cdr exp) env))
+    (optimize-list exp env)))
 
 ;;
 ;; while
 ;;
-(define (compile-while exp env)
-  (cons 'while (compile-list (cdr exp) env)))
+(define (optimize-while exp env)
+  (cons 'while (optimize-list (cdr exp) env)))
 
 ;;
 ;; lambda
 ;;
 ;;    (lambda <args> <body>) --> (clambda <evaluated-lambda>)
 ;;
-(define (compile-lambda exp env)
-  (if verbose (trace "compile-lambda:" exp env))
+(define (optimize-lambda exp env)
+  (if verbose (trace "optimize-lambda:" exp env))
   (let ((arg-list (cadr exp)))
     (let ((the-lambda (cons 'lambda
 			    (cons arg-list
-				  (compile-list (cddr exp) (extend-env arg-list env))))))
+				  (optimize-list (cddr exp) (extend-env arg-list env))))))
       (if enable-clambda
 	  (list 'clambda (%prim-eval the-lambda env))
 	the-lambda))))
@@ -149,12 +144,12 @@
 ;;
 ;;     (let <bindings> <body>)
 ;;
-(define (compile-let exp env)
-  (if verbose (trace "compile-let" exp env))
+(define (optimize-let exp env)
+  (if verbose (trace "optimize-let" exp env))
   (let ((<bindings> (cadr exp)))
-    (let ((<cbinds> (compile-let-bindings <bindings> env))
+    (let ((<cbinds> (optimize-let-bindings <bindings> env))
 	  (<xenv> (extend-env (get-let-vars <bindings>) env)))
-      (let ((<body> (compile-list (cddr exp) <xenv>)))
+      (let ((<body> (optimize-list (cddr exp) <xenv>)))
 	(append '(let) (list <cbinds>) <body>)
 	))))
 
@@ -163,17 +158,17 @@
 ;;
 ;;     (letrec <bindings> <body>)
 ;;
-(define (compile-letrec exp env)
-  (if verbose (trace "compile-let" exp env))
+(define (optimize-letrec exp env)
+  (if verbose (trace "optimize-let" exp env))
   (let ((<bindings> (cadr exp)))
     (let ((<xenv> (extend-env (get-let-vars <bindings>) env)))
-      (let ((<cbinds> (compile-let-bindings <bindings> <xenv>))
-	    (<body> (compile-list (cddr exp) <xenv>)))
+      (let ((<cbinds> (optimize-let-bindings <bindings> <xenv>))
+	    (<body> (optimize-list (cddr exp) <xenv>)))
 	(append '(letrec) (list <cbinds>) <body>)
 	))))
 
 (define (get-let-vars <bindings>)
-  ;;(if verbose (trace "compile-let-vars" <bindings>))
+  ;;(if verbose (trace "optimize-let-vars" <bindings>))
   (if (null? <bindings>)
       nil
     (let ((x (car <bindings>)))
@@ -181,62 +176,62 @@
 	  (cons (car x) (get-let-vars (cdr <bindings>)))
 	(cons x (get-let-vars (cdr <bindings>)))))))
 
-(define (compile-let-bindings <bindings> env)
-  ;;(if verbose (trace "compile-let-bindings" <bindings>))
+(define (optimize-let-bindings <bindings> env)
+  ;;(if verbose (trace "optimize-let-bindings" <bindings>))
   (if (null? <bindings>)
       nil
     (let ((<bind> (car <bindings>)))
       (if (pair? <bind>)
-	  (cons (list (car <bind>) (compile (cadr <bind>) env))
-		(compile-let-bindings (cdr <bindings>) env))
-	(cons <bind> (compile-let-bindings (cdr <bindings> env)))))))
+	  (cons (list (car <bind>) (optimize (cadr <bind>) env))
+		(optimize-let-bindings (cdr <bindings>) env))
+	(cons <bind> (optimize-let-bindings (cdr <bindings> env)))))))
 
 ;;
 ;; access
 ;;
-(define (compile-access exp env)
+(define (optimize-access exp env)
   (let ((x (cadr exp)))
     (if (symbol? x)
-	(list 'access x (compile (caddr exp) env))
+	(list 'access x (optimize (caddr exp) env))
       (error "access expects a symbol" exp))))
 
 ;;
 ;; delay
 ;;
-(define (compile-delay exp env)
+(define (optimize-delay exp env)
   (list 'delay (cadr exp)))
 ;;
 ;; set!
 ;;
-(define (compile-set! exp env)
+(define (optimize-set! exp env)
   ;; ultimately transform this into a lookup of the lexical env
   ;;   or an access expression
   (let ((x (cadr exp)))
     (cond ((symbol? x) 
 	   (if enable-cset
-	       (list 'cset! (lookup-symbol x env 0) (compile (caddr exp) env))
-	     (list 'set! x (compile (caddr exp) env))))
+	       (list 'cset! (lookup-symbol x env 0) (optimize (caddr exp) env))
+	     (list 'set! x (optimize (caddr exp) env))))
 	  ((and (pair? x) (eq? (car x) 'access)) 
-	   (list 'set! (compile-access x env) (compile (caddr exp) env)))
+	   (list 'set! (optimize-access x env) (optimize (caddr exp) env)))
 	  (else
 	   (error "illegal target for set!" x)))))
 
 ;;
 ;; define
 ;;
-(define (compile-define exp env)
-  (list 'define (cadr exp) (compile (caddr exp) env)))
+(define (optimize-define exp env)
+  (list 'define (cadr exp) (optimize (caddr exp) env)))
 
 ;;
 ;; application
 ;;
-(define (compile-application exp env)
-  (compile-list exp env))
+(define (optimize-application exp env)
+  (optimize-list exp env))
 
-(define (compile-list exp env)
+(define (optimize-list exp env)
   (if (null? exp) 
       nil 
-    (cons (compile (car exp) env) (compile-list (cdr exp) env))))
+    (cons (optimize (car exp) env) (optimize-list (cdr exp) env))))
 
 (define (normalize-arg-list x)
   (cond ((null? x) x)

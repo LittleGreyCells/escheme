@@ -53,6 +53,7 @@ while honoring C++ block finalization.
 | ---------------- | ---------------------------------------------------|
 |  src/eval    |    evaluator|
 |  src/core    |    core sourses|
+|  optimizer | s-expression transformer |
 |  macros   |  macro and quasiquote|
 |  linenoise|  readline package|
 |  tests  |    files for escheme regression testing|
