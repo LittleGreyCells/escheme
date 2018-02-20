@@ -62,7 +62,6 @@ enum EVSTATE
    EV_LET_ACCUM_LAST_ARG,
    EV_LET_BODY,
    EV_LETREC,
-   EV_LETSTAR,
    EV_WHILE,
    EVAL_WHILE_COND,
    EVAL_WHILE_BODY,
@@ -108,8 +107,6 @@ namespace EVAL
 
    void statistics();
    SEXPR get_evaluator_state();
-
-   SEXPR transform_letstar( SEXPR exp );
 
    SEXPR lookup( SEXPR var, SEXPR env );
    void normalize_definition( SEXPR exp, SEXPR& var, SEXPR& val );

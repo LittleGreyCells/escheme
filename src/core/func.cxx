@@ -1771,27 +1771,6 @@ SEXPR FUNC::string_to_integer()
 }
 
 //
-// let transformer(s)
-//
-//   let*
-//
-
-SEXPR FUNC::transform_letstar()
-{
-   //
-   // syntax: (%transform-let*  <exp>) -> <exp>
-   //
-   ArgstackIterator iter;
-   SEXPR exp = iter.getlast();
-
-   if (!(consp(exp) && ::car(exp) == LETSTAR))
-      ERROR::severe( "not a let* expression", exp );
-
-   return EVAL::transform_letstar( exp );
-}
-
-
-//
 // Member Functions
 //
 

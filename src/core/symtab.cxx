@@ -38,7 +38,6 @@ SEXPR SYMTAB::symbol_begin;
 SEXPR SYMTAB::symbol_sequence;
 SEXPR SYMTAB::symbol_let;
 SEXPR SYMTAB::symbol_letrec;
-SEXPR SYMTAB::symbol_letstar;
 SEXPR SYMTAB::symbol_access;
 
 SEXPR SYMTAB::enter( const char* name, SEXPR value )
@@ -136,7 +135,6 @@ void SYMTAB::initialize()
    symbol_sequence  	 = enter("sequence");
    symbol_let		 = enter("let");
    symbol_letrec   	 = enter("letrec");
-   symbol_letstar   	 = enter("let*");
    symbol_access  	 = enter("access");
 
    enter("t", symbol_true);

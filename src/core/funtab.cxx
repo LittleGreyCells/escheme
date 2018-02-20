@@ -101,8 +101,6 @@ static std::vector<Function> funtab =
    { "eqv?",                 FUNC::eqv          , n_func },
    { "equal?",               FUNC::equal        , n_func },
 
-   { "%transform-let*",      FUNC::transform_letstar , n_func },
-
    { "string->symbol",       FUNC::string_to_symbol , n_func },
    { "symbol->string",       FUNC::symbol_to_string , n_func },
    { "gensym",               FUNC::gensym           , n_func },

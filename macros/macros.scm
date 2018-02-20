@@ -122,7 +122,6 @@
       (%expand-list (cddr form)))))
 
 (compiler-syntax let %expand-let-form)
-(compiler-syntax let* %expand-let-form)
 (compiler-syntax letrec %expand-let-form)
 
 (macro define-integrable

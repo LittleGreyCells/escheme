@@ -255,7 +255,28 @@
 ;;
 ;;    let*->let
 ;;
-(define (let*->let exp)   (%transform-let* exp))
+(define (let*->let exp)
+  (letrec ((xform 
+	    (lambda (vars body)
+	      (if verbose (print (list 'vars: vars)))
+	      (if verbose (print (list 'body: body)))
+	      (if (null? vars)
+		  (cons 'begin body)
+		  (list 'let (list (car vars)) 
+			  (xform (cdr vars) body))))))
+    (let ((vars (cadr exp))
+	  (body (cddr exp)))
+      (xform vars body))))
+
+(if #f
+(begin
+  (let*->let '(let*))
+  (let*->let '(let* ()))
+  (let*->let '(let* () 1))
+  (let*->let '(let* ((a 1)) a))
+  (let*->let '(let* ((a 1) (b a)) (cons a b)))
+  (let*->let '(let* ((a 10) (b (* a 2)) (c (+ a b))) (list a b c)))
+))
 
 ;;
 ;; Nested Defines

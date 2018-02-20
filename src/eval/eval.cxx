@@ -376,61 +376,6 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
    return xenv;
 }
 
-
-///////////////////////////////////////////////
-//
-// let transformer(s)
-//
-//////////////////////////////////////////////
-
-SEXPR EVAL::transform_letstar( SEXPR exp )
-{
-   //
-   // let*
-   //     
-   // (let* ((<v1> <e1>) (<v2> <e2>) ... ) <body> ) ==>
-   //     
-   //   (let ((<v1> <e1>))
-   //     (let ((<v2> <e2>))
-   //        ...
-   //       (begin <body>) ))
-   //
-   // note: we transform (let* () <body>) -> (begin <body>)
-   //
-  
-   REGSTACK_CHECKER("transform-let*");
-
-   SEXPR cdr_exp = cdr(exp);
-   SEXPR bindings = car(cdr_exp);
-   SEXPR body = cdr(cdr_exp);
-
-   // preserve body
-   regstack.push(cons(BEGIN, body));                         // [1] (BEGIN <body>)
-   const int p = regstack.gettop();
-
-   int n = 0;
-
-   for ( ; anyp(bindings); bindings = cdr(bindings))
-   {
-      n++;
-      regstack.push(car(bindings));                          // (si vi)
-   }
-  
-   // Address the rest
-   for ( int i = 0; i < n; ++i )
-   {
-      // new binding at level
-      regstack.top() = cons(regstack.top(), null);           // ((si vi))
-      regstack[p]    = cons(regstack[p], null);              // (<rest>)
-      regstack.top() = cons(regstack.top(), regstack[p]);    // (((si vi)) <rest>)
-      regstack.top() = cons(LET, regstack.top());            // (LET <binding> <rest>)
-      regstack[p]    = regstack.pop();
-   }
-
-   return regstack.pop();
-}
-
-
 #if 0
 #define CASEN(state, label) case state: return #label;
 
@@ -472,7 +417,6 @@ static const char* image( EVSTATE state )
       CASEN(EVAL_SEQUENCE_BODY, SeqBody);
       CASEN(EV_LET, Let);
       CASEN(EV_LETREC, Letrec);
-      CASEN(EV_LETSTAR, Letstar);
       CASEN(EV_WHILE, While);
       CASEN(EVAL_WHILE_COND, WhileCond);
       CASEN(EVAL_WHILE_BODY, WhileBody);
@@ -571,7 +515,6 @@ void EVAL::initialize()
    setform( SEQUENCE, EV_BEGIN );
    setform( LET,      EV_LET );
    setform( LETREC,   EV_LETREC );
-   setform( LETSTAR,  EV_LETSTAR );
    setform( WHILE,    EV_WHILE );
    setform( AND,      EV_AND );
    setform( OR,       EV_OR );

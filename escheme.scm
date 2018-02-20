@@ -103,4 +103,17 @@
 	     ,@<results>)
 	  )))))
 
+(macro let*
+   (lambda (exp)
+     (letrec ((xform
+	       (lambda (vars body)
+		 (if (null? vars)
+		     `(begin ,@body)
+		     `(let (,(car vars))
+			,(xform (cdr vars) body))))))
+       (let ((vars (cadr exp))
+	     (body (cddr exp)))
+	 (xform vars body)
+	 ))))
+
 ;; [EOF]

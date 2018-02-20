@@ -150,9 +150,6 @@ namespace FUNC
    SEXPR open_output_string();
    SEXPR get_output_string();
 
-   // syntax
-   SEXPR transform_letstar();
-
    // predicates
    PRED_DCL(nullp);
    PRED_DCL(symbolp);

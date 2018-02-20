@@ -952,16 +952,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 }
 	    
 	 //
-	 // syntax: (let* <bindings> <sequence>)
-	 //
-	 case EV_LETSTAR:
-	 {
-	    exp = transform_letstar(exp);
-	    next = EVAL_DISPATCH;
-	    break;
-	 }
-	    
-	 //
 	 // syntax: (let <bindings> <body>)
 	 // syntax: (letrec <bindings> <body>)
 	 //

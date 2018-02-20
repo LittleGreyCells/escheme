@@ -20,7 +20,6 @@
 #define SEQUENCE        SYMTAB::symbol_sequence
 #define LET   		SYMTAB::symbol_let
 #define LETREC   	SYMTAB::symbol_letrec
-#define LETSTAR   	SYMTAB::symbol_letstar
 #define ACCESS          SYMTAB::symbol_access
 #define UNBOUND         SYMTAB::symbol_unbound
 #define OPTIONAL        SYMTAB::symbol_optional
