@@ -258,8 +258,6 @@
 (define (let*->let exp)
   (letrec ((xform 
 	    (lambda (vars body)
-	      (if verbose (print (list 'vars: vars)))
-	      (if verbose (print (list 'body: body)))
 	      (if (null? vars)
 		  (cons 'begin body)
 		  (list 'let (list (car vars)) 
