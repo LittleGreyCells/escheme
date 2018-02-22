@@ -28,12 +28,12 @@ R3RS features supported(<s>) and not supported(<o>) by escheme:
     and			<s>
     or			<s>
     let			<s>
-    let*		<s>
+    let*		<s> (macro)
     letrec		<s>
     begin		<s>
     do			<s> (macro)
     delay		<s>
-    quasiquote		<s> (macro+qquote)
+    quasiquote		<s>
 
   Programe Structure
     define		<s>
@@ -252,6 +252,8 @@ escheme additions
 
   Symbols
     gensym
+    get
+    put
 
   Sockets
     socket-read
