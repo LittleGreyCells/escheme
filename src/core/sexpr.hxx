@@ -449,4 +449,11 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define code_setbcodes(n,x) code_getbcodes(n) = (x)
 #define code_setsexprs(n,x) code_getsexprs(n) = (x)
 
+// promise
+#define promise_getexp(n) getcar(n)
+#define promise_getval(n) getcdr(n)
+#define promise_setexp(n,x) promise_getexp(n) = (x)
+#define promise_setval(n,x) promise_getval(n) = (x)
+
+
 #endif

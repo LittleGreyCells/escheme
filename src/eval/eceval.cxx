@@ -3,9 +3,6 @@
 #include "memory.hxx"
 #include "printer.hxx"
 
-#define DO_CHECK
-#undef DO_CHECK
-
 #ifdef DO_CHECK
 #define CHECK( id, pred, reg ) check( id, pred, reg )
 #else
@@ -342,10 +339,10 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  ArgstackIterator iter;
 		  SEXPR promise = guard(iter.getlast(), promisep);
 		  argstack.removeargc();
-		  if ( nullp(getcar(promise)) )
+		  if ( nullp(promise_getexp(promise)) )
 		  {
 		     // already forced
-		     val = getcdr(promise);
+		     val = promise_getval(promise);
 		     restore_evs(cont);
 		     next = cont;   
 		  }
@@ -353,7 +350,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  {
 		     // force the evaluation...
 		     save_reg( promise );
-		     exp = getcar(promise);
+		     exp = promise_getexp(promise);
 		     cont = EV_FORCE_VALUE;
 		     next = EVAL_DISPATCH;
 		  }
@@ -374,8 +371,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    // cache and return the value
 	    restore_reg( exp );
 	    CHECK( 2, promisep, exp );
-	    setcar(exp, null);
-	    setcdr(exp, val);
+	    promise_setexp(exp, null);
+	    promise_setval(exp, val);
 	    restore_evs(cont);
 	    next = cont;
 	    break;
@@ -1009,7 +1006,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 {
 	    restore_reg(unev);
 	    restore_reg(env);
-	    CHECK( 20, envp, env );
+	    CHECK( 20, anyenvp, env );
 	    restore_int(frameindex);
 	    if ( envp(regstack.top()) )
 	       frameset( getenvframe(regstack.top()), frameindex, val );

@@ -52,7 +52,7 @@ $(TARGET) : $(OBJS) $(NOISE)/linenoise.o
 	rm $(NOISE)/*.o
 
 %.o	: %.cxx
-	$(CXXC) $(INCLUDES) -c $(CFLAGS) $< -o $@
+	$(CXXC) -DDO_CHECK $(INCLUDES) -c $(CFLAGS) $< -o $@
 
 $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 	gcc -Wall -W -Os -c $< -o $@
