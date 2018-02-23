@@ -332,8 +332,15 @@ static SEXPR newnode( NodeKind kind )
    {
       MEMORY::gc();
 
+#if 1
+      // don't wait till 0, before allocating a new block.
+      //   make the threshold 1/5 of the NODE_BLOCK_SIZE.
+      if ( MEMORY::FreeNodeCount < NODE_BLOCK_SIZE / 5 )
+	 NewNodeBlock();
+#else
       if (nullp(FreeNodeList))
 	 NewNodeBlock();
+#endif
    }
 
    MEMORY::FreeNodeCount -= 1;
