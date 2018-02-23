@@ -551,8 +551,8 @@ SEXPR MEMORY::fref( int depth, int index )
 SEXPR MEMORY::promise( SEXPR exp )
 {
    SEXPR n = newnode(n_promise);
-   setcar(n, exp);
-   setcdr(n, null);
+   promise_setexp(n, exp);
+   promise_setval(n, null);
    return n;
 }
 
