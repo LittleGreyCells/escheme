@@ -126,24 +126,29 @@ static void badnode( SEXPR n )
 void MEMORY::mark( SEXPR n )
 {
    if ( n == nullptr )
-      ERROR::fatal("marking nullptr; abandoning gc");
+      ERROR::fatal( "marking nullptr; abandoning gc" );
 
    if ( nullp(n) || markedp(n) )
       return;
 
-   switch (nodekind(n))
+   switch ( nodekind(n) )
    {
       case n_cons:
+	 setmark(n);
+	 mark( getcar(n) );
+	 mark( getcdr(n) );
+	 break;
+    
       case n_promise:
 	 setmark(n);
-	 mark(getcar(n));
-	 mark(getcdr(n));
+	 mark( promise_getexp(n) );
+	 mark( promise_getval(n) );
 	 break;
     
       case n_code:
 	 setmark(n);
-	 mark(code_getbcodes(n));
-	 mark(code_getsexprs(n));
+	 mark( code_getbcodes(n) );
+	 mark( code_getsexprs(n) );
 	 break;
     
       case n_environment:
@@ -151,21 +156,21 @@ void MEMORY::mark( SEXPR n )
 	 setmark(n);
 	 // mark the frame if not nullptr
 	 FRAME frame = getenvframe(n);
-	 if (frame != nullptr)
+	 if ( frame != nullptr )
 	 {
-	    mark(frame->vars);
+	    mark( getframevars(frame) );
 	    const int nslots = getframenslots(frame);
 	    for (int i = 0; i < nslots; ++i)
-	       mark(frameref(frame, i));
+	       mark( frameref(frame, i) );
 	 }
 	 // mark the base env
-	 mark(getenvbase(n));
+	 mark( getenvbase(n) );
 	 break;
       }
   
       case n_string_port:
 	 setmark(n);
-	 mark(getstringportstring(n));
+	 mark( getstringportstring(n) );
 	 break;
     
       case n_continuation:
@@ -174,22 +179,22 @@ void MEMORY::mark( SEXPR n )
 	 setmark(n);
 	 const UINT32 length = getvectorlength(n);
 	 for (UINT32 i = 0; i < length; ++i)
-	    mark(vectorref(n, i));
+	    mark( vectorref(n, i) );
 	 break;
       }
   
       case n_symbol:
 	 setmark(n);
-	 mark(getvalue(n));
-	 mark(getplist(n));
+	 mark( getvalue(n) );
+	 mark( getplist(n) );
 	 break;
     
       case n_closure:
       {
 	 setmark(n);
-	 mark(getclosurecode(n));
-	 mark(getclosurebenv(n));
-	 mark(getclosurevars(n));
+	 mark( getclosurecode(n) );
+	 mark( getclosurebenv(n) );
+	 mark( getclosurevars(n) );
 	 break;
       }
 
@@ -200,9 +205,12 @@ void MEMORY::mark( SEXPR n )
       case n_char:
       case n_bvec:
       case n_func:
+	 setmark(n);
+	 break;
+
+      case n_eval:
       case n_apply:
       case n_callcc:
-      case n_eval:
       case n_map:
       case n_foreach:
       case n_force:
@@ -211,7 +219,7 @@ void MEMORY::mark( SEXPR n )
 
       case n_gref:
 	 setmark(n);
-	 mark(gref_getsymbol(n));
+	 mark( gref_getsymbol(n) );
 	 break;
 
       case n_fref:
@@ -219,6 +227,7 @@ void MEMORY::mark( SEXPR n )
 	 break;
 
       case n_null:
+	 // null is not allocated from node space
 	 break;
    
       case n_free:
@@ -232,7 +241,7 @@ void MEMORY::mark( TSTACK<SEXPR>& stack )
 {
    const int depth = stack.getdepth();
    for (int i = 0; i < depth; ++i)
-      mark(stack[i]);
+      mark( stack[i] );
 }
 
 //
