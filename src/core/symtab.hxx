@@ -54,7 +54,6 @@ namespace SYMTAB
    extern SEXPR symbol_sequence;
    extern SEXPR symbol_let;
    extern SEXPR symbol_letrec;
-   extern SEXPR symbol_letstar;
    extern SEXPR symbol_access;
    extern SEXPR symbol_unbound;
    extern SEXPR symbol_optional;
