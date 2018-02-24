@@ -323,6 +323,8 @@ bool promisep( const SEXPR n );
 bool codep( const SEXPR n );
 bool vcp( const SEXPR n );
 bool primp( const SEXPR n );
+bool grefp( const SEXPR n );
+bool frefp( const SEXPR n );
 
 #define _symbolp(n) ((n)->kind == n_symbol)
 #define _fixnump(n) ((n)->kind == n_fixnum)
@@ -341,10 +343,6 @@ bool primp( const SEXPR n );
 
 SEXPR guard( SEXPR s, PREDICATE predicate );
 
-#ifdef CHECKED_ACCESS
-bool typecheck( SEXPR s, PREDICATE predicate );
-#endif
-
 /////////////////////////////////////////////////////////////////
 //
 // Primitive accessors
@@ -360,17 +358,10 @@ bool typecheck( SEXPR s, PREDICATE predicate );
 
 // cons
 #ifdef CHECKED_ACCESS
-#if 1
 SEXPR& getcar(SEXPR n);
 SEXPR& getcdr(SEXPR n);
 void setcar(SEXPR n, SEXPR x);
 void setcdr(SEXPR n, SEXPR x);
-#else
-#define getcar(n) (typecheck(n, consp), (n)->u.cons.car)
-#define getcdr(n) (typecheck(n, consp), (n)->u.cons.cdr)
-#define setcar(n,x) getcar(n) = (x)
-#define setcdr(n,x) getcdr(n) = (x)
-#endif
 #else
 #define getcar(n) ((n)->u.cons.car)
 #define getcdr(n) ((n)->u.cons.cdr)
@@ -553,14 +544,26 @@ void setstringportstring(SEXPR n, SEXPR x);
 #endif
 
 // gref
+#ifdef CHECKED_ACCESS
+SEXPR& gref_getsymbol(SEXPR n);
+void gref_setsymbol(SEXPR n, SEXPR s);
+#else
 #define gref_getsymbol(n) ((n)->u.gref.symbol)
 #define gref_setsymbol(n,s) (gref_getsymbol(n) = (s))
+#endif
 
 // fref
+#ifdef CHECKED_ACCESS
+UINT32& fref_getdepth(SEXPR n);
+UINT32& fref_getindex(SEXPR n);
+void fref_setdepth(SEXPR n, UINT32 d);
+void fref_setindex(SEXPR n, UINT32 i);
+#else
 #define fref_getdepth(n) ((n)->u.fref.depth)
 #define fref_getindex(n) ((n)->u.fref.index)
 #define fref_setdepth(n,d) (fref_getdepth(n) = (d))
 #define fref_setindex(n,i) (fref_getindex(n) = (i))
+#endif
 
 // code
 #ifdef CHECKED_ACCESS

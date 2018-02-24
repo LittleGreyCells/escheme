@@ -15,11 +15,11 @@ is printed and the linenoise prompt is displayed:
    $./escheme
    escheme v1.0
 
-   rep>
+   ece>
 
 To exit escheme, type ^D, ^C or exit function at the prompt:
 
-   rep> (exit)
+   ece> (exit)
    $
 
 [EOF]

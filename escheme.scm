@@ -1,5 +1,5 @@
 (define *version* "v1.0")
-(set-prompt "rep> ")
+(set-prompt "ece> ")
 
 (load "./boot/standard-functions.scm")
 
