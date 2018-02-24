@@ -1454,7 +1454,7 @@ SEXPR FUNC::procedurep()
 {
    ArgstackIterator iter;
    const SEXPR arg = iter.getlast();
-   return (funcp(arg) || specialp(arg) || closurep(arg)) ? symbol_true : symbol_false;
+   return (primp(arg) || closurep(arg)) ? symbol_true : symbol_false;
 }
 
 inline int string_nullp(SEXPR s)

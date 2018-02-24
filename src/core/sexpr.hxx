@@ -321,6 +321,8 @@ bool anyoutportp( const SEXPR n );
 bool lastp( const SEXPR n );
 bool promisep( const SEXPR n );
 bool codep( const SEXPR n );
+bool vcp( const SEXPR n );
+bool primp( const SEXPR n );
 
 #define _symbolp(n) ((n)->kind == n_symbol)
 #define _fixnump(n) ((n)->kind == n_fixnum)
@@ -339,6 +341,10 @@ bool codep( const SEXPR n );
 
 SEXPR guard( SEXPR s, PREDICATE predicate );
 
+#ifdef CHECKED_ACCESS
+bool typecheck( SEXPR s, PREDICATE predicate );
+#endif
+
 /////////////////////////////////////////////////////////////////
 //
 // Primitive accessors
@@ -354,10 +360,17 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 
 // cons
 #ifdef CHECKED_ACCESS
+#if 1
 SEXPR& getcar(SEXPR n);
 SEXPR& getcdr(SEXPR n);
 void setcar(SEXPR n, SEXPR x);
 void setcdr(SEXPR n, SEXPR x);
+#else
+#define getcar(n) (typecheck(n, consp), (n)->u.cons.car)
+#define getcdr(n) (typecheck(n, consp), (n)->u.cons.cdr)
+#define setcar(n,x) getcar(n) = (x)
+#define setcdr(n,x) getcdr(n) = (x)
+#endif
 #else
 #define getcar(n) ((n)->u.cons.car)
 #define getcdr(n) ((n)->u.cons.cdr)
@@ -459,8 +472,13 @@ void setflonum(SEXPR n, FLONUM x);
 #endif
 
 // function
+#ifdef CHECKED_ACCESS
+PRIMITIVE& getfunc(SEXPR n);
+void setfunc(SEXPR n, PRIMITIVE x);
+#else
 #define getfunc(n) ((n)->u.func)
 #define setfunc(n,x) getfunc(n) = (x)
+#endif
 
 // closure
 #ifdef CHECKED_ACCESS
@@ -545,16 +563,29 @@ void setstringportstring(SEXPR n, SEXPR x);
 #define fref_setindex(n,i) (fref_getindex(n) = (i))
 
 // code
+#ifdef CHECKED_ACCESS
+SEXPR& code_getbcodes(SEXPR n);
+SEXPR& code_getsexprs(SEXPR n);
+void code_setbcodes(SEXPR n, SEXPR x);
+void code_setsexprs(SEXPR n, SEXPR x);
+#else
 #define code_getbcodes(n) ((n)->u.code.bcodes)
 #define code_getsexprs(n) ((n)->u.code.sexprs)
 #define code_setbcodes(n,x) code_getbcodes(n) = (x)
 #define code_setsexprs(n,x) code_getsexprs(n) = (x)
+#endif
 
 // promise
+#ifdef CHECKED_ACCESS
+SEXPR& promise_getexp(SEXPR n);
+SEXPR& promise_getval(SEXPR n);
+void promise_setexp(SEXPR n, SEXPR x);
+void promise_setval(SEXPR n, SEXPR x);
+#else
 #define promise_getexp(n) ((n)->u.promise.exp)
 #define promise_getval(n) ((n)->u.promise.val)
 #define promise_setexp(n,x) promise_getexp(n) = (x)
 #define promise_setval(n,x) promise_getval(n) = (x)
-
+#endif
 
 #endif

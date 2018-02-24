@@ -164,6 +164,8 @@ bool specialp( const SEXPR n ) { return n->kind == n_eval ||
                                         n->kind == n_foreach ||
                                         n->kind == n_force; }
 
+bool primp( const SEXPR n ) { return funcp(n) || specialp(n); }
+
 bool contp( const SEXPR n ) { return n->kind == n_continuation; }
 bool envp( const SEXPR n ) { return n->kind == n_environment; }
 bool bvecp( const SEXPR n ) { return n->kind == n_bvec; }
@@ -180,6 +182,8 @@ bool anyoutportp( const SEXPR n ) { return outportp(n) || outstringportp(n); }
 bool lastp( SEXPR n )  { return nullp(cdr(n)); }
 bool promisep( SEXPR n )  { return n->kind == n_promise; }
 bool codep( const SEXPR n ) { return n->kind == n_code; }
+
+bool vcp(SEXPR n) { return vectorp(n) || contp(n); }
 
 struct PredMap { PREDICATE pred; const char* name; };
 
@@ -211,7 +215,8 @@ std::vector<PredMap> pmap =
    { anyoutportp, "any output port" },
    { lastp, "last argument" },
    { promisep, "promise" },
-   { codep, "code object" },
+   { anyportp, "port or stringport" },
+   { vcp, "vector or continuation" },
 };
 
 SEXPR guard( SEXPR s, PREDICATE predicate )
@@ -240,9 +245,13 @@ SEXPR guard( SEXPR s, PREDICATE predicate )
 
 #ifdef CHECKED_ACCESS
 
-static void check( SEXPR s, PREDICATE predicate )
+bool typecheck( SEXPR s, PREDICATE predicate )
 {
-   if ( !predicate(s) )
+   if ( predicate(s) )
+   {
+      return true;
+   }
+   else
    {
       const char* expected = "<unknown>";
 
@@ -259,50 +268,52 @@ static void check( SEXPR s, PREDICATE predicate )
       SPRINTF( message, "type check failed--expected %s, got", expected );
 
       ERROR::fatal( message );
+
+      return false;
    }
 }
 
-SEXPR& getcar(SEXPR n) { check(n, consp); return n->u.cons.car; }
-SEXPR& getcdr(SEXPR n) { check(n, consp); return n->u.cons.cdr; }
+#if 1
+SEXPR& getcar(SEXPR n) { typecheck(n, consp); return n->u.cons.car; }
+SEXPR& getcdr(SEXPR n) { typecheck(n, consp); return n->u.cons.cdr; }
 void setcar(SEXPR n, SEXPR x) { getcar(n) = x; }
 void setcdr(SEXPR n, SEXPR x) { getcdr(n) = x; }
+#endif
  
-static bool vcp(SEXPR n) { return vectorp(n) || contp(n); }
-
-UINT32& getvectorlength(SEXPR n) { check(n, vcp); return n->u.vector.length; }
-SEXPR*& getvectordata(SEXPR n) { check(n, vcp); return n->u.vector.data; }
-SEXPR& vectorref(SEXPR n, UINT32 i) { check(n, vcp); return n->u.vector.data[i]; }
+UINT32& getvectorlength(SEXPR n) { typecheck(n, vcp); return n->u.vector.length; }
+SEXPR*& getvectordata(SEXPR n) { typecheck(n, vcp); return n->u.vector.data; }
+SEXPR& vectorref(SEXPR n, UINT32 i) { typecheck(n, vcp); return n->u.vector.data[i]; }
 void setvectorlength(SEXPR n, UINT32 x) { getvectorlength(n) = x; }
 void setvectordata(SEXPR n, SEXPR* x) { getvectordata(n) = x; }
 void vectorset(SEXPR n, UINT32 i, SEXPR x) { vectorref(n,i) = x; }
 
-UINT32& getstringlength(SEXPR n) { check(n, stringp); return n->u.string.length; }
-UINT32& getstringindex(SEXPR n) { check(n, stringp); return n->u.string.index; }
-char*& getstringdata(SEXPR n) { check(n, stringp); return n->u.string.data; }
+UINT32& getstringlength(SEXPR n) { typecheck(n, stringp); return n->u.string.length; }
+UINT32& getstringindex(SEXPR n) { typecheck(n, stringp); return n->u.string.index; }
+char*& getstringdata(SEXPR n) { typecheck(n, stringp); return n->u.string.data; }
 void setstringlength(SEXPR n, UINT32 x) { getstringlength(n) = x; }
 void setstringindex(SEXPR n, UINT32 x) {  getstringindex(n) = x; }
 void setstringdata(SEXPR n, char* x) { getstringdata(n) = x; }
 
-char*& getname(SEXPR n) { check(n, symbolp); return n->u.symbol.name; }
-SEXPR& getvalue(SEXPR n) { check(n, symbolp); return n->u.symbol.value; }
-SEXPR& getplist(SEXPR n) { check(n, symbolp); return n->u.symbol.plist; }
+char*& getname(SEXPR n) { typecheck(n, symbolp); return n->u.symbol.name; }
+SEXPR& getvalue(SEXPR n) { typecheck(n, symbolp); return n->u.symbol.value; }
+SEXPR& getplist(SEXPR n) { typecheck(n, symbolp); return n->u.symbol.plist; }
 void setname(SEXPR n, char* x) { getname(n) = x; }
 void setvalue(SEXPR n, SEXPR x) { getvalue(n) = x; }
 void setplist(SEXPR n, SEXPR x) { getplist(n) = x; }
 
-char& getcharacter(SEXPR n) { check(n, charp); return n->u.ch; }
+char& getcharacter(SEXPR n) { typecheck(n, charp); return n->u.ch; }
 void setcharacter(SEXPR n, char ch) { getcharacter(n) = ch; }
 
-FIXNUM& getfixnum(SEXPR n) { check(n, fixnump); return n->u.fixnum; }
-FLONUM& getflonum(SEXPR n) { check(n, flonump); return n->u.flonum; }
+FIXNUM& getfixnum(SEXPR n) { typecheck(n, fixnump); return n->u.fixnum; }
+FLONUM& getflonum(SEXPR n) { typecheck(n, flonump); return n->u.flonum; }
 void setfixnum(SEXPR n, FIXNUM x) { getfixnum(n) = x; }
 void setflonum(SEXPR n, FLONUM x) { getflonum(n) = x; }
 
-SEXPR& getclosurecode(SEXPR n) { check(n, closurep); return n->u.closure.code; }
-SEXPR& getclosurebenv(SEXPR n) { check(n, closurep); return n->u.closure.benv; }
-SEXPR& getclosurevars(SEXPR n) { check(n, closurep); return n->u.closure.vars; }
-BYTE& getclosurenumv(SEXPR n) { check(n, closurep); return n->aux1; }
-BYTE& getclosurerargs(SEXPR n) { check(n, closurep); return n->aux2; }
+SEXPR& getclosurecode(SEXPR n) { typecheck(n, closurep); return n->u.closure.code; }
+SEXPR& getclosurebenv(SEXPR n) { typecheck(n, closurep); return n->u.closure.benv; }
+SEXPR& getclosurevars(SEXPR n) { typecheck(n, closurep); return n->u.closure.vars; }
+BYTE& getclosurenumv(SEXPR n) { typecheck(n, closurep); return n->aux1; }
+BYTE& getclosurerargs(SEXPR n) { typecheck(n, closurep); return n->aux2; }
 
 void setclosurecode(SEXPR n, SEXPR x) { getclosurecode(n) = x; }
 void setclosurebenv(SEXPR n, SEXPR x) { getclosurebenv(n) = x; }
@@ -310,24 +321,37 @@ void setclosurevars(SEXPR n, SEXPR x) { getclosurevars(n) = x; }
 void setclosurenumv(SEXPR n, BYTE x) { getclosurenumv(n) = x; }
 void setclosurerargs(SEXPR n, BYTE x) { getclosurerargs(n) = x; }
 
-FRAME& getenvframe(SEXPR n) { check(n, envp); return n->u.environ.frame; }
-SEXPR& getenvbase(SEXPR n) { check(n, envp); return n->u.environ.baseenv; }
+FRAME& getenvframe(SEXPR n) { typecheck(n, envp); return n->u.environ.frame; }
+SEXPR& getenvbase(SEXPR n) { typecheck(n, envp); return n->u.environ.baseenv; }
 void setenvframe(SEXPR n, FRAME x) { getenvframe(n) = x; }
 void setenvbase(SEXPR n, SEXPR x) { getenvbase(n) = x; }
 
-UINT32& getbveclength(SEXPR n) { check(n, bvecp); return n->u.bvec.length; }
-BYTE*& getbvecdata(SEXPR n) { check(n, bvecp); return n->u.bvec.data; }
-BYTE& bvecref(SEXPR n, UINT32 i) { check(n, bvecp); return n->u.bvec.data[(i)]; }
+UINT32& getbveclength(SEXPR n) { typecheck(n, bvecp); return n->u.bvec.length; }
+BYTE*& getbvecdata(SEXPR n) { typecheck(n, bvecp); return n->u.bvec.data; }
+BYTE& bvecref(SEXPR n, UINT32 i) { typecheck(n, bvecp); return n->u.bvec.data[(i)]; }
 void setbveclength(SEXPR n, UINT32 x) { getbveclength(n) = x; }
 void setbvecdata(SEXPR n, BYTE* x) { getbvecdata(n) = x; }
 void bvecset(SEXPR n, UINT32 i, BYTE x) { bvecref(n,i) = x; }
 
-FILE*& getfile(SEXPR n) { check(n, portp); return n->u.port.p.file; }
-INT16& getmode(SEXPR n) { check(n, anyportp); return n->u.port.mode; }
+FILE*& getfile(SEXPR n) { typecheck(n, portp); return n->u.port.p.file; }
+INT16& getmode(SEXPR n) { typecheck(n, anyportp); return n->u.port.mode; }
 void setfile(SEXPR n, FILE* x) { getfile(n) = x; }
 void setmode(SEXPR n, INT16 x) { getmode(n) = x; }
 
-SEXPR& getstringportstring(SEXPR n) { check(n, stringportp); return n->u.port.p.string; }
+SEXPR& getstringportstring(SEXPR n) { typecheck(n, stringportp); return n->u.port.p.string; }
 void setstringportstring(SEXPR n, SEXPR x) { getstringportstring(n) = x; }
+
+SEXPR& code_getbcodes(SEXPR n) { return n->u.code.bcodes; }
+SEXPR& code_getsexprs(SEXPR n) { return n->u.code.sexprs; }
+void code_setbcodes(SEXPR n, SEXPR x) { code_getbcodes(n) = x; }
+void code_setsexprs(SEXPR n, SEXPR x) { code_getsexprs(n) = x; }
+
+SEXPR& promise_getexp(SEXPR n) { return n->u.promise.exp; }
+SEXPR& promise_getval(SEXPR n) { return n->u.promise.val; }
+void promise_setexp(SEXPR n, SEXPR x) { promise_getexp(n) = x; }
+void promise_setval(SEXPR n, SEXPR x) { promise_getval(n) = x; }
+
+PRIMITIVE& getfunc(SEXPR n) { typecheck(n, primp); return ((n)->u.func); }
+void setfunc(SEXPR n, PRIMITIVE x) { getfunc(n) = (x); }
 
 #endif
