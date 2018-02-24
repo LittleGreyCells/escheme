@@ -88,8 +88,8 @@ SEXPR nthcdr( const SEXPR list, UINT32 n )
    return cdr(s);
 }
 
-void  vset( SEXPR v, UINT32 index, SEXPR value ) { vectorset(guard(v, vectorp), index, value); }
-SEXPR vref( SEXPR v, UINT32 index ) { return vectorref(guard(v, vectorp), index); }
+void  vset( SEXPR v, UINT32 index, SEXPR value ) { vectorset(guard(v,vectorp), index, value); }
+SEXPR vref( SEXPR v, UINT32 index ) { return vectorref(guard(v,vectorp), index); }
 
 SEXPR value( SEXPR n ) { return getvalue(guard(n, symbolp)); }
 
@@ -358,6 +358,5 @@ UINT32& fref_getdepth(SEXPR n) { typecheck(n,frefp); return n->u.fref.depth; }
 UINT32& fref_getindex(SEXPR n) { typecheck(n,frefp); return n->u.fref.index; }
 void fref_setdepth(SEXPR n, UINT32 d) { fref_getdepth(n) = d; }
 void fref_setindex(SEXPR n, UINT32 i) { fref_getindex(n) = i; }
-
 
 #endif
