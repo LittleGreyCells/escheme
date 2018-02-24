@@ -148,7 +148,11 @@ struct PORT
 {
    INT16 ungot;
    INT16 mode;
-   FILE* file;
+   union 
+   {
+      FILE* file;         // file port
+      SEXPR string;       // string port
+   } p;
 };
 
 struct STRING
@@ -184,6 +188,12 @@ struct CODE
 {
    SEXPR bcodes;
    SEXPR sexprs;
+};
+
+struct PROMISE
+{
+   SEXPR exp;
+   SEXPR val;
 };
 
 //
@@ -223,6 +233,7 @@ struct Node
       GREF gref;
       FREF fref;
       CODE code;
+      PROMISE promise;
    } u;
 
    Node()
@@ -294,6 +305,7 @@ bool funcp( const SEXPR n );
 bool specialp( const SEXPR n );
 bool portp( const SEXPR n );
 bool stringportp( const SEXPR n );
+bool anyportp( const SEXPR n );
 bool closurep( const SEXPR n );
 bool contp( const SEXPR n );
 bool envp( const SEXPR n );
@@ -341,97 +353,186 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define setform(n,x) getform(n) = (x)
 
 // cons
+#ifdef CHECKED_ACCESS
+SEXPR& getcar(SEXPR n);
+SEXPR& getcdr(SEXPR n);
+void setcar(SEXPR n, SEXPR x);
+void setcdr(SEXPR n, SEXPR x);
+#else
 #define getcar(n) ((n)->u.cons.car)
 #define getcdr(n) ((n)->u.cons.cdr)
 #define setcar(n,x) getcar(n) = (x)
 #define setcdr(n,x) getcdr(n) = (x)
+#endif
 
 // vector
+#ifdef CHECKED_ACCESS
+UINT32& getvectorlength(SEXPR n);
+SEXPR*& getvectordata(SEXPR n);
+SEXPR& vectorref(SEXPR n, UINT32 i);
+void setvectorlength(SEXPR n, UINT32 x);
+void setvectordata(SEXPR n, SEXPR* x);
+void vectorset(SEXPR n, UINT32 i, SEXPR x);
+#else
 #define getvectorlength(n) ((n)->u.vector.length)
 #define getvectordata(n) ((n)->u.vector.data)
 #define vectorref(n,i) ((n)->u.vector.data[(i)])
 #define setvectorlength(n,x) getvectorlength(n) = (x)
 #define setvectordata(n,x) getvectordata(n) = (x)
 #define vectorset(n,i,x) vectorref(n,i) = (x)
+#endif
+
+// continuation
+//   use vector
 
 // string
+#ifdef CHECKED_ACCESS
+UINT32& getstringlength(SEXPR n);
+UINT32& getstringindex(SEXPR n);
+char*& getstringdata(SEXPR n);
+void setstringlength(SEXPR n, UINT32 x);
+void setstringindex(SEXPR n, UINT32 x);
+void setstringdata(SEXPR n, char* x);
+#else
 #define getstringlength(n) ((n)->u.string.length)
 #define getstringindex(n) ((n)->u.string.index)
 #define getstringdata(n) ((n)->u.string.data)
 #define setstringlength(n,x) getstringlength(n) = (x)
 #define setstringindex(n,x) getstringindex(n) = (x)
 #define setstringdata(n,x) getstringdata(n) = (x)
+#endif
 
 // byte vector
+#ifdef CHECKED_ACCESS
+UINT32& getbveclength(SEXPR n);
+BYTE*& getbvecdata(SEXPR n);
+void setbveclength(SEXPR n, UINT32 x);
+void setbvecdata(SEXPR n, BYTE* x);
+BYTE& bvecref(SEXPR n, UINT32 i);
+void bvecset(SEXPR n, UINT32 i, BYTE x);
+#else
 #define getbveclength(n) ((n)->u.bvec.length)
 #define getbvecdata(n) ((n)->u.bvec.data)
 #define setbveclength(n,x) getbveclength(n) = (x)
 #define setbvecdata(n,x) getbvecdata(n) = (x)
 #define bvecref(n,i) ((n)->u.bvec.data[(i)])
 #define bvecset(n,i,x) bvecref(n,i) = (x)
+#endif
 
 // character
+#ifdef CHECKED_ACCESS
+char& getcharacter(SEXPR n);
+void setcharacter(SEXPR n, char ch);
+#else
 #define getcharacter(n) ((n)->u.ch)
 #define setcharacter(n,ch) getcharacter(n) = (ch)
+#endif
 
 // symbol
+#ifdef CHECKED_ACCESS
+char*& getname(SEXPR n);
+SEXPR& getvalue(SEXPR n);
+SEXPR& getplist(SEXPR n);
+void setname(SEXPR n, char* x);
+void setvalue(SEXPR n, SEXPR x);
+void setplist(SEXPR n, SEXPR x);
+#else
 #define getname(n) ((n)->u.symbol.name)
 #define getvalue(n) ((n)->u.symbol.value)
 #define getplist(n) ((n)->u.symbol.plist)
 #define setname(n,x) getname(n) = (x)
 #define setvalue(n,x) getvalue(n) = (x)
 #define setplist(n,x) getplist(n) = (x)
+#endif
 
 // number
+#ifdef CHECKED_ACCESS
+FIXNUM& getfixnum(SEXPR n);
+FLONUM& getflonum(SEXPR n);
+void setfixnum(SEXPR n, FIXNUM x);
+void setflonum(SEXPR n, FLONUM x);
+#else
 #define getfixnum(n) ((n)->u.fixnum)
 #define getflonum(n) ((n)->u.flonum)
 #define setfixnum(n,x) getfixnum(n) = (x)
 #define setflonum(n,x) getflonum(n) = (x)
+#endif
 
 // function
 #define getfunc(n) ((n)->u.func)
 #define setfunc(n,x) getfunc(n) = (x)
 
 // closure
+#ifdef CHECKED_ACCESS
+SEXPR& getclosurecode(SEXPR n);
+SEXPR& getclosurebenv(SEXPR n);
+SEXPR& getclosurevars(SEXPR n);
+BYTE& getclosurenumv(SEXPR n);
+BYTE& getclosurerargs(SEXPR n);
+#else
 #define getclosurecode(n) ((n)->u.closure.code)
 #define getclosurebenv(n) ((n)->u.closure.benv)
 #define getclosurevars(n) ((n)->u.closure.vars)
 #define getclosurenumv(n) ((n)->aux1)
 #define getclosurerargs(n) ((n)->aux2)
+#endif
 
+#ifdef CHECKED_ACCESS
+void setclosurecode(SEXPR n, SEXPR x);
+void setclosurebenv(SEXPR n, SEXPR x);
+void setclosurevars(SEXPR n, SEXPR x);
+void setclosurenumv(SEXPR n, BYTE x);
+void setclosurerargs(SEXPR n, BYTE x);
+#else
 #define setclosurecode(n,x) getclosurecode(n) = (x)
 #define setclosurebenv(n,x) getclosurebenv(n) = (x)
 #define setclosurevars(n,x) getclosurevars(n) = (x)
 #define setclosurenumv(n,x) getclosurenumv(n) = (x)
 #define setclosurerargs(n,x) getclosurerargs(n) = (x)
-
-// continuation
-//   use vector operations
+#endif
 
 // environment
+#ifdef CHECKED_ACCESS
+FRAME& getenvframe(SEXPR n);
+SEXPR& getenvbase(SEXPR n);
+void setenvframe(SEXPR n, FRAME x);
+void setenvbase(SEXPR n, SEXPR x);
+#else
 #define getenvframe(n) ((n)->u.environ.frame)
 #define getenvbase(n) ((n)->u.environ.baseenv)
 #define setenvframe(n,x) getenvframe(n) = (x)
 #define setenvbase(n,x) getenvbase(n) = (x)
+#endif
 
+// frame
 #define getframenslots(fr) ((fr)->nslots)
-#define setframenslots(fr,n) getframenslots(fr) = (n)
-
+#define getframevars(fr) ((fr)->vars)
 #define frameref(fr,i) ((fr)->slot[(i)])
+#define setframenslots(fr,n) getframenslots(fr) = (n)
+#define setframevars(fr,x) getframevars(fr) = (x)
 #define frameset(fr,i,x) frameref(fr,i) = (x)
 
-#define getframevars(fr) ((fr)->vars)
-#define setframevars(fr,x) getframevars(fr) = (x)
-
 // port
-#define getfile(n) ((n)->u.port.file)
+#ifdef CHECKED_ACCESS
+FILE*& getfile(SEXPR n);
+INT16& getmode(SEXPR n);
+void setfile(SEXPR n, FILE* x);
+void setmode(SEXPR n, INT16 x);
+#else
+#define getfile(n) ((n)->u.port.p.file)
 #define getmode(n) ((n)->u.port.mode)
 #define setfile(n,x) getfile(n) = (x)
 #define setmode(n,x) getmode(n) = (x)
+#endif
 
 // string port
-#define getstringportstring(n) getcdr(n)
+#ifdef CHECKED_ACCESS
+SEXPR& getstringportstring(SEXPR n);
+void setstringportstring(SEXPR n, SEXPR x);
+#else
+#define getstringportstring(n) ((n)->u.port.p.string)
 #define setstringportstring(n,x) getstringportstring(n) = (x)
+#endif
 
 // gref
 #define gref_getsymbol(n) ((n)->u.gref.symbol)
@@ -450,8 +551,8 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define code_setsexprs(n,x) code_getsexprs(n) = (x)
 
 // promise
-#define promise_getexp(n) getcar(n)
-#define promise_getval(n) getcdr(n)
+#define promise_getexp(n) ((n)->u.promise.exp)
+#define promise_getval(n) ((n)->u.promise.val)
 #define promise_setexp(n,x) promise_getexp(n) = (x)
 #define promise_setval(n,x) promise_getval(n) = (x)
 

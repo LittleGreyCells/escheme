@@ -1365,7 +1365,10 @@ SEXPR FUNC::open_output_string()
    // syntax: (open-output-string)
    //
    argstack.noargs();
-   return PIO::open_on_string( MEMORY::string(2000), pm_output );
+   push_reg( MEMORY::string(2000) );
+   SEXPR port = PIO::open_on_string( top_reg(), pm_output );
+   pop_reg();
+   return port;
 }
 
 SEXPR FUNC::get_output_string()

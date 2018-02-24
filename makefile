@@ -43,6 +43,10 @@ DEBUG_FLAGS = -O
 CFLAGS = $(DEBUG_FLAGS) -pedantic -std=c++11
 LFLAGS = $(DEBUG_FLAGS) -v -lm
 
+DEFINES =
+#DEFINES = -DDO_CHECK
+#DEFINES = -DDO_CHECK -DCHECKED_ACCESS 
+
 all 	: $(TARGET)
 
 $(TARGET) : $(OBJS) $(NOISE)/linenoise.o
@@ -52,7 +56,7 @@ $(TARGET) : $(OBJS) $(NOISE)/linenoise.o
 	rm $(NOISE)/*.o
 
 %.o	: %.cxx
-	$(CXXC) -DDO_CHECK $(INCLUDES) -c $(CFLAGS) $< -o $@
+	$(CXXC) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
 
 $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 	gcc -Wall -W -Os -c $< -o $@

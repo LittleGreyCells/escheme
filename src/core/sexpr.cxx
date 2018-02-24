@@ -153,6 +153,7 @@ bool consp( const SEXPR n ) { return n->kind == n_cons; }
 bool funcp( const SEXPR n ) { return n->kind == n_func; }
 bool portp( const SEXPR n ) { return n->kind == n_port; }
 bool stringportp( const SEXPR n ) { return n->kind == n_string_port; }
+bool anyportp(SEXPR n) { return portp(n) || stringportp(n); }
 
 bool closurep( const SEXPR n ) { return n->kind == n_closure; }
 
@@ -236,3 +237,97 @@ SEXPR guard( SEXPR s, PREDICATE predicate )
 
    return s;
 }
+
+#ifdef CHECKED_ACCESS
+
+static void check( SEXPR s, PREDICATE predicate )
+{
+   if ( !predicate(s) )
+   {
+      const char* expected = "<unknown>";
+
+      for ( auto& x : pmap )
+      {
+	 if ( x.pred == predicate )
+	 {
+	    expected = x.name;
+	    break;
+	 }
+      }
+
+      char message[80];
+      SPRINTF( message, "type check failed--expected %s, got", expected );
+
+      ERROR::fatal( message );
+   }
+}
+
+SEXPR& getcar(SEXPR n) { check(n, consp); return n->u.cons.car; }
+SEXPR& getcdr(SEXPR n) { check(n, consp); return n->u.cons.cdr; }
+void setcar(SEXPR n, SEXPR x) { getcar(n) = x; }
+void setcdr(SEXPR n, SEXPR x) { getcdr(n) = x; }
+ 
+static bool vcp(SEXPR n) { return vectorp(n) || contp(n); }
+
+UINT32& getvectorlength(SEXPR n) { check(n, vcp); return n->u.vector.length; }
+SEXPR*& getvectordata(SEXPR n) { check(n, vcp); return n->u.vector.data; }
+SEXPR& vectorref(SEXPR n, UINT32 i) { check(n, vcp); return n->u.vector.data[i]; }
+void setvectorlength(SEXPR n, UINT32 x) { getvectorlength(n) = x; }
+void setvectordata(SEXPR n, SEXPR* x) { getvectordata(n) = x; }
+void vectorset(SEXPR n, UINT32 i, SEXPR x) { vectorref(n,i) = x; }
+
+UINT32& getstringlength(SEXPR n) { check(n, stringp); return n->u.string.length; }
+UINT32& getstringindex(SEXPR n) { check(n, stringp); return n->u.string.index; }
+char*& getstringdata(SEXPR n) { check(n, stringp); return n->u.string.data; }
+void setstringlength(SEXPR n, UINT32 x) { getstringlength(n) = x; }
+void setstringindex(SEXPR n, UINT32 x) {  getstringindex(n) = x; }
+void setstringdata(SEXPR n, char* x) { getstringdata(n) = x; }
+
+char*& getname(SEXPR n) { check(n, symbolp); return n->u.symbol.name; }
+SEXPR& getvalue(SEXPR n) { check(n, symbolp); return n->u.symbol.value; }
+SEXPR& getplist(SEXPR n) { check(n, symbolp); return n->u.symbol.plist; }
+void setname(SEXPR n, char* x) { getname(n) = x; }
+void setvalue(SEXPR n, SEXPR x) { getvalue(n) = x; }
+void setplist(SEXPR n, SEXPR x) { getplist(n) = x; }
+
+char& getcharacter(SEXPR n) { check(n, charp); return n->u.ch; }
+void setcharacter(SEXPR n, char ch) { getcharacter(n) = ch; }
+
+FIXNUM& getfixnum(SEXPR n) { check(n, fixnump); return n->u.fixnum; }
+FLONUM& getflonum(SEXPR n) { check(n, flonump); return n->u.flonum; }
+void setfixnum(SEXPR n, FIXNUM x) { getfixnum(n) = x; }
+void setflonum(SEXPR n, FLONUM x) { getflonum(n) = x; }
+
+SEXPR& getclosurecode(SEXPR n) { check(n, closurep); return n->u.closure.code; }
+SEXPR& getclosurebenv(SEXPR n) { check(n, closurep); return n->u.closure.benv; }
+SEXPR& getclosurevars(SEXPR n) { check(n, closurep); return n->u.closure.vars; }
+BYTE& getclosurenumv(SEXPR n) { check(n, closurep); return n->aux1; }
+BYTE& getclosurerargs(SEXPR n) { check(n, closurep); return n->aux2; }
+
+void setclosurecode(SEXPR n, SEXPR x) { getclosurecode(n) = x; }
+void setclosurebenv(SEXPR n, SEXPR x) { getclosurebenv(n) = x; }
+void setclosurevars(SEXPR n, SEXPR x) { getclosurevars(n) = x; }
+void setclosurenumv(SEXPR n, BYTE x) { getclosurenumv(n) = x; }
+void setclosurerargs(SEXPR n, BYTE x) { getclosurerargs(n) = x; }
+
+FRAME& getenvframe(SEXPR n) { check(n, envp); return n->u.environ.frame; }
+SEXPR& getenvbase(SEXPR n) { check(n, envp); return n->u.environ.baseenv; }
+void setenvframe(SEXPR n, FRAME x) { getenvframe(n) = x; }
+void setenvbase(SEXPR n, SEXPR x) { getenvbase(n) = x; }
+
+UINT32& getbveclength(SEXPR n) { check(n, bvecp); return n->u.bvec.length; }
+BYTE*& getbvecdata(SEXPR n) { check(n, bvecp); return n->u.bvec.data; }
+BYTE& bvecref(SEXPR n, UINT32 i) { check(n, bvecp); return n->u.bvec.data[(i)]; }
+void setbveclength(SEXPR n, UINT32 x) { getbveclength(n) = x; }
+void setbvecdata(SEXPR n, BYTE* x) { getbvecdata(n) = x; }
+void bvecset(SEXPR n, UINT32 i, BYTE x) { bvecref(n,i) = x; }
+
+FILE*& getfile(SEXPR n) { check(n, portp); return n->u.port.p.file; }
+INT16& getmode(SEXPR n) { check(n, anyportp); return n->u.port.mode; }
+void setfile(SEXPR n, FILE* x) { getfile(n) = x; }
+void setmode(SEXPR n, INT16 x) { getmode(n) = x; }
+
+SEXPR& getstringportstring(SEXPR n) { check(n, stringportp); return n->u.port.p.string; }
+void setstringportstring(SEXPR n, SEXPR x) { getstringportstring(n) = x; }
+
+#endif

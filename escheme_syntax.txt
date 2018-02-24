@@ -30,6 +30,7 @@ syntax: (cxxxxr <pair>) -> <exp>
 
 syntax: (list {<exp>}*) -> <list>
 syntax: (list* {<exp>}*) -> <list>
+syntax: (rank <item> <list>) -> nil | <fixnum>
 
 syntax: (vector {<exp>}*)
 syntax: (make-vector <size>)
@@ -38,7 +39,7 @@ syntax: (vector-ref <vector> <index>)
 syntax: (vector-set! <vector> <index> <value>)
 syntax: (vector-fill! <vector> <value>) -> <vector>
 syntax: (vector-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
-syntax: (find-index <item> <vector> [<limit>])
+syntax: (find-index <item> <vector> [<limit>]) -> nil | <fixnum>
 
 syntax: (list->vector <list>) -> <vector>
 syntax: (vector->list <vector>) -> <list>
