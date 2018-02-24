@@ -12,7 +12,7 @@ Running
 To run the interpreter, invoke escheme with no arguments. The banner 
 is printed and the linenoise prompt is displayed:
 
-   $./escheme
+   $ ./escheme
    escheme v1.0
 
    ece>
@@ -21,5 +21,15 @@ To exit escheme, type ^D, ^C or exit function at the prompt:
 
    ece> (exit)
    $
+
+To prevent the macro subsystem load (and overhead), use the --nomacros option:
+
+   $ ./escheme --nomacros
+   escheme v1.0 (no macros)
+
+   ece>
+
+This will marginally increase evaluator speed at the cost of macros and 
+some special forms (let*, case, do).
 
 [EOF]
