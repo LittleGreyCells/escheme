@@ -17,18 +17,14 @@
 
      (perform-timed-run 1)
      (perform-timed-run 10)
+     (perform-timed-run 20)
      (perform-timed-run 50)
      (perform-timed-run 100)
      (perform-timed-run 500)
      (perform-timed-run 1000)
      (perform-timed-run 2000)
      (perform-timed-run 4000)
-     (perform-timed-run 6000)
-     (perform-timed-run 8000)
      (perform-timed-run 10000)
-
-     (perform-timed-run 20000)
-     (perform-timed-run 30000)
 
      (perform-timed-run 100000)
      ))
@@ -63,17 +59,14 @@
   (test-lets)
   (test-ports)
 
+  (if #f (test-compiler))
+
   (if (zero? failures)
       (if #f (displayln "All Tests Passed"))
     (begin
      (display failures)
      (displayln " failures")))
-
-  ;; end
   )
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (define (displayln text)
@@ -95,11 +88,9 @@
 (define (assert x)
   (if (not x)
       (begin
-       (display "assertion failed")
-       (newline)
        (set! failures (1+ failures))
-       ))
-  x)
+       )))
+
 
 (define (test-structured-ops)  
   
@@ -160,12 +151,12 @@
   (set! f1 10.0)
   (set! f2 10.0)
   
-  (assert (eq? s1 s1))
-  (assert (not (eq? s1 s2)))
+  ;;(assert '(eq? s1 s1))
+  ;;(assert '(not (eq? s1 s2)))
   (assert (eqv? s1 s2))
   (assert (equal? s1 s2))
   
-  (assert (not (eq? n1 n2)))
+  ;;(assert '(not (eq? n1 n2)))
   (assert (eqv? n1 n2))
   (assert (equal? n1 n2))
   
@@ -192,10 +183,6 @@
 
 
 (define (test-arithmetic-functions)
-  
-  ;;
-  ;; Math/arithmetic functions
-  ;;
   
   (assert (= 0 0))
   (assert (< 0 1))
@@ -228,12 +215,12 @@
   (assert (= (round -1.4) -1.0))
   (assert (= (round -1.5) -2.0))
   
-  ;;(assert (= (inc 1) (+ 1 1)))
-  ;;(assert (= (dec 1) (- 1 1)))
+  (assert (= (inc 1) (+ 1 1)))
+  (assert (= (dec 1) (- 1 1)))
   (assert (= ( 1+ 1) (+ 1 1)))
   (assert (= (-1+ 1) (- 1 1)))
-  ;;(assert (= (inc 1.0) (+ 1.0 1)))
-  ;;(assert (= (dec 1.0) (- 1.0 1)))
+  (assert (= (inc 1.0) (+ 1.0 1)))
+  (assert (= (dec 1.0) (- 1.0 1)))
   (assert (= ( 1+ 1.0) (+ 1.0 1)))
   (assert (= (-1+ 1.0) (- 1.0 1)))
   
@@ -555,46 +542,44 @@
     (if (number? b)
       (assert (equal? (+ a b) 2)))
     )
+  (let ((sum 0))
+    (let ((n1 10))
+      (while (> n1 0)
+	(let ((n2 10))
+	  (while (> n2 0)
+	    (set! sum (+ sum n2))
+	    (set! n2 (- n2 1)))
+	  (set! n1 (- n1 1)))))
+    (assert (equal? sum 550))
+    sum)
 )
 
-
 (define (test-ports)
-  (let ((pin (open-input-file "escheme.scm"))
-	(pout (open-output-file "/tmp/dump")))
+  (let ((pin (open-input-file "escheme.scm")))
     (let ((x (read pin)))
       (while (not (eof-object? x))
-	(print x pout)
+	(set! x (read pin))
+	)
+    (close-port pin))))
+ 
+
+(define (test-compiler)
+  (load "./compiler.scm")
+  (let ((pin (open-input-file "compiler.scm"))
+	(count 0))
+    (let ((x (read pin)))
+      (while (not (eof-object? x))
+	;; (print x)
+	(let ((cx (compile x)))
+	  (if #f (begin
+		  (set! count (1+ count))
+		  (print (list count cx))
+		  ;;(disassemble cx)
+		  ))
+	  )
 	(set! x (read pin))))
-    (close-port pin)
-    (close-port pout)))
+    (close-port pin)))
 
-
-(if #f (begin
-
-	(define x '(letrec ((a 0) (b (lambda (n) n)) (c (lambda () (b a))))
-			   (c)))
-	
-	(define e1 (let ((a 1) (b 2)) (the-environment)))
-	(define e2 (letrec ((a 1) (b 2)) (the-environment)))
-	
-	(define e3 (letrec ((x 0)
-			    (getx (lambda () x))) 
-			   (print (getx)) 
-			   (the-environment)))
-	
-	(define eb environment-bindings)
-	
-	(eb e1)
-	(eb e2)
-	(eb e3)
-	
-	(define x
-	  '(letrec ((qq-lev 10)
-		    (foo (lambda (a)
-			   (let ((b 0))
-			     (+ b qq-lev)))))
-		   (foo 1)))
-	))
 
 ;;
 ;; The following function classes have not been tested:
@@ -606,10 +591,17 @@
 (define (repeat f n)
    (while (> n 0)
       (f)
-      ;;(display n) 
-      ;;(display " ")
-      ;;(flush-output *standard-output*)
       (set! n (- n 1))))
+
+(define (%sum x sum)
+  (if (null? x)
+      sum
+    (%sum (cdr x) (+ (car x) sum))))
+
+(define (avg x)    
+  (let ((n (length x))
+	(s (%sum x 0)))
+    (/ s (* 1.0 n))))
 
 (define (time-it f)
   (let ((start-time (gettime))
@@ -623,33 +615,35 @@
       etime
     )))
 
-(define (test1) (repeat run-the-test 10))
-(define (timed-test) (time-it test1))
+(define (timed-test) 
+  (time-it (lambda () (repeat run-the-test 10))))
 
 (define (run-n-times f n)
-  (let ((result 0))
+  (let ((results nil)
+	(m 0))
     (while (> n 0)
       (display n)
       (display " ")
       (flush-output *standard-output*)
       (let ((x (f)))
-	(if (= result 0)
-	    (set! result x)
-	  (set! result (/ (+ result x) 2))))
+	(set! m (+ m 1))
+	(if (< m 100)
+	    (set! results (cons x results))))
       (set! n (- n 1)))
-    (display "-- ")
-    result
+    results
     ))
 
 (define (perform-timed-run n)
   (let ((factor 1000000000))
-    (print (/ (run-n-times timed-test n)  factor)))
+    (let ((x (/ (avg (run-n-times timed-test n)) factor)))
+      (display "-- ")
+      (display x)
+      (newline)))
   (newline)
   (display "gc: ") (print (gc))
-  (display-done)
-)
+  (display-done))
 
-(load "./tests/gc.scm")
+;; [EOF]
 
 
 

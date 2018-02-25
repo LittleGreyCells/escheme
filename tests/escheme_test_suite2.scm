@@ -17,9 +17,15 @@
 
      (perform-timed-run 10)
      (perform-timed-run 100)
+     (perform-timed-run 200)
+     (perform-timed-run 300)
+     (perform-timed-run 400)
+     (perform-timed-run 500)
      (perform-timed-run 1000)
-     (perform-timed-run 12000)
-     (perform-timed-run 24000)
+
+     (perform-timed-run 10000)
+     (perform-timed-run 20000)
+     (perform-timed-run 30000)
 
      ))
 
@@ -55,12 +61,12 @@
 ;;
 ;;
 
-(define x nil)
-(define alist nil)
-(define a1 nil)
-(define a2 nil)
-
 (define (test-driver)
+
+  (set! x nil)
+  (set! alist nil)
+  (set! a1 nil)
+  (set! a2 nil)
 
   (set! x (list 1 2 3))
 
@@ -90,15 +96,9 @@
   (assert (equal? (map (lambda (n) n) '(1)) '(1)))
   (assert (equal? (map (lambda (n) n) '(1 2 3)) '(1 2 3)))
   
-  (set! x '())
+  (set! x nil)
   
-  (assert 
-   (equal? 
-    (for-each 
-     (lambda (n) (set! x (cons n x)))
-     '())
-    '())
-   )
+  (assert (equal? (for-each (lambda (n) (set! x (cons n x))) '()) '()) )
   
   (assert (equal? x '()))
   
@@ -228,10 +228,18 @@
 (define (repeat f n)
    (while (> n 0)
       (f)
-      (display n)
-      (display " ")
-      (flush-output)
-      (set! n (- n 1))))
+      (set! n (- n 1))
+      ))
+
+(define (%sum x sum)
+  (if (null? x)
+      sum
+    (%sum (cdr x) (+ (car x) sum))))
+
+(define (avg x)    
+  (let ((n (length x))
+	(s (%sum x 0)))
+    (/ s (* 1.0 n))))
 
 (define (time-it f)
   (let ((start-time (gettime))
@@ -245,29 +253,32 @@
       etime
     )))
 
-(define (test1) (repeat run-the-test 200))
-(define (timed-test) (time-it test1))
+(define (timed-test) 
+  (time-it (lambda () (repeat run-the-test 50))))
 
 (define (run-n-times f n)
-  (let ((result 0))
+  (let ((results nil)
+	(m 0))
     (while (> n 0)
+      (let ((x (f)))
+	(set! m (+ m 1))
+	(if (< m 100)
+	    (set! results (cons x results))))
       (display n)
       (display " ")
-      (flush-output *standard-output*)
-      (let ((x (f)))
-	(if (= result 0)
-	    (set! result x)
-	  (set! result (/ (+ result x) 2))))
+      (flush-output)
       (set! n (- n 1)))
-    (display "-- ")
-    result
+    results
     ))
 
 (define (perform-timed-run n)
   (let ((factor 1000000000))
-    (print (/ (run-n-times timed-test n)  factor)))
+    (let ((x (/ (avg (run-n-times timed-test n)) factor)))
+      (display "-- ")
+      (display x)
+      (newline)))
   (newline)
   (display "gc: ") (print (gc))
-  (display-done)
-)
+  (display-done))
+
 
