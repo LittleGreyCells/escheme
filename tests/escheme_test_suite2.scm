@@ -27,6 +27,17 @@
   (display text)
   (newline))
 
+(define (display-done)
+  (newline)
+  (newline)
+  (displayln "==========================================")
+  (displayln "==========================================")
+  (displayln "                 DONE!                    ")
+  (displayln "==========================================")
+  (displayln "==========================================")
+  (newline)
+  (newline))
+
 (define count 0)
 (define failures 0)
 
@@ -222,16 +233,6 @@
       (flush-output)
       (set! n (- n 1))))
 
-(define (%sum x sum)
-  (if (null? x)
-      sum
-    (%sum (cdr x) (+ (car x) sum))))
-
-(define (avg x)    
-  (let ((n (length x))
-	(s (%sum x 0)))
-    (/ s (* 1.0 n))))
-
 (define (time-it f)
   (let ((start-time (gettime))
 	end-time)
@@ -248,16 +249,25 @@
 (define (timed-test) (time-it test1))
 
 (define (run-n-times f n)
-  (let ((results nil))
+  (let ((result 0))
     (while (> n 0)
-      (set! results (cons (f) results))
+      (display n)
+      (display " ")
+      (flush-output *standard-output*)
+      (let ((x (f)))
+	(if (= result 0)
+	    (set! result x)
+	  (set! result (/ (+ result x) 2))))
       (set! n (- n 1)))
-    results
+    (display "-- ")
+    result
     ))
 
 (define (perform-timed-run n)
   (let ((factor 1000000000))
-    (/ (avg (run-n-times timed-test n)) factor)))
-
-
+    (print (/ (run-n-times timed-test n)  factor)))
+  (newline)
+  (display "gc: ") (print (gc))
+  (display-done)
+)
 

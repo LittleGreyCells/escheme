@@ -23,7 +23,14 @@
      (perform-timed-run 1000)
      (perform-timed-run 2000)
      (perform-timed-run 4000)
+     (perform-timed-run 6000)
+     (perform-timed-run 8000)
      (perform-timed-run 10000)
+
+     (perform-timed-run 20000)
+     (perform-timed-run 30000)
+
+     (perform-timed-run 100000)
      ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -604,16 +611,6 @@
       ;;(flush-output *standard-output*)
       (set! n (- n 1))))
 
-(define (%sum x sum)
-  (if (null? x)
-      sum
-    (%sum (cdr x) (+ (car x) sum))))
-
-(define (avg x)    
-  (let ((n (length x))
-	(s (%sum x 0)))
-    (/ s (* 1.0 n))))
-
 (define (time-it f)
   (let ((start-time (gettime))
 	end-time)
@@ -630,20 +627,23 @@
 (define (timed-test) (time-it test1))
 
 (define (run-n-times f n)
-  (let ((results nil))
+  (let ((result 0))
     (while (> n 0)
       (display n)
       (display " ")
       (flush-output *standard-output*)
-      (set! results (cons (f) results))
+      (let ((x (f)))
+	(if (= result 0)
+	    (set! result x)
+	  (set! result (/ (+ result x) 2))))
       (set! n (- n 1)))
     (display "-- ")
-    results
+    result
     ))
 
 (define (perform-timed-run n)
   (let ((factor 1000000000))
-    (print (/ (avg (run-n-times timed-test n)) factor)))
+    (print (/ (run-n-times timed-test n)  factor)))
   (newline)
   (display "gc: ") (print (gc))
   (display-done)
