@@ -19,7 +19,6 @@ SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
 SEXPR MEMORY::listbuilder;
 
-
 #ifdef GC_STATISTICS_DETAILED
 array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
 #endif

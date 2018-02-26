@@ -1063,7 +1063,7 @@ SEXPR FUNC::make_environment()
       pairs = ::cdr(pairs);
    }
 
-   setframevars( frame, getcdr( MEMORY::listbuilder ) );
+   setframevars( frame, getcdr(MEMORY::listbuilder) );
 
    setcdr( MEMORY::listbuilder, null );
 
