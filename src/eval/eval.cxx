@@ -352,8 +352,7 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
    if ( nullp(bindings) )
       return benv;
 
-   SEXPR vars = MEMORY::listbuilder;
-   setcdr(vars, null);
+   ListBuilder vars;
 
    int nvars = 0;
 
@@ -363,15 +362,12 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
       SEXPR v = car(bindings);
       if ( consp(v) )
 	 v = car(v);
-      setcdr( vars, cons(v, null) );
-      vars = getcdr(vars);
+      vars.add( v );
       bindings = cdr(bindings);
    }
 
-   FRAME frame = create_frame( nvars, getcdr(MEMORY::listbuilder) );
+   FRAME frame = create_frame( nvars, vars.get() );
    SEXPR xenv = MEMORY::environment( frame, benv );
-
-   setcdr( MEMORY::listbuilder, null );
 
    return xenv;
 }

@@ -73,4 +73,32 @@ struct GcSuspension
    ~GcSuspension() { resume_gc(); }
 };
 
+
+class ListBuilder
+{
+   SEXPR list;
+public:
+   ListBuilder()
+   {
+      list = MEMORY::listbuilder;
+      setcdr( list, null );
+   }
+
+   void add( SEXPR item )
+   {
+      setcdr( list, MEMORY::cons(item, null) );
+      list = getcdr( list );
+   }
+
+   SEXPR get()
+   {
+      return getcdr( MEMORY::listbuilder );
+   }
+
+   ~ListBuilder()
+   {
+      setcdr( MEMORY::listbuilder, null );
+   }
+};
+
 #endif
