@@ -17,6 +17,8 @@ using std::list;
 
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
+SEXPR MEMORY::listbuilder;
+
 
 #ifdef GC_STATISTICS_DETAILED
 array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
@@ -320,6 +322,7 @@ void MEMORY::gc()
    // mark memory managed roots
    mark( string_null );
    mark( vector_null );
+   mark( listbuilder );
 
    // notify all clients to mark their active roots
    for ( auto marker : markers )
@@ -592,4 +595,5 @@ void MEMORY::initialize()
    NewNodeBlock();
    string_null = string(UINT32(0));
    vector_null = vector(UINT32(0));
+   listbuilder = cons(null, null);
 }

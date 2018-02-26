@@ -21,6 +21,7 @@ namespace MEMORY
 
    extern SEXPR string_null;
    extern SEXPR vector_null;
+   extern SEXPR listbuilder;
 
    void initialize();
 

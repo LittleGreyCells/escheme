@@ -19,8 +19,6 @@ EVSTATE EVAL::cont;
 EVSTATE EVAL::next;
 SEXPR EVAL::theGlobalEnv;
 
-SEXPR EVAL::listbuilder;
-
 //
 // New: A frame-based representation
 //
@@ -347,14 +345,14 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
    REGSTACK_CHECKER("extend-env-vars");
    //
    // extend the environment with let/letrec vars
-   //   bindings = (<binding> ...)
+   //   bindings = (binding ...)
    //   binding = (v e) | v
    //
 
    if ( nullp(bindings) )
       return benv;
 
-   SEXPR vars = listbuilder;
+   SEXPR vars = MEMORY::listbuilder;
    setcdr(vars, null);
 
    int nvars = 0;
@@ -370,8 +368,10 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
       bindings = cdr(bindings);
    }
 
-   FRAME frame = create_frame( nvars, getcdr(listbuilder) );
+   FRAME frame = create_frame( nvars, getcdr(MEMORY::listbuilder) );
    SEXPR xenv = MEMORY::environment( frame, benv );
+
+   setcdr( MEMORY::listbuilder, null );
 
    return xenv;
 }
@@ -484,7 +484,6 @@ static void eval_marker()
    MEMORY::mark(EVAL::aux);
    MEMORY::mark(EVAL::val);
    MEMORY::mark(EVAL::unev);
-   MEMORY::mark(EVAL::listbuilder);
 }
 
 void EVAL::initialize()
@@ -520,8 +519,6 @@ void EVAL::initialize()
    setform( OR,       EV_OR );
    setform( ACCESS,   EV_ACCESS );
    setform( null,     EV_APPLICATION );
-
-   listbuilder = MEMORY::cons(null, null);
 
    MEMORY::register_marker( eval_marker );
 }

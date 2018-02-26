@@ -90,8 +90,6 @@ namespace EVAL
 
    extern SEXPR theGlobalEnv;
 
-   extern SEXPR listbuilder;
-
    void initialize();
   
    SEXPR eceval( SEXPR sexpr );

@@ -138,33 +138,7 @@ SEXPR FUNC::list()
    //
    ArgstackIterator iter;
 
-#if 0
-
-   if (!iter.more())
-   {
-      return null;  // empty list
-   }
-   else
-   {
-      SEXPR cell = MEMORY::cons(null, null);
-      push_reg(cell);
-
-      while (true)
-      {
-	 setcar(cell, iter.getarg());
-	 if (!iter.more())
-	    break;
-	 SEXPR newcell = MEMORY::cons(null, null);
-	 setcdr(cell, newcell);
-	 cell = newcell;
-      }
-
-      return pop_reg();
-   }
-
-#else
-
-   SEXPR a = EVAL::listbuilder;
+   SEXPR a = MEMORY::listbuilder;
    setcdr(a, null);
 
    while ( iter.more() )
@@ -173,9 +147,11 @@ SEXPR FUNC::list()
       a = getcdr( a );
    }
 
-   return getcdr( EVAL::listbuilder );
+   SEXPR list =  getcdr( MEMORY::listbuilder );
 
-#endif
+   setcdr( MEMORY::listbuilder, null );
+
+   return list;
 }
 
 SEXPR FUNC::liststar()
@@ -1010,7 +986,7 @@ SEXPR FUNC::env_bindings()
 
    if (frame)
    {
-      SEXPR a = EVAL::listbuilder;
+      SEXPR a = MEMORY::listbuilder;
       setcdr(a, null);
 
       SEXPR vars = getframevars(frame);
@@ -1024,7 +1000,11 @@ SEXPR FUNC::env_bindings()
 	 vars = getcdr(vars);
       }
       
-      return getcdr( EVAL::listbuilder );
+      SEXPR bindings = getcdr( MEMORY::listbuilder );
+
+      setcdr( MEMORY::listbuilder, null );
+
+      return bindings;
    }
    else
    {
@@ -1055,9 +1035,9 @@ SEXPR FUNC::make_environment()
 
    FRAME frame = MEMORY::frame(len);
 
-   push_reg( MEMORY::environment( frame, benv ) );
+   push_reg( MEMORY::environment( frame, benv ) );  // push [0] environment
 
-   SEXPR a = EVAL::listbuilder;
+   SEXPR a = MEMORY::listbuilder;
    setcdr(a, null);
 
    for (int i = 0; anyp(pairs); ++i)
@@ -1083,7 +1063,9 @@ SEXPR FUNC::make_environment()
       pairs = ::cdr(pairs);
    }
 
-   setframevars( frame, getcdr(EVAL::listbuilder) );   // pop [1] vars
+   setframevars( frame, getcdr( MEMORY::listbuilder ) );
+
+   setcdr( MEMORY::listbuilder, null );
 
    return pop_reg();                          // pop [0] environment
 }
@@ -1923,10 +1905,10 @@ SEXPR FUNC::append()
 
    ArgstackIterator iter;
 
-   SEXPR a = EVAL::listbuilder;
+   SEXPR a = MEMORY::listbuilder;
    setcdr(a, null);
 
-   while (iter.more())
+   while ( iter.more() )
    {
       SEXPR b = guard(iter.getarg(), listp);
 
@@ -1938,7 +1920,11 @@ SEXPR FUNC::append()
       }
    }
 
-   return getcdr( EVAL::listbuilder );
+   SEXPR list = getcdr( MEMORY::listbuilder );
+
+   setcdr( MEMORY::listbuilder, null );
+
+   return list;
 }
 
 //
