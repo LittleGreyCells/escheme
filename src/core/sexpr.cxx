@@ -183,7 +183,6 @@ bool lastp( SEXPR n )  { return nullp(cdr(n)); }
 bool promisep( SEXPR n )  { return n->kind == n_promise; }
 bool codep( const SEXPR n ) { return n->kind == n_code; }
 
-bool vcp(SEXPR n) { return vectorp(n) || contp(n); }
 bool grefp( const SEXPR n ) { return n->kind == n_gref; }
 bool frefp( const SEXPR n ) { return n->kind == n_fref; }
 
@@ -218,7 +217,6 @@ std::vector<PredMap> predicate_map =
    { lastp, "last argument" },
    { promisep, "promise" },
    { anyportp, "port or stringport" },
-   { vcp, "vector or continuation" },
    { primp, "func or special" },
    { grefp, "global symbol reference" },
    { frefp, "frame symbol reference" },
@@ -240,7 +238,7 @@ SEXPR guard( SEXPR s, PREDICATE predicate )
       }
 
       char message[80];
-      SPRINTF( message, "argument wrong type--expected %s, got", expected );
+      SPRINTF( message, "argument wrong type--expected %s", expected );
 
       ERROR::severe( message, s );
    }
@@ -266,7 +264,7 @@ static void typecheck( SEXPR s, PREDICATE predicate )
       }
 
       char message[80];
-      SPRINTF( message, "type check failed--expected %s, got", expected );
+      SPRINTF( message, "type check failed--expected %s", expected );
 
       ERROR::fatal( message );
    }
@@ -277,9 +275,9 @@ SEXPR& getcdr(SEXPR n) { typecheck(n,consp); return n->u.cons.cdr; }
 void setcar(SEXPR n, SEXPR x) { getcar(n) = x; }
 void setcdr(SEXPR n, SEXPR x) { getcdr(n) = x; }
  
-UINT32& getvectorlength(SEXPR n) { typecheck(n,vcp); return n->u.vector.length; }
-SEXPR*& getvectordata(SEXPR n) { typecheck(n,vcp); return n->u.vector.data; }
-SEXPR& vectorref(SEXPR n, UINT32 i) { typecheck(n,vcp); return n->u.vector.data[i]; }
+UINT32& getvectorlength(SEXPR n) { typecheck(n,vectorp); return n->u.vector.length; }
+SEXPR*& getvectordata(SEXPR n) { typecheck(n,vectorp); return n->u.vector.data; }
+SEXPR& vectorref(SEXPR n, UINT32 i) { typecheck(n,vectorp); return n->u.vector.data[i]; }
 void setvectorlength(SEXPR n, UINT32 x) { getvectorlength(n) = x; }
 void setvectordata(SEXPR n, SEXPR* x) { getvectordata(n) = x; }
 void vectorset(SEXPR n, UINT32 i, SEXPR x) { vectorref(n,i) = x; }

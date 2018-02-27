@@ -38,7 +38,7 @@ namespace MEMORY
    SEXPR closure( SEXPR code, SEXPR env );
    SEXPR environment( FRAME frame, SEXPR env );
    SEXPR vector( UINT32 length );
-   SEXPR continuation( UINT32 length );
+   SEXPR continuation();
    SEXPR byte_vector( UINT32 length );
    SEXPR string_port();
    FRAME frame( UINT32 nslots );
@@ -78,11 +78,8 @@ class ListBuilder
 {
    SEXPR list;
 public:
-   ListBuilder()
-   {
-      list = MEMORY::listbuilder;
-      setcdr( list, null );
-   }
+   ListBuilder() : list(MEMORY::listbuilder) { setcdr( list, null ); }
+   ~ListBuilder() { setcdr( MEMORY::listbuilder, null ); }
 
    void add( SEXPR item )
    {
@@ -90,15 +87,7 @@ public:
       list = getcdr( list );
    }
 
-   SEXPR get()
-   {
-      return getcdr( MEMORY::listbuilder );
-   }
-
-   ~ListBuilder()
-   {
-      setcdr( MEMORY::listbuilder, null );
-   }
+   SEXPR get() { return getcdr( MEMORY::listbuilder ); }
 };
 
 #endif

@@ -36,8 +36,8 @@ SRCS	= \
 OBJS	= $(SRCS:.cxx=.o)
 
 #DEBUG_FLAGS = -g
-DEBUG_FLAGS = -O
-#DEBUG_FLAGS = -O2
+#DEBUG_FLAGS = -O
+DEBUG_FLAGS = -O2
 #DEBUG_FLAGS = -O3
 
 #CFLAGS = $(DEBUG_FLAGS) -fno-operator-names -fpermissive -std=c++11

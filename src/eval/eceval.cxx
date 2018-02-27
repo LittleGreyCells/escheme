@@ -1061,15 +1061,17 @@ const int BvReserved = 3;
 SEXPR EVAL::create_continuation()
 {
    // allocate and populate the 'continuation'
-   //   (it is assumed that 'cont' is protected from gc)
    const int regs_depth = regstack.getdepth();
    const int args_depth = argstack.getdepth();
    const int ints_depth = intstack.getdepth();
 
-   const int cont_len = ContSingletons + regs_depth + args_depth;
+   const int state_len = ContSingletons + regs_depth + args_depth;
 
-   SEXPR cc = MEMORY::continuation(cont_len);
-   regstack.push(cc);
+   SEXPR cc = MEMORY::continuation();
+   regstack.push( cc );                         // push continuation
+
+   SEXPR state = MEMORY::vector(state_len);
+   cont_setstate( cc, state );
    
    // byte vector
    //   length accomodates the intstack and the three(3) stack depth values
@@ -1081,29 +1083,31 @@ SEXPR EVAL::create_continuation()
    pint16[1] = args_depth;
    pint16[2] = ints_depth;
 
-   vectorset(cc, 0, env);
-   vectorset(cc, 1, unev);
-   vectorset(cc, 2, bv);
+   vectorset( state, 0, env );
+   vectorset( state, 1, unev );
+   vectorset( state, 2, bv );
    
    int j = ContSingletons;
 
    for (int i = 0; i < regs_depth; ++i)
-      vectorset(cc, j++, regstack[i]);
+      vectorset( state, j++, regstack[i] );
    
    for (int i = 0; i < args_depth; ++i)
-      vectorset(cc, j++, argstack[i]); 
+      vectorset( state, j++, argstack[i] ); 
    
    for (int i = 0; i < ints_depth; ++i)
       pint16[BvReserved+i] = intstack[i];
    
-   return regstack.pop();
+   return regstack.pop();                     // pop continuation
 }
 
 void EVAL::restore_continuation( SEXPR cc )
 {
-   env = vectorref(cc, 0);
-   unev = vectorref(cc, 1);
-   SEXPR bv = vectorref(cc, 2);
+   SEXPR state = cont_getstate( cc );
+
+   env = vectorref( state, 0 );
+   unev = vectorref( state, 1 );
+   SEXPR bv = vectorref( state, 2 );
 
    const INT16* pint16 = reinterpret_cast<INT16*>(getbvecdata(bv));
 
@@ -1114,15 +1118,15 @@ void EVAL::restore_continuation( SEXPR cc )
    int j = ContSingletons;
    
    for (int i = 0; i < regs_depth; ++i)
-      regstack[i] = vectorref(cc, j++);
+      regstack[i] = vectorref( state, j++ );
    
    for (int i = 0; i < args_depth; ++i)
-      argstack[i] = vectorref(cc, j++);
+      argstack[i] = vectorref( state, j++ );
       
    for (int i = 0; i < ints_depth; ++i)
       intstack[i] = pint16[BvReserved+i];
    
-   regstack.newtop(regs_depth);
-   argstack.newtop(args_depth);
-   intstack.newtop(ints_depth);
+   regstack.newtop( regs_depth );
+   argstack.newtop( args_depth );
+   intstack.newtop( ints_depth );
 }

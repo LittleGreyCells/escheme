@@ -387,7 +387,8 @@ void vectorset(SEXPR n, UINT32 i, SEXPR x);
 #endif
 
 // continuation
-//   use vector
+#define cont_getstate(n) ((n)->u.cons.car)
+#define cont_setstate(n,x) cont_getstate(n) = (x)
 
 // string
 #ifdef CHECKED_ACCESS

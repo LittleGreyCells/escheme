@@ -175,6 +175,10 @@ void MEMORY::mark( SEXPR n )
 	 break;
     
       case n_continuation:
+	 setmark(n);
+	 mark( cont_getstate(n) );
+	 break;
+
       case n_vector:
       {
 	 setmark(n);
@@ -281,7 +285,6 @@ static void sweep()
 		  freestringdata(p);
 		  break;
 
-	       case n_continuation:
 	       case n_vector:
 		  freevectordata(p);
 		  break;
@@ -492,10 +495,10 @@ SEXPR MEMORY::string_resize( SEXPR string, UINT32 delta )
    return string;
 }
 
-SEXPR MEMORY::continuation( UINT32 length )               // (<vector>)
+SEXPR MEMORY::continuation()
 {
-   SEXPR n = vector(length);
-   setnodekind(n, n_continuation);
+   SEXPR n = newnode(n_continuation);
+   cont_setstate(n, null);
    return n;
 }
 
