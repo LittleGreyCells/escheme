@@ -3,13 +3,6 @@
 
 #include <cstdio>
 
-// Opitimization Definitions
-// 
-#define GC_STATISTICS_DETAILED
-
-#define DO_REGSTACK_CHECK
-#undef DO_REGSTACK_CHECK
-
 //
 // escheme configration
 //

@@ -120,7 +120,7 @@ namespace EVAL
    SEXPR create_continuation();
    void restore_continuation( SEXPR continuation );
 
-   void check( int id, PREDICATE pre, SEXPR reg );
+   void register_check( int id, PREDICATE pre, SEXPR reg );
 }
 
 #endif

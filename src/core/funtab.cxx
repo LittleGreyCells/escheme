@@ -120,6 +120,7 @@ static std::vector<Function> funtab =
    { "write-char",           FUNC::write_char   , n_func },
 
    { "gc",		     FUNC::gc		, n_func },
+   { "%fs",		     FUNC::fs		, n_func },
 
    { "eval",		     EVAL::eval,           n_eval     },
    { "%prim-eval",	     EVAL::eval,           n_eval     },

@@ -900,7 +900,7 @@ SEXPR FUNC::write_char()
 SEXPR FUNC::gc()
 {
    // *
-   // syntax: (gc) -> #t
+   // syntax: (gc) -> <statistics>
    //
    argstack.noargs();
 
@@ -920,6 +920,38 @@ SEXPR FUNC::gc()
       vectorset( v, i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
 
    vectorset( top_reg(), 3, v );
+#endif
+
+   return pop_reg();
+}
+
+SEXPR FUNC::fs()
+{
+   // *
+   // syntax: (fs) -> <statistics>
+   //
+   argstack.noargs();
+
+   push_reg( MEMORY::vector(4) );
+
+   vectorset( top_reg(), 0, MEMORY::fixnum( frameStore.nframes ) );
+   vectorset( top_reg(), 1, MEMORY::fixnum( frameStore.nzeroallocs ) );
+
+#ifdef FS_STATISTICS_DETAILED
+   const int n = frameStore.size();
+
+   SEXPR outstanding = MEMORY::vector(n);
+   vectorset( top_reg(), 2, outstanding );
+
+   SEXPR available = MEMORY::vector(n);
+   vectorset( top_reg(), 3, available );
+
+   for ( int i = 0; i < n; ++i )
+   {
+      vectorset( outstanding, i, MEMORY::fixnum( frameStore.outstanding[i] ) );
+      vectorset( available, i, MEMORY::fixnum( frameStore.available[i] ) );
+   }
+   
 #endif
 
    return pop_reg();

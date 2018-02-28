@@ -431,7 +431,7 @@ static const char* image( EVSTATE state )
 }
 #endif
 
-void EVAL::check( int id, PREDICATE pred, SEXPR reg )
+void EVAL::register_check( int id, PREDICATE pred, SEXPR reg )
 {
    if ( !pred(reg) )
    {

@@ -4,7 +4,6 @@
 
 #include "memory.hxx"
 #include "error.hxx"
-#include "framestore.hxx"
 
 using std::array;
 using std::list;
@@ -259,8 +258,10 @@ static void sweep()
    FreeNodeList = null;
    MEMORY::FreeNodeCount = 0;
 
+#ifdef GC_STATISTICS_DETAILED
    for ( auto& count : MEMORY::ReclamationCounts ) 
       count = 0;
+#endif
 
    for ( auto block : blocks )
    {
@@ -294,7 +295,8 @@ static void sweep()
 		  break;
 
 	       case n_environment:
-		  frameStore.free( getenvframe(p) ); 
+		  if ( getenvframe(p) )
+		     frameStore.free( getenvframe(p) ); 
 		  break;
 
 	       default:

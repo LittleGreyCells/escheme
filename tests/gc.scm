@@ -49,6 +49,7 @@
 	   (adorn vk 22 'force)
 	   (adorn vk 23 'gref)
 	   (adorn vk 24 'fref)
+	   (adorn vk 25 'code)
 	   ))
       (display (list "collections" (vector-ref stats 0)))
       (newline)
@@ -56,8 +57,10 @@
       (newline)
       (display (list "free-nodes" (vector-ref stats 2)))
       (newline)
-      (display "last-collection")
-      (newline)
-      (print-vector vk)
+      (if vk
+	  (begin
+	   (display "last-collection")
+	   (newline)
+	   (print-vector vk)))
       #t
       )))

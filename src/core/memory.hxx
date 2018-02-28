@@ -6,8 +6,11 @@
 
 #include "sexpr.hxx"
 #include "tstack.hxx"
+#include "framestore.hxx"
 
 using std::array;
+
+extern FrameStore frameStore;
 
 namespace MEMORY
 {
