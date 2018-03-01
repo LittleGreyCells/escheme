@@ -121,20 +121,16 @@ struct VECTOR
    SEXPR* data;
 };
 
-// a 3-cell
 struct CLOSURE
 {
    SEXPR code;
-   SEXPR benv;
-   SEXPR vars;
+   SEXPR pair;            // ( code . ( benv . vars ) )
 };
 
-// a 3-cell
 struct SYMBOL
 {
    char* name;
-   SEXPR value;
-   SEXPR plist;
+   SEXPR pair;            // ( name . ( value . plist ) )
 };
 
 struct PORT
@@ -429,16 +425,20 @@ void setcharacter(SEXPR n, char ch);
 // symbol
 #ifdef CHECKED_ACCESS
 char*& getname(SEXPR n);
+SEXPR& getsymbolpair(SEXPR n);
 SEXPR& getvalue(SEXPR n);
 SEXPR& getplist(SEXPR n);
 void setname(SEXPR n, char* x);
+void setsymbolpair(SEXPR n, SEXPR x);
 void setvalue(SEXPR n, SEXPR x);
 void setplist(SEXPR n, SEXPR x);
 #else
 #define getname(n) ((n)->u.symbol.name)
-#define getvalue(n) ((n)->u.symbol.value)
-#define getplist(n) ((n)->u.symbol.plist)
+#define getsymbolpair(n) ((n)->u.symbol.pair)
+#define getvalue(n) (getsymbolpair(n)->u.cons.car)
+#define getplist(n) (getsymbolpair(n)->u.cons.cdr)
 #define setname(n,x) getname(n) = (x)
+#define setsymbolpair(n,x) getsymbolpair(n) = (x)
 #define setvalue(n,x) getvalue(n) = (x)
 #define setplist(n,x) getplist(n) = (x)
 #endif
@@ -468,26 +468,30 @@ void setfunc(SEXPR n, PRIMITIVE x);
 // closure
 #ifdef CHECKED_ACCESS
 SEXPR& getclosurecode(SEXPR n);
+SEXPR& getclosurepair(SEXPR n);
 SEXPR& getclosurebenv(SEXPR n);
 SEXPR& getclosurevars(SEXPR n);
 BYTE& getclosurenumv(SEXPR n);
 BYTE& getclosurerargs(SEXPR n);
 #else
 #define getclosurecode(n) ((n)->u.closure.code)
-#define getclosurebenv(n) ((n)->u.closure.benv)
-#define getclosurevars(n) ((n)->u.closure.vars)
+#define getclosurepair(n) ((n)->u.closure.pair)
+#define getclosurebenv(n) (getclosurepair(n)->u.cons.car)
+#define getclosurevars(n) (getclosurepair(n)->u.cons.cdr)
 #define getclosurenumv(n) ((n)->aux1)
 #define getclosurerargs(n) ((n)->aux2)
 #endif
 
 #ifdef CHECKED_ACCESS
 void setclosurecode(SEXPR n, SEXPR x);
+void setclosurepair(SEXPR n, SEXPR x);
 void setclosurebenv(SEXPR n, SEXPR x);
 void setclosurevars(SEXPR n, SEXPR x);
 void setclosurenumv(SEXPR n, BYTE x);
 void setclosurerargs(SEXPR n, BYTE x);
 #else
 #define setclosurecode(n,x) getclosurecode(n) = (x)
+#define setclosurepair(n,x) getclosurepair(n) = (x)
 #define setclosurebenv(n,x) getclosurebenv(n) = (x)
 #define setclosurevars(n,x) getclosurevars(n) = (x)
 #define setclosurenumv(n,x) getclosurenumv(n) = (x)

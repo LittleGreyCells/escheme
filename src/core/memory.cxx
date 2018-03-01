@@ -4,11 +4,10 @@
 
 #include "memory.hxx"
 #include "error.hxx"
+#include "regstack.hxx"
 
 using std::array;
 using std::list;
-
-#define TRACE_FRAMES
 
 //
 // the global objects
@@ -48,8 +47,6 @@ int   MEMORY::CollectionCount = 0;
 
 static SEXPR FreeNodeList;
 
-static int BlockCount = 0;
-
 struct NodeBlock
 {
    array<Node, NODE_BLOCK_SIZE> nodes;
@@ -64,8 +61,6 @@ static list<NodeBlock*> blocks;
 static void NewNodeBlock()
 {
    NodeBlock* block = new NodeBlock;
-
-   BlockCount += 1;
 
    blocks.push_back(block);
 
@@ -189,16 +184,14 @@ void MEMORY::mark( SEXPR n )
   
       case n_symbol:
 	 setmark(n);
-	 mark( getvalue(n) );
-	 mark( getplist(n) );
+	 mark( getsymbolpair(n) );
 	 break;
     
       case n_closure:
       {
 	 setmark(n);
 	 mark( getclosurecode(n) );
-	 mark( getclosurebenv(n) );
-	 mark( getclosurevars(n) );
+	 mark( getclosurepair(n) );
 	 break;
       }
 
@@ -348,15 +341,10 @@ static SEXPR newnode( NodeKind kind )
    {
       MEMORY::gc();
 
-#if 1
       // don't wait till 0, before allocating a new block.
       //   make the threshold 1/5 of the NODE_BLOCK_SIZE.
       if ( MEMORY::FreeNodeCount < NODE_BLOCK_SIZE / 5 )
 	 NewNodeBlock();
-#else
-      if (nullp(FreeNodeList))
-	 NewNodeBlock();
-#endif
    }
 
    MEMORY::FreeNodeCount -= 1;
@@ -418,9 +406,9 @@ SEXPR MEMORY::symbol( const char* s )      // (<name> <value>  <plist>)
    char* str = newsymbolname(strlen(s)+1);
    strcpy(str, s);
    setname(n, str);
-   setvalue(n, null);
-   setplist(n, null);
-   return n;
+   regstack.push(n);
+   setsymbolpair( n, cons(null, null) );
+   return regstack.pop();
 }
 
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
@@ -531,9 +519,9 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
 {
    SEXPR n = newnode(n_closure);
    setclosurecode(n, code);
-   setclosurebenv(n, env);
-   setclosurevars(n, null);
-   return n;
+   regstack.push(n);
+   setclosurepair( n, cons(env, null) );
+   return regstack.pop();
 }
 
 SEXPR MEMORY::environment( FRAME frame, SEXPR env )   // (<frame> . <env>)

@@ -290,11 +290,14 @@ void setstringindex(SEXPR n, UINT32 x) {  getstringindex(n) = x; }
 void setstringdata(SEXPR n, char* x) { getstringdata(n) = x; }
 
 char*& getname(SEXPR n) { typecheck(n,symbolp); return n->u.symbol.name; }
-SEXPR& getvalue(SEXPR n) { typecheck(n,symbolp); return n->u.symbol.value; }
-SEXPR& getplist(SEXPR n) { typecheck(n,symbolp); return n->u.symbol.plist; }
+SEXPR& getsymbolpair(SEXPR n) { typecheck(n,symbolp); return n->u.symbol.pair; }
+SEXPR& getvalue(SEXPR n) { return getsymbolpair(n)->u.cons.car; }
+SEXPR& getplist(SEXPR n) { return getsymbolpair(n)->u.cons.cdr; }
 void setname(SEXPR n, char* x) { getname(n) = x; }
+void setsymbolpair(SEXPR n, SEXPR x) { getsymbolpair(n) = x; }
 void setvalue(SEXPR n, SEXPR x) { getvalue(n) = x; }
 void setplist(SEXPR n, SEXPR x) { getplist(n) = x; }
+
 
 char& getcharacter(SEXPR n) { typecheck(n,charp); return n->u.ch; }
 void setcharacter(SEXPR n, char ch) { getcharacter(n) = ch; }
@@ -305,12 +308,14 @@ void setfixnum(SEXPR n, FIXNUM x) { getfixnum(n) = x; }
 void setflonum(SEXPR n, FLONUM x) { getflonum(n) = x; }
 
 SEXPR& getclosurecode(SEXPR n) { typecheck(n,closurep); return n->u.closure.code; }
-SEXPR& getclosurebenv(SEXPR n) { typecheck(n,closurep); return n->u.closure.benv; }
-SEXPR& getclosurevars(SEXPR n) { typecheck(n,closurep); return n->u.closure.vars; }
+SEXPR& getclosurepair(SEXPR n) { typecheck(n,closurep); return n->u.closure.pair; }
+SEXPR& getclosurebenv(SEXPR n) { return getclosurepair(n)->u.cons.car; }
+SEXPR& getclosurevars(SEXPR n) { return getclosurepair(n)->u.cons.cdr; }
 BYTE& getclosurenumv(SEXPR n) { typecheck(n,closurep); return n->aux1; }
 BYTE& getclosurerargs(SEXPR n) { typecheck(n,closurep); return n->aux2; }
 
 void setclosurecode(SEXPR n, SEXPR x) { getclosurecode(n) = x; }
+void setclosurepair(SEXPR n, SEXPR x) { getclosurepair(n) = x; }
 void setclosurebenv(SEXPR n, SEXPR x) { getclosurebenv(n) = x; }
 void setclosurevars(SEXPR n, SEXPR x) { getclosurevars(n) = x; }
 void setclosurenumv(SEXPR n, BYTE x) { getclosurenumv(n) = x; }
