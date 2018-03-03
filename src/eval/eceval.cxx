@@ -705,7 +705,14 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //
 	 case EV_DEFINE:
 	 {
-	    normalize_definition(exp, unev, exp);
+#if 1
+	    normalize_definition( exp, unev, exp );
+#else
+	    exp = normalize_definition( exp );
+	    SEXPR cdr_exp = cdr(exp);    // (<var> <exp>)
+	    unev = car(cdr_exp);         // <var>
+	    exp = car(cdr(cdr_exp));     // <exp>
+#endif
 	    save_reg(unev);
 	    save_reg(env);
 	    save_evs(cont);
