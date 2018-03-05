@@ -114,7 +114,7 @@ SEXPR READER::read_list( SEXPR inport, char terminator )
 		  if (terminator == ')')
 		     ERROR::warning("expecting ) list terminator");
 	       }
-	       return list ? pop() : null;
+	       return anyp(list) ? pop() : null;
 	    }
 	    else if (nullp(list))
 	    {
