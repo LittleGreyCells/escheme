@@ -402,13 +402,13 @@ SEXPR MEMORY::character( CHAR ch )   // (<char>)
 
 SEXPR MEMORY::symbol( const char* s )      // (<name> <value>  <plist>)
 {
+   regstack.push( cons(null, null) );
    SEXPR n = newnode(n_symbol);
    char* str = newsymbolname(strlen(s)+1);
    strcpy(str, s);
    setname(n, str);
-   regstack.push(n);
-   setsymbolpair( n, cons(null, null) );
-   return regstack.pop();
+   setsymbolpair( n, regstack.pop() );
+   return n;
 }
 
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
@@ -517,11 +517,11 @@ SEXPR MEMORY::port( FILE* file, short mode )          // (<file>)
 
 SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> <vars>] )
 {
+   regstack.push( cons(env, null) );
    SEXPR n = newnode(n_closure);
    setclosurecode(n, code);
-   regstack.push(n);
-   setclosurepair( n, cons(env, null) );
-   return regstack.pop();
+   setclosurepair( n, regstack.pop() );
+   return n;
 }
 
 SEXPR MEMORY::environment( FRAME frame, SEXPR env )   // (<frame> . <env>)
