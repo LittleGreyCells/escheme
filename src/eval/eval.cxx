@@ -99,8 +99,6 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 //       val == (lambda (<args> <body>))
 //
 
-#if 1
-
 void EVAL::normalize_definition( SEXPR exp, SEXPR& var, SEXPR& val )
 {
    const SEXPR cdr_exp = cdr(exp);
@@ -121,39 +119,6 @@ void EVAL::normalize_definition( SEXPR exp, SEXPR& var, SEXPR& val )
       setcdr(val, regstack.pop());   //     = (lambda (<args> ...)
    }
 }
-
-#else
-
-SEXPR EVAL::normalize_definition( SEXPR exp )
-{
-   const SEXPR cdr_exp = cdr(exp);
-   const SEXPR cadr_exp = car(cdr_exp);
-
-   if ( _symbolp(cadr_exp) )
-   {
-      // (define x <exp>)
-      return exp;
-   }
-   else if ( _consp(cadr_exp) )
-   { 
-      // (define (x <args>) <body>)
-      SEXPR var = car(cadr_exp);                     // x
-      SEXPR body = cdr(cdr_exp);                     // <body>
-      SEXPR args = cdr(cadr_exp);                    // (<args>)
-      regstack.push( cons(LAMBDA, null) );           // (lambda)
-      setcdr( regstack.top(), cons(args, body) );    // (lambda (<args>) <body>)
-      regstack.top() = cons( regstack.top(), null ); // ((lambda (<args>) <body>))
-      regstack.top() = cons( var, regstack.top() );  // (x (lambda ...) ...)
-      setcdr( exp, regstack.pop() );                 // (define x (lambda ...) ...)
-      return exp;
-   }
-   else
-   {
-      ERROR::severe( "erroneous define syntax", exp );
-   }
-}
-
-#endif
 
 //
 // Parse the Formal Parameters
@@ -304,7 +269,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       {
 	 if (nactual < nformal)
 	    arg_error( "too few arguments", nactual, nformal );
-	 else if (nactual > nformal)
+	 else
 	    arg_error( "too many arguments", nactual, nformal );
       }
      
