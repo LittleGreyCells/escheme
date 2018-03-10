@@ -207,11 +207,7 @@ FRAME EVAL::create_frame( int nvars, SEXPR vars )
    if ( nvars > 0 )
    {
       FRAME frame = MEMORY::frame(nvars);
-      frame->vars = vars;
-
-      for (int i = 0; i < nvars; ++i)
-	 frameset(frame, i, null);
-
+      setframevars( frame, vars );
       return frame;
    }
    else

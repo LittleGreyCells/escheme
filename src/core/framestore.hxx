@@ -39,6 +39,12 @@ public:
 
    FRAME alloc( UINT32 nslots )
    {
+      // allocate a frame with all slots defined
+      //    framenslots = nslots
+      //    framevars = null
+      //    frameslots = {null}
+      FRAME frame;
+
       nframes += 1;
 
       if ( nslots == 0 )
@@ -46,7 +52,8 @@ public:
 
       if ( (nslots < store.size()) && store[nslots] )
       {
-	 FRAME frame = store[nslots];
+	 // reuse an existing frame
+	 frame = store[nslots];
 	 store[nslots] = frame->next;
 
 	 if ( getframenslots(frame) != nslots )
@@ -56,20 +63,25 @@ public:
 	 outstanding[nslots] += 1;
 	 available[nslots] -= 1;
 #endif
-	 setframevars( frame, null );
-	 return frame;
+      }
+      else
+      {
+	 // allocate a new frame from heap
+	 const size_t frameSize = sizeof(Frame) + sizeof(SEXPR) * nslots - sizeof(SEXPR);   
+	 frame = (FRAME) ::operator new (frameSize);
+      
+	 setframenslots( frame, nslots );
+  
+#ifdef FS_STATISTICS_DETAILED
+	 if ( nslots < store.size() )
+	    outstanding[nslots] += 1;
+#endif
       }
       
-      const size_t frameSize = sizeof(Frame) + sizeof(SEXPR) * nslots - sizeof(SEXPR);   
-      FRAME frame = (FRAME) ::operator new (frameSize);
-      
-      setframenslots( frame, nslots );
       setframevars( frame, null );
-      
-#ifdef FS_STATISTICS_DETAILED
-      if ( nslots < store.size() )
-	 outstanding[nslots] += 1;
-#endif
+
+      for (int i = 0; i < nslots; ++i )
+	 frameset( frame, i, null );
 
       return frame;
    }
