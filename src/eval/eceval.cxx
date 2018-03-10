@@ -705,14 +705,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //
 	 case EV_DEFINE:
 	 {
-#if 1
 	    normalize_definition( exp, unev, exp );
-#else
-	    exp = normalize_definition( exp );
-	    SEXPR cdr_exp = cdr(exp);    // (<var> <exp>)
-	    unev = car(cdr_exp);         // <var>
-	    exp = car(cdr(cdr_exp));     // <exp>
-#endif
 	    save_reg(unev);
 	    save_reg(env);
 	    save_evs(cont);
@@ -1075,7 +1068,7 @@ SEXPR EVAL::create_continuation()
    const int state_len = ContSingletons + regs_depth + args_depth;
 
    SEXPR cc = MEMORY::continuation();
-   regstack.push( cc );                         // push continuation
+   regstack.push( cc );
 
    SEXPR state = MEMORY::vector(state_len);
    cont_setstate( cc, state );
@@ -1105,7 +1098,7 @@ SEXPR EVAL::create_continuation()
    for (int i = 0; i < ints_depth; ++i)
       pint16[BvReserved+i] = intstack[i];
    
-   return regstack.pop();                     // pop continuation
+   return regstack.pop();
 }
 
 void EVAL::restore_continuation( SEXPR cc )

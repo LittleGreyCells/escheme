@@ -114,7 +114,6 @@ namespace EVAL
    FRAME create_frame( int nvars, SEXPR vars );
 
    SEXPR extend_env_fun( SEXPR closure );
-
    SEXPR extend_env_vars( SEXPR bindings, SEXPR benv );
 
    SEXPR create_continuation();
