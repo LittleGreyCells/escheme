@@ -22,8 +22,6 @@
 #define LETREC   	SYMTAB::symbol_letrec
 #define ACCESS          SYMTAB::symbol_access
 #define UNBOUND         SYMTAB::symbol_unbound
-#define OPTIONAL        SYMTAB::symbol_optional
-#define REST            SYMTAB::symbol_rest
 #define DEFAULT         SYMTAB::symbol_default
 #define QUASIQUOTE      SYMTAB::symbol_quasiquote
 #define UNQUOTE         SYMTAB::symbol_unquote
@@ -56,8 +54,6 @@ namespace SYMTAB
    extern SEXPR symbol_letrec;
    extern SEXPR symbol_access;
    extern SEXPR symbol_unbound;
-   extern SEXPR symbol_optional;
-   extern SEXPR symbol_rest;
    extern SEXPR symbol_default;
    extern SEXPR symbol_quasiquote;
    extern SEXPR symbol_unquote;

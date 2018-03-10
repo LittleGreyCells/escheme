@@ -14,8 +14,6 @@ SEXPR SYMTAB::symbol_unbound;
 SEXPR SYMTAB::symbol_false;
 SEXPR SYMTAB::symbol_true;
 SEXPR SYMTAB::symbol_default;
-SEXPR SYMTAB::symbol_optional;
-SEXPR SYMTAB::symbol_rest;
 SEXPR SYMTAB::symbol_quasiquote;
 SEXPR SYMTAB::symbol_unquote;
 SEXPR SYMTAB::symbol_unquotesplicing;
@@ -111,8 +109,6 @@ void SYMTAB::initialize()
    // create other special symbols/objects
    symbol_default         = enter("**default**");
    setvalue(symbol_default, symbol_default);
-   symbol_optional	  = enter("#!optional");
-   symbol_rest		  = enter("#!rest");
    symbol_quasiquote      = enter("quasiquote");
    symbol_unquote         = enter("unquote");
    symbol_unquotesplicing = enter("unquote-splicing");

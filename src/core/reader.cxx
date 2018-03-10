@@ -366,13 +366,7 @@ SEXPR READER::read_special( SEXPR inport )
 	 {
 	    char ss[MAX_SYMBOL_LENGTH];
 	    SPRINTF(ss, "#!%s", s);
-
-	    SEXPR sym = SYMTAB::enter(ss);
-
-	    if ( sym == SYMTAB::symbol_rest || sym == SYMTAB::symbol_optional )
-	       ERROR::warning( "#!rest and #!optional are not supported" );
-
-	    return sym;
+	    return SYMTAB::enter(ss);
 	 }
       }
 
