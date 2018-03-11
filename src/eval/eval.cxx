@@ -41,7 +41,7 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 
       if (frame)
       {
-	 SEXPR vars = frame->vars;
+	 SEXPR vars = getframevars(frame);
 
 	 for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
 	 {
@@ -71,7 +71,7 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 
       if (frame)
       {
-	 SEXPR vars = frame->vars;
+	 SEXPR vars = getframevars(frame);
 
 	 for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
 	 {
@@ -306,37 +306,6 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
    return regstack.pop();
 }
 
-#if 0
-static void print_bindings( SEXPR env )
-{
-   int depth = 0;
-
-   while ( anyp(env) )
-   {
-      FRAME frame = getenvframe(env);
-
-      if (frame)
-      {
-	 SEXPR vars = getframevars(frame);
-
-	 for ( int i = 0; i < static_cast<int>(getframenslots(frame)); ++i )
-	 {
-	    printf("slot[%d:%d]: ", depth, i);
-	    PRINTER::print( car(vars) );
-	    printf(" ");
-	    PRINTER::print( frameref(frame,i) );
-	    PRINTER::newline();
-	    vars = cdr(vars);
-	 }
-      }
-
-      printf( "--\n" );
-      env = getenvbase(env);
-      depth += 1;
-   }
-}
-#endif
-
 SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
 {
    REGSTACK_CHECKER("extend-env-vars");
@@ -369,64 +338,6 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
    return xenv;
 }
 
-#if 0
-#define CASEN(state, label) case state: return #label;
-
-static const char* image( EVSTATE state )
-{
-   switch (state)
-   {
-      CASEN(EV_APPLICATION, Apply);
-      CASEN(EVAL_ARGS, Args);
-      CASEN(EVAL_ARG_LOOP, ArgLoop);
-      CASEN(ACCUMULATE_ARG, AccumArg);
-      CASEN(ACCUMULATE_LAST_ARG, AccumLast);
-      CASEN(EVAL_DISPATCH, Dispatch);
-      CASEN(EV_QUOTE, Quote);
-      CASEN(EV_DEFINE, Def);
-      CASEN(EV_DEFINE_VALUE, DefValue);
-      CASEN(EV_SET, Set);
-      CASEN(EV_SET_VALUE, SetValue);
-      CASEN(EV_SETACCESS_ENV, SetAccessEnv);
-      CASEN(EV_SETACCESS_VALUE, SetAccessValue);
-      CASEN(EV_CSET, CSet);
-      CASEN(EV_CSET_VALUE, CSetValue);
-      CASEN(EV_LAMBDA, Lambda);
-      CASEN(EV_CLAMBDA, CLambda);
-      CASEN(EV_IF, If);
-      CASEN(EVIF_DECIDE, IfDecide);
-      CASEN(EV_AND, And);
-      CASEN(EV_OR, Or);
-      CASEN(EVAL_ANDSEQ, AndSeq);	
-      CASEN(EVAL_ANDSEQ_FORK, AndSeqFork);	
-      CASEN(EVAL_ORSEQ, OrSeq);	
-      CASEN(EVAL_ORSEQ_FORK, OrSeqFork);	
-      CASEN(EV_COND, Cond);
-      CASEN(EVCOND_PRED, CondOred);
-      CASEN(EVCOND_DECIDE, CondDecide);
-      CASEN(EV_BEGIN, Begin);
-      CASEN(APPLY_DISPATCH, ApplyDispatch);
-      CASEN(EVAL_SEQUENCE, Seq);
-      CASEN(EVAL_SEQUENCE_BODY, SeqBody);
-      CASEN(EV_LET, Let);
-      CASEN(EV_LETREC, Letrec);
-      CASEN(EV_WHILE, While);
-      CASEN(EVAL_WHILE_COND, WhileCond);
-      CASEN(EVAL_WHILE_BODY, WhileBody);
-      CASEN(EV_ACCESS, Access);
-      CASEN(EV_ACCESS_VALUE, AccessValue);
-      CASEN(EV_MAP_APPLY, MapApply);
-      CASEN(EV_MAP_RESULT, MapResult);
-      CASEN(EV_FOR_APPLY, ForApply);
-      CASEN(EV_FOR_RESULT, ForResult);
-      CASEN(EV_DELAY, Delay);
-      CASEN(EV_FORCE_VALUE, ForceValue);
-      CASEN(EV_DONE, Done);
-      default:
-	 return "<unknown-evstate>";
-   }
-}
-#endif
 
 void EVAL::register_check( int id, PREDICATE pred, SEXPR reg )
 {
