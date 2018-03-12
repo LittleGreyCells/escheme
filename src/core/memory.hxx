@@ -40,6 +40,7 @@ namespace MEMORY
    SEXPR port( FILE* file, short mode );
    SEXPR closure( SEXPR code, SEXPR env );
    SEXPR environment( FRAME frame, SEXPR env );
+   SEXPR environment( UINT32 nvars, SEXPR vars, SEXPR env );
    SEXPR vector( UINT32 length );
    SEXPR continuation();
    SEXPR byte_vector( UINT32 length );

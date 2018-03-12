@@ -111,7 +111,6 @@ namespace EVAL
    void set_variable_value( SEXPR var, SEXPR val, SEXPR env );
    void parse_formals( SEXPR formals, SEXPR& vars, BYTE& numv, BYTE& rargs );
    void set_closure_attributes( SEXPR closure, SEXPR fvars );
-   FRAME create_frame( int nvars, SEXPR vars );
 
    SEXPR extend_env_fun( SEXPR closure );
    SEXPR extend_env_vars( SEXPR bindings, SEXPR benv );

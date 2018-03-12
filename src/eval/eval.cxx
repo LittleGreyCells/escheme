@@ -200,22 +200,6 @@ void EVAL::set_closure_attributes( SEXPR closure, SEXPR formals )
 		  getclosurerargs(closure) );
 }
 
-FRAME EVAL::create_frame( int nvars, SEXPR vars )
-{
-   // create a frame of size (nvars) with vars (vars)
-
-   if ( nvars > 0 )
-   {
-      FRAME frame = MEMORY::frame(nvars);
-      setframevars( frame, vars );
-      return frame;
-   }
-   else
-   {
-      return nullptr;
-   }
-} 
-
 static void arg_error( const char* text, unsigned n1, unsigned n2 )
 {
    char msg[80];
@@ -239,29 +223,25 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
    const SEXPR benv = getclosurebenv(closure);
    const bool rargs = getclosurerargs(closure);
 
-   if (nformal == 0)
+   if ( nformal == 0 )
    {
       if (nactual > 0)
 	 arg_error( "too many arguments", nactual, nformal );
 
-      return MEMORY::environment(nullptr, benv);
+      return MEMORY::environment( nullptr, benv );
    }
 
    // create an extended environment
-   SEXPR env = MEMORY::environment(nullptr, benv);
-   regstack.push(env); 
+   SEXPR env = MEMORY::environment( nformal, getclosurevars(closure), benv );
+   regstack.push( env ); 
 
-   // create a new frame
-   FRAME frame = create_frame(nformal, getclosurevars(closure));
-   setenvframe(env, frame);
-
-   if (rargs == false) 
+   if ( rargs == false ) 
    {
       // case I: no rest args
       //
       //   <fargs> := (a1 a2 ...)
       //
-      if (nactual != nformal)
+      if ( nactual != nformal )
       {
 	 if (nactual < nformal)
 	    arg_error( "too few arguments", nactual, nformal );
@@ -269,11 +249,12 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
 	    arg_error( "too many arguments", nactual, nformal );
       }
      
+      FRAME frame = getenvframe(env);
       int p = argstack.getfirstargindex();
      
       // BIND required
-      for (unsigned i = 0; i < nactual; ++i)
-	 frameset(frame, i, argstack[p++]);
+      for ( unsigned i = 0; i < nactual; ++i )
+	 frameset( frame, i, argstack[p++] );
    }
    else
    {
@@ -283,22 +264,24 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       //
       const unsigned nrequired = nformal - 1;
 
-      if (nactual < nrequired)
+      if ( nactual < nrequired )
 	 arg_error( "too few arguments", nactual, nrequired );
      
+      FRAME frame = getenvframe(env);
       int p = argstack.getfirstargindex();
      
       // BIND required
-      for (unsigned i = 0; i < nrequired; ++i)
-	 frameset(frame, i, argstack[p++]);
+      for ( unsigned i = 0; i < nrequired; ++i )
+	 frameset( frame, i, argstack[p++] );
 
       // BIND rest
       regstack.push(null);
  
-      for (int i = p + (nactual - nformal); i >= p; --i)
-	 regstack.top() = cons(argstack[i], regstack.top());
+      for ( int i = p + (nactual - nformal); i >= p; --i )
+	 regstack.top() = cons( argstack[i], regstack.top() );
      
-      frameset(frame, nrequired, regstack.pop());
+      // grab the frame again
+      frameset( getenvframe(env), nrequired, regstack.pop() );
    }
 
    argstack.removeargc();
@@ -332,10 +315,7 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
       bindings = cdr(bindings);
    }
 
-   FRAME frame = create_frame( nvars, vars.get() );
-   SEXPR xenv = MEMORY::environment( frame, benv );
-
-   return xenv;
+   return MEMORY::environment( nvars, vars.get(), benv );
 }
 
 
@@ -381,13 +361,13 @@ SEXPR EVAL::get_evaluator_state()
 static void eval_marker()
 {
    // mark the evaluator objects
-   MEMORY::mark(argstack);
-   MEMORY::mark(regstack);
-   MEMORY::mark(EVAL::exp);
-   MEMORY::mark(EVAL::env);
-   MEMORY::mark(EVAL::aux);
-   MEMORY::mark(EVAL::val);
-   MEMORY::mark(EVAL::unev);
+   MEMORY::mark( argstack );
+   MEMORY::mark( regstack );
+   MEMORY::mark( EVAL::exp );
+   MEMORY::mark( EVAL::env );
+   MEMORY::mark( EVAL::aux );
+   MEMORY::mark( EVAL::val );
+   MEMORY::mark( EVAL::unev );
 }
 
 void EVAL::initialize()

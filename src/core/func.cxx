@@ -1051,30 +1051,29 @@ SEXPR FUNC::make_environment()
    const int len = list_length(pairs);
 
    // if empty, extend base environment w/ empty frame
-   if (len == 0)
+   if ( len == 0 )
       return MEMORY::environment(nullptr, benv);
 
-   FRAME frame = MEMORY::frame(len);
-
-   push_reg( MEMORY::environment( frame, benv ) );  // push [0] environment
+   SEXPR env = MEMORY::environment( len, null, benv );
+   push_reg( env );
 
    ListBuilder vars;
 
-   for (int i = 0; anyp(pairs); ++i)
+   for ( int i = 0; anyp(pairs); ++i )
    {
       SEXPR x = ::car(pairs);
 
-      if (consp(x))
+      if ( consp(x) )
       {
 	 // ( <var> . <val> )
 	 vars.add( ::car(x) );
-	 frameset(frame, i, ::cdr(x));
+	 frameset( getenvframe(env), i, ::cdr(x) );
       }
       else if (symbolp(x))
       {
 	 // <var>
 	 vars.add( x );
-	 frameset(frame, i, null);
+	 frameset( getenvframe(env), i, null );
       }
       else
       {
@@ -1084,9 +1083,9 @@ SEXPR FUNC::make_environment()
       pairs = ::cdr(pairs);
    }
 
-   setframevars( frame, vars.get() );
+   setframevars( getenvframe(env), vars.get() );
 
-   return pop_reg();                          // pop [0] environment
+   return pop_reg();
 }
 
 //
