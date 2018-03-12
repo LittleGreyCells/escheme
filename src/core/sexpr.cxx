@@ -64,8 +64,6 @@ char* name( const SEXPR n ) { return getname(guard(n, symbolp)); }
 FIXNUM fixnum( const SEXPR n ) { return getfixnum(guard(n, fixnump)); }
 FLONUM flonum( const SEXPR n ) { return getflonum(guard(n, flonump)); }
 
-char* string( const SEXPR n ) { return getstringdata(guard(n, stringp)); }
-
 SEXPR car( const SEXPR n ) { return anyp(n) ? getcar(guard(n, consp)) : null; }
 SEXPR cdr( const SEXPR n ) { return anyp(n) ? getcdr(guard(n, consp)) : null; }
 

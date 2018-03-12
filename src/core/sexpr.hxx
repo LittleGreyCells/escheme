@@ -248,7 +248,6 @@ void show( const SEXPR n );
 // accessors
 FIXNUM fixnum( const SEXPR n );
 FLONUM flonum( const SEXPR n );
-char*  string( const SEXPR n );
 
 // list 
 SEXPR car( const SEXPR n );
