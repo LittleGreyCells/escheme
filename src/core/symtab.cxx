@@ -4,7 +4,7 @@
 #include "memory.hxx"
 #include "regstack.hxx"
 
-const int NBUCKETS = 32;
+const int NBUCKETS = 64;
 
 // the global symbol table (vector)
 SEXPR SYMTAB::table;
@@ -59,19 +59,19 @@ SEXPR SYMTAB::enter( const char* symbol_name )
 {
    const UINT32 h = hash(symbol_name);
 
-   if (vectorref(table, h))
+   if ( anyp(vectorref(table, h)) )
    {
-      for (SEXPR n = vectorref(table, h); anyp(n); n = getcdr(n))
+      for ( SEXPR n = vectorref(table, h); anyp(n); n = getcdr(n) )
       {
 	 SEXPR s = getcar(n);
-	 if (strcmp(name(s), symbol_name) == 0)
+	 if ( strcmp(name(s), symbol_name) == 0 )
 	    return s;
       }
    }
 
-   regstack.push(MEMORY::symbol(symbol_name));
+   regstack.push( MEMORY::symbol(symbol_name) );
    setvalue( regstack.top(), UNBOUND );
-   vectorset(table, h, MEMORY::cons(regstack.top(), vectorref(table, h)));
+   vectorset( table, h, MEMORY::cons(regstack.top(), vectorref(table, h)) );
    return regstack.pop();
 }
 
@@ -79,18 +79,18 @@ SEXPR SYMTAB::enter( const char* symbol_name )
 //   (why assume it is not already interned?)
 SEXPR SYMTAB::enter( SEXPR s )
 {
-   if (!symbolp(s))
+   if ( !symbolp(s) )
       return null;
 
    const UINT32 h = hash(name(s));
-   vectorset(table, h, MEMORY::cons(s, vectorref(table, h)));
+   vectorset( table, h, MEMORY::cons(s, vectorref(table, h)) );
    return s;
 }
 
 static void symtab_marker()
 {
    // mark the symbol table objects
-   MEMORY::mark(SYMTAB::table);
+   MEMORY::mark( SYMTAB::table );
 }
 
 void SYMTAB::initialize()
