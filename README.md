@@ -1,5 +1,5 @@
-escheme v1.0
-============
+escheme
+=======
 
 R3RS scheme interpreter utilizing an explicit control evaluator
 
@@ -10,10 +10,10 @@ supporting approximately 90% of the standard. Further, many additional
 functions are added to support environments, input/output, the host OS 
 (linux/unix) and access escheme internals.
 
-Abelson and Sussman's SICP* in Ch5 describes a tail recursive explicit 
-control evalutor for scheme. That material provided the impetus for escheme.
-The name "ece-scheme" was a mouthful, so it was shortened to "escheme." It
-is not related to emacs or eLisp in any way.
+Abelson and Sussman's SICP* in Ch5 describes an explicit control evalutor for scheme. 
+That material provided the impetus for escheme. The name escheme is derived from 
+"ece-scheme", which is unfortunately a mouthful, so it was shortened to "escheme." 
+It is not related to emacs or eLisp in any way.
 
 The escheme interpreter implementation takes SICP's explicit control 
 evaluator and extends it beyond its simple core, adding a number of 
@@ -31,24 +31,12 @@ and cleanup. Templates are used for control stack and argument stack
 implementation. Exceptions replace the standard library's setjmp/longjmp, 
 while honoring C++ block finalization.
 
-### Highlights
-
-- escheme objects are created from a uniformly sized descriminated union
-    (not from a class heirarchy)
-- escheme uses a simple mark/sweep garbage collector
-- escheme uses array based stacks for its interpreter state stacks
-- escheme uses an array based stack for its argument stack
-- escheme represents continuations as vectors of saved state
-   (more expensive than a link list implementation, but favors a more efficient runtime for function calls)
-- escheme implements the global environment as a hash table (single instance)
-- escheme implements other environments as indexable "frames"
-
 ### Content
   
 | Directory        | Description                                        |
 | ---------------- | ---------------------------------------------------|
 |  src/eval    |    evaluator|
-|  src/core    |    core sourses|
+|  src/core    |    core sources|
 |  boot      | bootstrapping files to select interpreter configurations |
 |  optimizer | s-expression transformer |
 |  macros   |  macro and quasiquote|
