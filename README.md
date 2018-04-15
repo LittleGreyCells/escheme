@@ -10,10 +10,10 @@ supporting approximately 90% of the standard. Further, many additional
 functions are added to support environments, input/output, the host OS 
 (linux/unix) and access escheme internals.
 
-Abelson and Sussman's SICP* in Ch5 describes an explicit control evalutor for scheme. 
-That material provided the impetus for escheme. The name escheme is derived from 
-"ece-scheme", which is unfortunately a mouthful, so it was shortened to "escheme." 
-It is not related to emacs or eLisp in any way.
+Abelson and Sussman's SICP* in Ch5 describes an explicit control evalutor for 
+scheme. That material provided the impetus for escheme. The name escheme is 
+derived from "ece-scheme", which is unfortunately a mouthful, so it was 
+shortened. It is not related to emacs or eLisp in any way.
 
 The escheme interpreter implementation takes SICP's explicit control 
 evaluator and extends it beyond its simple core, adding a number of 
