@@ -236,7 +236,7 @@ SEXPR guard( SEXPR s, PREDICATE predicate )
       }
 
       char message[80];
-      SPRINTF( message, "argument wrong type--expected %s", expected );
+      SPRINTF( message, "argument wrong type--expected %s, not", expected );
 
       ERROR::severe( message, s );
    }

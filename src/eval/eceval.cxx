@@ -2,6 +2,7 @@
 #include "symtab.hxx"
 #include "memory.hxx"
 #include "printer.hxx"
+#include "funtab.hxx"
 
 #ifdef DO_ECE_CHECK
 #define REGISTER_CHECK( id, pred, reg ) register_check( id, pred, reg )
@@ -245,7 +246,15 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    {
 	       case n_func:
 	       {
-		  val = getfunc(val)();
+		  try
+		  {
+		     val = getfunc(val)();
+		  }
+		  catch ( ERROR::SevereError& )
+		  {
+		     printf( "prim: %s\n", FUNTAB::funname( getfunc(val) ) );
+		     throw;
+		  }
 		  argstack.removeargc();
 		  restore_evs(cont);
 		  next = cont;

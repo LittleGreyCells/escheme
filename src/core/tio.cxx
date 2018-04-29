@@ -55,7 +55,7 @@ int TIO::terminal_getch()
       char* line = linenoise( prompt.c_str() );
 
       if ( !line )
-	 throw ERROR::Exit;
+	 throw ERROR::Exit();
 
       term_index = 0;
       term_line = line;

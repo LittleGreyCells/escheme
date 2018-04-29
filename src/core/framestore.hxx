@@ -54,7 +54,8 @@ public:
       {
 	 // reuse an existing frame
 	 frame = store[nslots];
-	 store[nslots] = frame->next;
+	 // store[nslots] = frame->next;
+	 store[nslots] = getframenext(frame);
 
 	 if ( getframenslots(frame) != nslots )
 	    ERROR::fatal( "recycled frame size inconsistent with request" );
@@ -79,6 +80,7 @@ public:
       }
       
       setframevars( frame, null );
+      setframeclosure( frame, null );
 
       for (int i = 0; i < nslots; ++i )
 	 frameset( frame, i, null );
@@ -98,7 +100,8 @@ public:
 	 
 	 if ( nslots < store.size() )
 	 {
-	    frame->next = store[nslots];
+	    //frame->next = store[nslots];
+	    setframenext(frame, store[nslots]);
 	    store[nslots] = frame;
 #ifdef FS_STATISTICS_DETAILED
 	    outstanding[nslots] -= 1;

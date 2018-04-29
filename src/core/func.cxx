@@ -61,7 +61,7 @@ SEXPR FUNC::exit()
    // syntax: (exit)
    //
    argstack.noargs();
-   throw ERROR::Exit;
+   throw ERROR::Exit();
 }
 
 //

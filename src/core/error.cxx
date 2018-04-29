@@ -30,25 +30,17 @@ void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
    printf("\n");
 
 #if 0
-   SEXPR evs = EVAL::get_evaluator_state();
-   PRINTER::print( vectorref( evs, 0 ) );
-   printf("\n");
-   PRINTER::print( vectorref( evs, 1 ) );
-   printf("\n");
-   PRINTER::print( vectorref( evs, 2 ) );
+   PRINTER::print( EVAL::get_evaluator_state() );
    printf("\n");
 #endif
-#if 0
-   EVAL::show_ece_history();
-#endif
-   throw Severe;
+   throw SevereError();
 }
 
 void ERROR::fatal( const char* s )
 {
    printf("fatal error: %s\n", s);
    
-   throw Fatal;
+   throw FatalError();
 }
 
 void ERROR::warning( const char* s, SEXPR exp )

@@ -99,46 +99,42 @@ void rep_loop()
 	 exp = EVAL::eceval(exp);
 	 return;
       }
-      catch ( ERROR::Kinds& kind )
+      catch ( ERROR::SevereError& )
       {
-	 switch ( kind )
+	 exp = SYMTAB::enter(TOPLEVEL);
+
+	 const SEXPR val = getvalue(exp);
+	 
+	 if ( contp(val) ||
+	      funcp(val) ||
+	      specialp(val) ||
+	      closurep(val) )
 	 {
-	    case ERROR::Severe:
-	    {
-	       exp = SYMTAB::enter(TOPLEVEL);
-
-	       const SEXPR val = getvalue(exp);
-
-	       if ( contp(val) ||
-		    funcp(val) ||
-		    specialp(val) ||
-		    closurep(val) )
-	       {
-		  // make it into an application
-		  exp = MEMORY::cons( exp, null );
-	       }
-	       else
-	       {
-		  // abandon the interpreter
-		  printf( "toplevel is unbound\n" );
-		  return;
-	       }
-	       break;
-	    }
-	
-	    case ERROR::Fatal:
-	       printf( "handling fatal error\n" );
-	       return;
-	
-	    case ERROR::Exit:
-	       // place holder for Exit actions
-	       PIO::transcript_off();
-	       return;
-	
-	    default:
-	       printf( "handling other error (%d)\n", kind );
-	       return;
+	    // make it into an application
+	    exp = MEMORY::cons( exp, null );
 	 }
+	 else
+	 {
+	    // abandon the interpreter
+	    printf( "toplevel is unbound\n" );
+	    return;
+	 }
+      }
+      catch ( ERROR::FatalError& )
+      {
+	 printf( "handling fatal error\n" );
+	 return;
+      }
+      catch ( ERROR::Exit& )
+      {
+	 // place holder for Exit actions
+	 PIO::transcript_off();
+	 return;
+      }
+      catch ( ... )
+      {
+	 printf( "handling other error\n" );
+	 return;
       }
    }
 }

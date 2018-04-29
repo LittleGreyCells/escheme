@@ -99,6 +99,7 @@ struct Frame
 {
    FRAME next;
    SEXPR vars;
+   SEXPR closure;
    UINT32 nslots;
    SEXPR slot[1];        // varying numbers
 };
@@ -513,9 +514,13 @@ void setenvbase(SEXPR n, SEXPR x);
 // frame
 #define getframenslots(fr) ((fr)->nslots)
 #define getframevars(fr) ((fr)->vars)
+#define getframeclosure(fr) ((fr)->closure)
+#define getframenext(fr) ((fr)->next)
 #define frameref(fr,i) ((fr)->slot[(i)])
 #define setframenslots(fr,n) getframenslots(fr) = (n)
 #define setframevars(fr,x) getframevars(fr) = (x)
+#define setframeclosure(fr,x) getframeclosure(fr) = (x)
+#define setframenext(fr,x) getframenext(fr) = (x)
 #define frameset(fr,i,x) frameref(fr,i) = (x)
 
 // port
