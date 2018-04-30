@@ -1051,8 +1051,6 @@ SEXPR FUNC::make_environment()
    const int len = list_length(pairs);
 
    // if empty, extend base environment w/ empty frame
-   if ( len == 0 )
-      return MEMORY::environment(nullptr, benv);
 
    SEXPR env = MEMORY::environment( len, null, benv );
    push_reg( env );
