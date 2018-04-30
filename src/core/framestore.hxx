@@ -82,7 +82,7 @@ public:
       setframevars( frame, null );
       setframeclosure( frame, null );
 
-      for (int i = 0; i < nslots; ++i )
+      for ( int i = 0; i < nslots; ++i )
 	 frameset( frame, i, null );
 
       return frame;
@@ -101,7 +101,7 @@ public:
 	 if ( nslots < store.size() )
 	 {
 	    //frame->next = store[nslots];
-	    setframenext(frame, store[nslots]);
+	    setframenext( frame, store[nslots] );
 	    store[nslots] = frame;
 #ifdef FS_STATISTICS_DETAILED
 	    outstanding[nslots] -= 1;

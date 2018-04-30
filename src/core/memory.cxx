@@ -536,13 +536,9 @@ SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> .
 {
    SEXPR n = newnode(n_environment);
    setenvbase(n, env);
-   setenvframe(n, nullptr);
-   if ( nvars > 0 ) 
-   {
-      FRAME frame = frameStore.alloc( nvars );
-      setframevars(frame, vars);
-      setenvframe(n, frame);
-   }
+   FRAME frame = frameStore.alloc( nvars );
+   setframevars(frame, vars);
+   setenvframe(n, frame);
    return n;
 }
 

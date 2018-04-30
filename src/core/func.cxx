@@ -909,14 +909,14 @@ SEXPR FUNC::gc()
    push_reg( MEMORY::vector(4) );
 
    vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
-   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount ) );
-   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
+   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount  ) );
+   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount   ) );
 
 #ifdef GC_STATISTICS_DETAILED
-   const int N = MEMORY::ReclamationCounts.size();
-   SEXPR v = MEMORY::vector(N);
+   const int ncounts = MEMORY::ReclamationCounts.size();
+   SEXPR v = MEMORY::vector(ncounts);
 
-   for (int i = 0; i < N; ++i)
+   for ( int i = 0; i < ncounts; ++i )
       vectorset( v, i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
 
    vectorset( top_reg(), 3, v );
@@ -934,22 +934,22 @@ SEXPR FUNC::fs()
 
    push_reg( MEMORY::vector(4) );
 
-   vectorset( top_reg(), 0, MEMORY::fixnum( frameStore.nframes ) );
+   vectorset( top_reg(), 0, MEMORY::fixnum( frameStore.nframes     ) );
    vectorset( top_reg(), 1, MEMORY::fixnum( frameStore.nzeroallocs ) );
 
 #ifdef FS_STATISTICS_DETAILED
-   const int n = frameStore.size();
+   const int nsizes = frameStore.size();
 
-   SEXPR outstanding = MEMORY::vector(n);
+   SEXPR outstanding = MEMORY::vector(nsizes);
    vectorset( top_reg(), 2, outstanding );
 
-   SEXPR available = MEMORY::vector(n);
+   SEXPR available = MEMORY::vector(nsizes);
    vectorset( top_reg(), 3, available );
 
-   for ( int i = 0; i < n; ++i )
+   for ( int i = 0; i < nsizes; ++i )
    {
       vectorset( outstanding, i, MEMORY::fixnum( frameStore.outstanding[i] ) );
-      vectorset( available, i, MEMORY::fixnum( frameStore.available[i] ) );
+      vectorset( available,   i, MEMORY::fixnum( frameStore.available[i]   ) );
    }
    
 #endif

@@ -101,6 +101,18 @@ void rep_loop()
       }
       catch ( ERROR::SevereError& )
       {
+	 if ( anyp(EVAL::env) )
+	 {
+	    FRAME frame = getenvframe(EVAL::env);
+	    SEXPR closure = getframeclosure(frame);
+	    printf( "frame fmls: " );
+	    PRINTER::print( getclosurevars(closure) );
+	    printf( "\n" );
+	    printf( "frame body: " );
+	    PRINTER::print( getclosurecode(closure) );
+	    printf( "\n" );
+	 }
+
 	 exp = SYMTAB::enter(TOPLEVEL);
 
 	 const SEXPR val = getvalue(exp);

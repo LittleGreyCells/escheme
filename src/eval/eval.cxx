@@ -223,17 +223,13 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
    const SEXPR benv = getclosurebenv(closure);
    const bool rargs = getclosurerargs(closure);
 
-   if ( nformal == 0 )
-   {
-      if (nactual > 0)
-	 arg_error( "too many arguments", nactual, nformal );
-
-      return MEMORY::environment( nullptr, benv );
-   }
-
    // create an extended environment
    SEXPR env = MEMORY::environment( nformal, getclosurevars(closure), benv );
    regstack.push( env ); 
+
+   FRAME frame = getenvframe(env);
+
+   setframeclosure( frame, closure );
 
    if ( rargs == false ) 
    {
@@ -249,7 +245,6 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
 	    arg_error( "too many arguments", nactual, nformal );
       }
      
-      FRAME frame = getenvframe(env);
       int p = argstack.getfirstargindex();
      
       // BIND required
@@ -267,7 +262,6 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       if ( nactual < nrequired )
 	 arg_error( "too few arguments", nactual, nrequired );
      
-      FRAME frame = getenvframe(env);
       int p = argstack.getfirstargindex();
      
       // BIND required
@@ -280,8 +274,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       for ( int i = p + (nactual - nformal); i >= p; --i )
 	 regstack.top() = cons( argstack[i], regstack.top() );
      
-      // grab the frame again
-      frameset( getenvframe(env), nrequired, regstack.pop() );
+      frameset( frame, nrequired, regstack.pop() );
    }
 
    argstack.removeargc();
