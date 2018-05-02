@@ -17,7 +17,7 @@
 struct Function
 {
    const char* name;
-   PRIMITIVE func;
+   FUNCTION func;
    NodeKind kind;
 };
 
@@ -348,14 +348,14 @@ void FUNTAB::initialize()
 
    for ( auto& fn : funtab )
    {
-      regstack.top() = MEMORY::func(fn.func, fn.kind);
+      regstack.top() = MEMORY::prim(fn.func, fn.kind);
       SYMTAB::enter(fn.name, regstack.top());
    }
 
    regstack.pop();
 }
 
-const char* FUNTAB::funname( PRIMITIVE fun )
+const char* FUNTAB::funname( FUNCTION fun )
 {
    for ( auto& fn : funtab )
    {

@@ -92,7 +92,7 @@ using SEXPR = Node*;
 struct Frame;
 using FRAME = Frame*;
 
-using PRIMITIVE = SEXPR (*)();
+using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
 
 struct Frame
@@ -102,6 +102,12 @@ struct Frame
    SEXPR closure;
    UINT32 nslots;
    SEXPR slot[1];        // varying numbers
+};
+
+struct PRIMITIVE
+{
+   FUNCTION func;
+   char* name;
 };
 
 struct ENVIRON
@@ -214,7 +220,8 @@ struct Node
       STRING string;
       CONSCELL cons;
       VECTOR vector;
-      PRIMITIVE func;
+      //FUNCTION func;
+      PRIMITIVE prim;
       ENVIRON environ;
       PORT port;
       BVECTOR bvec;
@@ -456,12 +463,12 @@ void setflonum(SEXPR n, FLONUM x);
 #define setflonum(n,x) getflonum(n) = (x)
 #endif
 
-// function
+// primitive function
 #ifdef CHECKED_ACCESS
-PRIMITIVE& getfunc(SEXPR n);
-void setfunc(SEXPR n, PRIMITIVE x);
+FUNCTION& getfunc(SEXPR n);
+void setfunc(SEXPR n, FUNCTION x);
 #else
-#define getfunc(n) ((n)->u.func)
+#define getfunc(n) ((n)->u.prim.func)
 #define setfunc(n,x) getfunc(n) = (x)
 #endif
 

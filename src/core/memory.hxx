@@ -36,7 +36,7 @@ namespace MEMORY
    SEXPR string( const char* string );
    SEXPR character( CHAR ch );
    SEXPR cons( SEXPR car, SEXPR cdr );
-   SEXPR func( PRIMITIVE func, NodeKind kind = n_func );
+   SEXPR prim( FUNCTION func, NodeKind kind = n_func );
    SEXPR port( FILE* file, short mode );
    SEXPR closure( SEXPR code, SEXPR env );
    SEXPR environment( FRAME frame, SEXPR env );

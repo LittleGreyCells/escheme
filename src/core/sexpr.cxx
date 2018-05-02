@@ -349,8 +349,8 @@ SEXPR& promise_getval(SEXPR n) { typecheck(n,promisep); return n->u.promise.val;
 void promise_setexp(SEXPR n, SEXPR x) { promise_getexp(n) = x; }
 void promise_setval(SEXPR n, SEXPR x) { promise_getval(n) = x; }
 
-PRIMITIVE& getfunc(SEXPR n) { typecheck(n, primp); return ((n)->u.func); }
-void setfunc(SEXPR n, PRIMITIVE x) { getfunc(n) = (x); }
+FUNCTION& getfunc(SEXPR n) { typecheck(n, primp); return ((n)->u.func); }
+void setfunc(SEXPR n, FUNCTION x) { getfunc(n) = (x); }
 
 SEXPR& gref_getsymbol(SEXPR n) { typecheck(n,grefp); return n->u.gref.symbol; }
 void gref_setsymbol(SEXPR n, SEXPR s) { gref_getsymbol(n) = s; }
