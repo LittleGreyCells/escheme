@@ -252,7 +252,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  }
 		  catch ( ERROR::SevereError& )
 		  {
-		     printf( "prim: %s\n", FUNTAB::funname( getfunc(val) ) );
+		     PRINTER::print( val );
+		     printf( "\n" );
 		     throw;
 		  }
 		  argstack.removeargc();

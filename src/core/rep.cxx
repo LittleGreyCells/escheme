@@ -101,17 +101,8 @@ void rep_loop()
       }
       catch ( ERROR::SevereError& )
       {
-	 if ( anyp(EVAL::env) )
-	 {
-	    FRAME frame = getenvframe(EVAL::env);
-	    SEXPR closure = getframeclosure(frame);
-	    printf( "frame fmls: " );
-	    PRINTER::print( getclosurevars(closure) );
-	    printf( "\n" );
-	    printf( "frame body: " );
-	    PRINTER::print( getclosurecode(closure) );
-	    printf( "\n" );
-	 }
+	 ERROR::print_active_frame();
+	 ERROR::print_stacktrace();
 
 	 exp = SYMTAB::enter(TOPLEVEL);
 

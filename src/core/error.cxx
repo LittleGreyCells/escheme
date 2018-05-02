@@ -5,6 +5,7 @@
 #include "printer.hxx"
 #include "eval.hxx"
 #include "symtab.hxx"
+#include "regstack.hxx"
 
 
 void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
@@ -59,3 +60,62 @@ void ERROR::warning( const char* s, SEXPR exp )
    printf("\n");
 }
 
+void ERROR::print_frame( SEXPR env )
+{
+   if ( anyp(env) && envp(env) )
+   {
+      FRAME frame = getenvframe(env);
+      SEXPR closure = getframeclosure(frame);
+      if ( closurep(closure) )
+      {
+	 PRINTER::print( getclosurevars(closure) );
+	 printf( ", " );
+	 PRINTER::print( getclosurecode(closure) );
+      }
+   }
+}
+
+void ERROR::print_active_frame()
+{
+   printf( "active frame\n" );
+
+   SEXPR env = EVAL::env;
+
+   if ( nullp(env) )
+   {
+      printf( "  ()\n" );
+      return;
+   }
+
+   for ( int i = 0; anyp(env); ++i )
+   {
+      printf( "  level %d ", i );
+      print_frame( env );
+      printf( "\n" );
+      env = getenvbase(env);
+   }
+}
+
+void ERROR::print_stacktrace()
+{
+   const int top = regstack.gettop();
+   int n = 0;
+
+   printf( "stacktrace (depth=%d)\n", top+1 );
+
+   for ( int i = top; i >= 0; --i )
+   {
+      SEXPR item = regstack[i];
+
+      printf( "  depth %d ", top-i );
+      PRINTER::print( item );
+      printf( "\n" );
+
+      if ( envp(item) )
+      {
+	 printf( "  frame %d ", n++ );
+	 print_frame( item );
+	 printf( "\n" );
+      }
+   }
+}
