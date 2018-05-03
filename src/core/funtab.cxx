@@ -348,21 +348,11 @@ void FUNTAB::initialize()
 
    for ( auto& fn : funtab )
    {
-      regstack.top() = MEMORY::prim(fn.func, fn.kind);
-      SYMTAB::enter(fn.name, regstack.top());
+      regstack.top() = MEMORY::prim( fn.func, fn.kind );
+      setprimname( regstack.top(), fn.name );
+      SYMTAB::enter( fn.name, regstack.top() );
    }
 
    regstack.pop();
-}
-
-const char* FUNTAB::funname( FUNCTION fun )
-{
-   for ( auto& fn : funtab )
-   {
-      if (fun == fn.func)
-	 return fn.name;
-   }
-  
-   return "<unknown-primitive>";
 }
 

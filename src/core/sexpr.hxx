@@ -107,7 +107,7 @@ struct Frame
 struct PRIMITIVE
 {
    FUNCTION func;
-   char* name;
+   const char* name;
 };
 
 struct ENVIRON
@@ -220,7 +220,6 @@ struct Node
       STRING string;
       CONSCELL cons;
       VECTOR vector;
-      //FUNCTION func;
       PRIMITIVE prim;
       ENVIRON environ;
       PORT port;
@@ -470,6 +469,8 @@ void setfunc(SEXPR n, FUNCTION x);
 #else
 #define getfunc(n) ((n)->u.prim.func)
 #define setfunc(n,x) getfunc(n) = (x)
+#define getprimname(n) ((n)->u.prim.name)
+#define setprimname(n,x) getprimname(n) = (x)
 #endif
 
 // closure

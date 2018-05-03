@@ -160,7 +160,8 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	 case n_map:
 	 case n_foreach:
 	 case n_force:
-	    SPRINTF(buffer, "{prim:%s}", FUNTAB::funname(getfunc(n)) );
+	    //SPRINTF(buffer, "{prim:%s}", FUNTAB::primname(n));
+	    SPRINTF(buffer, "{prim:%s}", getprimname(n));
 	    PIO::put(outport, buffer);
 	    break;
 

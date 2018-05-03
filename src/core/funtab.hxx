@@ -6,7 +6,6 @@
 namespace FUNTAB
 {
    void initialize();
-   const char* funname( FUNCTION fun );
 }
 
 #endif
