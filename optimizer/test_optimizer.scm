@@ -5,7 +5,11 @@
 
 (if #f
     (begin
+     ;; the optimizer defines 'optimize'
+     (load "./optimizer/optimizer.scm")
+     ;; the test apparatus
      (load "./optimizer/test_optimizer.scm")
+
      (define x '(let ((a 1)) a))
      (define xab '(let ((a 1)(b 2)) b))
      (define x1 '(let ((a 1)) (+ a 1)))
