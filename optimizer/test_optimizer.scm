@@ -6,7 +6,8 @@
 (if #f
     (begin
      ;; the optimizer defines 'optimize'
-     (load "./optimizer/optimizer.scm")
+      (load "./optimizer/optimizer.scm")
+      
      ;; the test apparatus
      (load "./optimizer/test_optimizer.scm")
 
@@ -140,12 +141,6 @@
      (define (timed-test) (time-it repeat-call-foo))
      (perform-timed-run 10)
 
-     ;; unoptimized; no let xforms:   0.095103
-     ;; only let xforms:              0.078303 (i.e. expand once, not every time)
-     ;; only x+clambda:               0.071861
-     ;; only x+gref/fref:             0.074800
-     ;; only x+gref/fref/gset:        0.074593
-     ;; add x+clambda/gref/fref/gset: 0.068685
      ))
 
 (if #f (begin
@@ -155,7 +150,6 @@
 (define x '(let ((a 1) (b a)) (+ a b))) 
 (define x '(letrec ((a 1) (b a)) (+ a b)))
 (define x '(let ((a 1)) (let ((foo a)) (+ a foo))))
-      
 
 ))
 
@@ -219,3 +213,23 @@
   (let ((factor 1000000000))
     (/ (avg (run-n-times timed-test n)) factor)))
 
+;;
+;; Optimizer REP Loop
+;;
+
+(define (rep)
+  (load "./optimizer/optimizer.scm")
+  (set! verbose #f)
+  (set! enable-clambda #t)
+  (set! enable-grs #t)
+  (set! enable-cset #t)
+  (set-prompt "optimizer> ")
+  ;; all errors will return here
+  (call/cc (lambda (cc) (set! *toplevel* cc)))
+  (while #t
+     ;; incorporate realine with history
+     (let ((sexpr (read *terminal*)))
+       (add-history sexpr)
+       (set! sexpr (optimize sexpr nil))
+       (print (eval sexpr)))))
+    
