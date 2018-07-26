@@ -1,4 +1,4 @@
-(define verbose #f)
+(define opt-verbose #f)
 (define enable-clambda #t)
 (define enable-grs #t)
 (define enable-cset #t)
@@ -12,6 +12,7 @@
      (load "./optimizer/test_optimizer.scm")
 
      (define x '(let ((a 1)) a))
+     (define x '(let (a) a))
      (define xab '(let ((a 1)(b 2)) b))
      (define x1 '(let ((a 1)) (+ a 1)))
      (define x2 '(let ((a 1)) (let ((b 2)) (+ a b))))
@@ -213,23 +214,4 @@
   (let ((factor 1000000000))
     (/ (avg (run-n-times timed-test n)) factor)))
 
-;;
-;; Optimizer REP Loop
-;;
-
-(define (rep)
-  (load "./optimizer/optimizer.scm")
-  (set! verbose #f)
-  (set! enable-clambda #t)
-  (set! enable-grs #t)
-  (set! enable-cset #t)
-  (set-prompt "optimizer> ")
-  ;; all errors will return here
-  (call/cc (lambda (cc) (set! *toplevel* cc)))
-  (while #t
-     ;; incorporate realine with history
-     (let ((sexpr (read *terminal*)))
-       (add-history sexpr)
-       (set! sexpr (optimize sexpr nil))
-       (print (eval sexpr)))))
-    
+;; [EOF]

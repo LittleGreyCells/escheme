@@ -1,4 +1,4 @@
-(define verbose #t)
+(define opt-verbose #f)
 (define enable-clambda #f)
 (define enable-grs #f)
 (define enable-cset #f)
@@ -27,7 +27,7 @@
 
 
 (define (optimize exp env)
-  (if verbose (trace "optimize:" exp env))
+  (if opt-verbose (trace "optimize:" exp env))
   (cond ((symbol? exp) 
 	 (optimize-symbol exp env))
 	((atom? exp) 
@@ -83,7 +83,7 @@
 ;;   <symbol> -> (%fref <depth> <index>)
 ;;
 (define (optimize-symbol exp env)
-  (if verbose (trace "optimize-symbol:" exp env))
+  (if opt-verbose (trace "optimize-symbol:" exp env))
   (if enable-grs
       (lookup-symbol exp env 0)
     exp))
@@ -100,12 +100,12 @@
 ;;
 (define (optimize-cond exp env)
   ;; (cond <cond-clauses>)
-  (if verbose (trace "cond:" exp env))
+  (if opt-verbose (trace "cond:" exp env))
   (cons 'cond (optimize-cond-clauses (cdr exp) env)))
 
 (define (optimize-cond-clauses exp env)
   ;; (<cond-clause> <cond-clause> ...)
-  (if verbose (trace "cond-clauses:" exp env))
+  (if opt-verbose (trace "cond-clauses:" exp env))
   (if (pair? exp)
       (cons (optimize-cond-clause (car exp) env) (optimize-cond-clauses (cdr exp) env))
     nil))
@@ -113,7 +113,7 @@
 (define (optimize-cond-clause exp env)
   ;; <test> <list> |
   ;; else <list>
-  (if verbose (trace "cond-clause:" exp env))
+  (if opt-verbose (trace "cond-clause:" exp env))
   (if (eq? (car exp) 'else)
       (cons 'else (optimize-list (cdr exp) env))
     (optimize-list exp env)))
@@ -130,7 +130,7 @@
 ;;    (lambda <args> <body>) --> (clambda <evaluated-lambda>)
 ;;
 (define (optimize-lambda exp env)
-  (if verbose (trace "optimize-lambda:" exp env))
+  (if opt-verbose (trace "optimize-lambda:" exp env))
   (let ((arg-list (cadr exp)))
     (let ((the-lambda (cons 'lambda
 			    (cons arg-list
@@ -145,7 +145,7 @@
 ;;     (let <bindings> <body>)
 ;;
 (define (optimize-let exp env)
-  (if verbose (trace "optimize-let" exp env))
+  (if opt-verbose (trace "optimize-let" exp env))
   (let ((<bindings> (cadr exp)))
     (let ((<cbinds> (optimize-let-bindings <bindings> env))
 	  (<xenv> (extend-env (get-let-vars <bindings>) env)))
@@ -159,7 +159,7 @@
 ;;     (letrec <bindings> <body>)
 ;;
 (define (optimize-letrec exp env)
-  (if verbose (trace "optimize-let" exp env))
+  (if opt-verbose (trace "optimize-let" exp env))
   (let ((<bindings> (cadr exp)))
     (let ((<xenv> (extend-env (get-let-vars <bindings>) env)))
       (let ((<cbinds> (optimize-let-bindings <bindings> <xenv>))
@@ -168,7 +168,7 @@
 	))))
 
 (define (get-let-vars <bindings>)
-  ;;(if verbose (trace "optimize-let-vars" <bindings>))
+  ;;(if opt-verbose (trace "optimize-let-vars" <bindings>))
   (if (null? <bindings>)
       nil
     (let ((x (car <bindings>)))
@@ -177,14 +177,14 @@
 	(cons x (get-let-vars (cdr <bindings>)))))))
 
 (define (optimize-let-bindings <bindings> env)
-  ;;(if verbose (trace "optimize-let-bindings" <bindings>))
+  (if opt-verbose (trace "optimize-let-bindings" <bindings>))
   (if (null? <bindings>)
       nil
     (let ((<bind> (car <bindings>)))
       (if (pair? <bind>)
 	  (cons (list (car <bind>) (optimize (cadr <bind>) env))
 		(optimize-let-bindings (cdr <bindings>) env))
-	(cons <bind> (optimize-let-bindings (cdr <bindings> env)))))))
+	(cons <bind> (optimize-let-bindings (cdr <bindings>) env))))))
 
 ;;
 ;; access
@@ -294,7 +294,7 @@
 ;;
 
 (define (normalize-define d)
-  (if verbose (trace "normalize-define" d))
+  (if opt-verbose (trace "normalize-define" d))
   (if (not (and (pair? d) (eq? (car d) 'define)))
       (error "not a define" d)
     (if (eq? (car d) 'define)
@@ -309,7 +309,7 @@
 		(list 'define sym (append '(lambda) (list args) body)))))))))
 
 (define (accumulate-defines body)
-  (if verbose (trace "accumulate-defines" body))
+  (if opt-verbose (trace "accumulate-defines" body))
   ;;  gather a list of internal defines and non-defines, other s-expressions
   (let ((defines '())
 	(sexprs '()))
@@ -326,7 +326,7 @@
 
 
 (define (transform-nested-defines d)
-  (if verbose (trace "transform-nd"))
+  (if opt-verbose (trace "transform-nd"))
   (let ((<nd> (normalize-define d)))
     (if (not (pair? (caddr <nd>)))
 	<nd>
