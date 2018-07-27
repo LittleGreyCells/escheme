@@ -38,7 +38,6 @@ while honoring C++ block finalization.
 |  src/eval    |    evaluator|
 |  src/core    |    core sources|
 |  boot      | bootstrapping files to select interpreter configurations |
-|  optimizer | s-expression transformer |
 |  macros   |  macro and quasiquote|
 |  linenoise|  readline package|
 |  tests  |    files for escheme regression testing|
