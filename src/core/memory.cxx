@@ -214,15 +214,6 @@ void MEMORY::mark( SEXPR n )
 	 setmark(n);
 	 break;
 
-      case n_gref:
-	 setmark(n);
-	 mark( gref_getsymbol(n) );
-	 break;
-
-      case n_fref:
-	 setmark(n);
-	 break;
-
       case n_null:
 	 // null is not allocated from node space
 	 break;
@@ -545,21 +536,6 @@ SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> .
 FRAME MEMORY::frame( UINT32 nslots )
 {
    return frameStore.alloc( nslots );
-}
-
-SEXPR MEMORY::gref( SEXPR symbol )
-{
-   SEXPR n = newnode(n_gref);
-   gref_setsymbol(n, symbol);
-   return n;
-}
-
-SEXPR MEMORY::fref( int depth, int index )
-{
-   SEXPR n = newnode(n_fref);
-   fref_setdepth(n, depth);
-   fref_setindex(n, index);
-   return n;
 }
 
 SEXPR MEMORY::promise( SEXPR exp )

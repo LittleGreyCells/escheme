@@ -252,10 +252,6 @@ namespace FUNC
    SEXPR last_pair();
    SEXPR list_tail();
 
-   // reference
-   SEXPR gref();
-   SEXPR fref();
-
    // closure
    SEXPR closure_code();
    SEXPR closure_benv();

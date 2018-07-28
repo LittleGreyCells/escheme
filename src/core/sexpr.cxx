@@ -42,8 +42,6 @@ void show( const SEXPR n )
 	 case n_port:		show("port", n); break;
 	 case n_string_port:    show("stringport", n); break;
 	 case n_bvec:           show("byte-vector", n); break;
-	 case n_gref:           show("gref", n); break;
-	 case n_fref:           show("fref", n); break;
 	 case n_promise:        show("promise", n); break;
 	 case n_force:          show("force", n); break;
 	 case n_code:           show("code", n); break;
@@ -181,9 +179,6 @@ bool lastp( SEXPR n )  { return nullp(cdr(n)); }
 bool promisep( SEXPR n )  { return n->kind == n_promise; }
 bool codep( const SEXPR n ) { return n->kind == n_code; }
 
-bool grefp( const SEXPR n ) { return n->kind == n_gref; }
-bool frefp( const SEXPR n ) { return n->kind == n_fref; }
-
 struct PredMap { PREDICATE pred; const char* name; };
 
 std::vector<PredMap> predicate_map =
@@ -216,8 +211,6 @@ std::vector<PredMap> predicate_map =
    { promisep, "promise" },
    { anyportp, "port or stringport" },
    { primp, "func or special" },
-   { grefp, "global symbol reference" },
-   { frefp, "frame symbol reference" },
 };
 
 SEXPR guard( SEXPR s, PREDICATE predicate )
@@ -351,13 +344,5 @@ void promise_setval(SEXPR n, SEXPR x) { promise_getval(n) = x; }
 
 FUNCTION& getfunc(SEXPR n) { typecheck(n, primp); return ((n)->u.func); }
 void setfunc(SEXPR n, FUNCTION x) { getfunc(n) = (x); }
-
-SEXPR& gref_getsymbol(SEXPR n) { typecheck(n,grefp); return n->u.gref.symbol; }
-void gref_setsymbol(SEXPR n, SEXPR s) { gref_getsymbol(n) = s; }
-
-UINT32& fref_getdepth(SEXPR n) { typecheck(n,frefp); return n->u.fref.depth; }
-UINT32& fref_getindex(SEXPR n) { typecheck(n,frefp); return n->u.fref.index; }
-void fref_setdepth(SEXPR n, UINT32 d) { fref_getdepth(n) = d; }
-void fref_setindex(SEXPR n, UINT32 i) { fref_getindex(n) = i; }
 
 #endif

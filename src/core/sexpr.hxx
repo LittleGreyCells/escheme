@@ -50,9 +50,7 @@ enum NodeKind
 
    n_foreach,      // 21
    n_force,        // 22
-   n_gref,         // 23
-   n_fref,         // 24
-   n_code,         // 25
+   n_code,         // 23
 
    NUMKINDS        // keep me last
 };
@@ -169,17 +167,6 @@ struct LINKAGE
    SEXPR next;
 };
 
-struct GREF
-{
-   SEXPR symbol;
-};
-
-struct FREF
-{
-   UINT32 depth;
-   UINT32 index;
-};
-
 struct CODE
 {
    SEXPR bcodes;
@@ -226,8 +213,6 @@ struct Node
       BVECTOR bvec;
       SYMBOL symbol;
       CLOSURE closure;
-      GREF gref;
-      FREF fref;
       CODE code;
       PROMISE promise;
    } u;
@@ -318,8 +303,6 @@ bool promisep( const SEXPR n );
 bool codep( const SEXPR n );
 bool vcp( const SEXPR n );
 bool primp( const SEXPR n );
-bool grefp( const SEXPR n );
-bool frefp( const SEXPR n );
 
 #define _symbolp(n) ((n)->kind == n_symbol)
 #define _fixnump(n) ((n)->kind == n_fixnum)
@@ -551,28 +534,6 @@ void setstringportstring(SEXPR n, SEXPR x);
 #else
 #define getstringportstring(n) ((n)->u.port.p.string)
 #define setstringportstring(n,x) getstringportstring(n) = (x)
-#endif
-
-// gref
-#ifdef CHECKED_ACCESS
-SEXPR& gref_getsymbol(SEXPR n);
-void gref_setsymbol(SEXPR n, SEXPR s);
-#else
-#define gref_getsymbol(n) ((n)->u.gref.symbol)
-#define gref_setsymbol(n,s) (gref_getsymbol(n) = (s))
-#endif
-
-// fref
-#ifdef CHECKED_ACCESS
-UINT32& fref_getdepth(SEXPR n);
-UINT32& fref_getindex(SEXPR n);
-void fref_setdepth(SEXPR n, UINT32 d);
-void fref_setindex(SEXPR n, UINT32 i);
-#else
-#define fref_getdepth(n) ((n)->u.fref.depth)
-#define fref_getindex(n) ((n)->u.fref.index)
-#define fref_setdepth(n,d) (fref_getdepth(n) = (d))
-#define fref_setindex(n,i) (fref_getindex(n) = (i))
 #endif
 
 // code

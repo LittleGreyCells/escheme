@@ -293,9 +293,6 @@ static std::vector<Function> funtab =
    { "assv",                  FUNC::assv , n_func },
    { "assq",                  FUNC::assq , n_func },
 
-   { "%gref",                 FUNC::gref , n_func },
-   { "%fref",                 FUNC::fref , n_func },
-
    { "transcript-on",         FUNC::transcript_on  , n_func },
    { "transcript-off",        FUNC::transcript_off , n_func },
 

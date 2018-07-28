@@ -2032,31 +2032,6 @@ SEXPR FUNC::list_tail()
 }
 
 //
-// Symbol Reference
-//
-
-SEXPR FUNC::gref()
-{
-   //
-   // syntax: (%gref <symbol>) -> <gref>
-   //
-   ArgstackIterator iter;
-   SEXPR symbol = guard(iter.getlast(), symbolp);
-   return MEMORY::gref(symbol);
-}
-
-SEXPR FUNC::fref()
-{
-   //
-   // syntax: (%fref <depth> <index>) -> <fref>
-   //
-   ArgstackIterator iter;
-   const int depth = getfixnum(guard(iter.getarg(), fixnump));
-   const int index = getfixnum(guard(iter.getlast(), fixnump));
-   return MEMORY::fref(depth, index);
-}
-
-//
 // Closures
 //
 

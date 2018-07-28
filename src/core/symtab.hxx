@@ -7,9 +7,7 @@
 #define DELAY  		SYMTAB::symbol_delay
 #define DEFINE 		SYMTAB::symbol_define
 #define SET    		SYMTAB::symbol_set
-#define CSET    	SYMTAB::symbol_cset
 #define LAMBDA 		SYMTAB::symbol_lambda
-#define CLAMBDA 	SYMTAB::symbol_clambda
 #define IF     		SYMTAB::symbol_if
 #define WHILE  		SYMTAB::symbol_while
 #define COND   		SYMTAB::symbol_cond
@@ -39,9 +37,7 @@ namespace SYMTAB
    extern SEXPR symbol_delay;
    extern SEXPR symbol_define;
    extern SEXPR symbol_set;
-   extern SEXPR symbol_cset;
    extern SEXPR symbol_lambda;
-   extern SEXPR symbol_clambda;
    extern SEXPR symbol_if;
    extern SEXPR symbol_while;
    extern SEXPR symbol_cond;

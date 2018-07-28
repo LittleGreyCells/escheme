@@ -98,26 +98,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  break;
 	       }
 
-	       case n_gref:
-	       {
-		  val = value(gref_getsymbol(exp));
-		  if (val == SYMTAB::symbol_unbound)
-		     ERROR::severe("symbol is unbound", gref_getsymbol(exp));
-		  next = cont;
-		  break;
-	       }
-
-	       case n_fref:
-	       {
-		  int d = fref_getdepth(exp);
-		  SEXPR e = env;
-		  while (d-- > 0)
-		     e = getenvbase(e);
-		  val = fref(getenvframe(e), fref_getindex(exp));
-		  next = cont;
-		  break;
-	       }
-
 	       case n_cons:
 	       {
 		  // special form or function application
@@ -667,49 +647,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    next = cont;
 	    break;
 	 }
-	 
-	 //
-	 // syntax: (cset! <ref> <exp>)
-	 //
-	 case EV_CSET:
-	 {
-	    const SEXPR cdr_exp = cdr(exp);
-	    const SEXPR ref_exp = car(cdr_exp);
-	    
-	    unev = ref_exp;                   // unev == <ref>
-	    exp = car(cdr(cdr_exp));
-	    save_reg(unev);
-	    save_reg(env);
-	    save_evs(cont);
-	    cont = EV_CSET_VALUE;
-	    next = EVAL_DISPATCH;
-	    break;
-	 }
-
-	 case EV_CSET_VALUE:
-	 {
-	    restore_evs(cont);
-	    restore_reg(env);
-	    restore_reg(unev);
-	    REGISTER_CHECK( 11, anyenvp, env );
-	    // determine if the unev is a gref or fref
-	    //   make the assignment
-	    if (nodekind(unev) == n_gref)
-	    {
-	       set(gref_getsymbol(unev), val);
-	    }
-	    else
-	    {
-	       int d = fref_getdepth(unev);
-	       SEXPR e = env;
-	       while (d-- > 0)
-		  e = getenvbase(e);
-	       fset(getenvframe(e), fref_getindex(unev), val);
-	    }	 
-	    next = cont;
-	    break;
-	 }
-  
+	   
 	 //
 	 // syntax: (define <var> <exp>>
 	 //
@@ -754,26 +692,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    const SEXPR code = cdr(cdr_exp);
 	    val = MEMORY::closure(code, env);     // <code> <benv>
 	    set_closure_attributes(val, params);
-	    next = cont;
-	    break;
-	 }
-	    
-	 //
-	 // syntax: (clambda <closure>)
-	 //
-	 case EV_CLAMBDA:
-	 {
-	    // compiled lambda
-	    //   the argument <closure> must be an evaluated lambda/closure
-	    //   there is a significant performance gain by pre-processing
-	    //   the lambda, principally the parameter descriptor.
-	    //   this is done once rather than on each invocation
-	    SEXPR proc = guard(car(cdr(exp)), closurep);
-	    // clone it 
-	    val = MEMORY::closure(getclosurecode(proc), env);
-	    setclosurevars(val, getclosurevars(proc));
-	    setclosurenumv(val, getclosurenumv(proc));
-	    setclosurerargs(val, getclosurerargs(proc));
 	    next = cont;
 	    break;
 	 }

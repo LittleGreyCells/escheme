@@ -142,16 +142,6 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    }
 	    break;
 
-	 case n_gref:
-	    sprintf(buffer, "{gref:%s}", getname(gref_getsymbol(n)) );
-	    PIO::put(outport, buffer);
-	    break;
-
-	 case n_fref:
-	    sprintf(buffer, "{fref:%d,%d}", fref_getdepth(n),  fref_getindex(n) );
-	    PIO::put(outport, buffer);
-	    break;
-
 	 case n_func:
 	 case n_apply:
 	 case n_callcc:

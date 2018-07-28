@@ -1,4 +1,4 @@
-Syntax for Supported Primitive Functions and Special Forms
+Form and Function of Supported Primitive Functions and Special Forms
 
 Primitive Functions
 
@@ -250,8 +250,6 @@ Escheme Custom Functions
 syntax: (%make-environment <pairs> <baseenv>) -> <env>
 syntax: (%make-closure <code> <params> <env>) -> <closure>
 syntax: (%parse-formals <params>) -> <vector>
-syntax: (%gref <symbol>) -> <gref>
-syntax: (%fref <depth> <index>) -> <fref>
 syntax: (%closure-code <closure>) -> <list>
 syntax: (%closure-benv <closure>) -> <env>
 syntax: (%closure-vars <closure>) -> <list>

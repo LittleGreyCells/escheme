@@ -381,12 +381,10 @@ void EVAL::initialize()
    setform( QUOTE,    EV_QUOTE );
    setform( DELAY,    EV_DELAY );
    setform( SET,      EV_SET );
-   setform( CSET,     EV_CSET );
    setform( DEFINE,   EV_DEFINE );
    setform( IF,       EV_IF );
    setform( COND,     EV_COND );
    setform( LAMBDA,   EV_LAMBDA );
-   setform( CLAMBDA,  EV_CLAMBDA );
    setform( BEGIN,    EV_BEGIN );
    setform( SEQUENCE, EV_BEGIN );
    setform( LET,      EV_LET );

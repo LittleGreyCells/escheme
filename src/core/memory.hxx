@@ -46,8 +46,6 @@ namespace MEMORY
    SEXPR byte_vector( UINT32 length );
    SEXPR string_port();
    FRAME frame( UINT32 nslots );
-   SEXPR gref( SEXPR symbol );
-   SEXPR fref( int depth, int index );
    SEXPR promise( SEXPR exp );
    SEXPR code( SEXPR bcodes, SEXPR sexprs );
 

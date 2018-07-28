@@ -1,10 +1,10 @@
-ece-scheme v2.0
+escheme
 
 R3RS scheme interpreter and compilation system
 
 Introduction
 
-ece-scheme (aka escheme) is an aspiring R3RS implementation of the algorithmic 
+escheme is an aspiring R3RS implementation of the algorithmic 
 language scheme, supporting approximately 90% of the standard. Further, many 
 additional functions are added to support environments, input/output and unix.
 

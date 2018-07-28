@@ -47,9 +47,7 @@
 
 	   (adorn vk 21 'for)
 	   (adorn vk 22 'force)
-	   (adorn vk 23 'gref)
-	   (adorn vk 24 'fref)
-	   (adorn vk 25 'code)
+	   (adorn vk 23 'code)
 	   ))
       (display (list "collections" (vector-ref stats 0)))
       (newline)
