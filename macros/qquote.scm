@@ -1,5 +1,3 @@
-;;; -*- Mode: Lisp -*-
-
 ;;
 ;; 09/18/2002  LMJ Modified for escheme
 ;;

@@ -1,5 +1,3 @@
-;;; -*- Mode: Lisp -*-
-
 ;;
 ;; (load "escheme_test_suite.scm")
 ;;

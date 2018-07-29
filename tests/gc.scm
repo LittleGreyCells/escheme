@@ -1,4 +1,6 @@
-;;; -*- Mode: Lisp -*-
+;;
+;; Detailed GC Report
+;;
 
 (define (adorn v i adornment)
   (vector-set! v i (cons adornment (vector-ref v i))))

@@ -1,5 +1,3 @@
-;;; -*- Mode: Lisp -*-
-
 ;;
 ;; The following code is adapted from xscheme macros.s
 ;;
@@ -9,7 +7,9 @@
 ;;
 
 ;; modified for escheme
+;; begin
 (define %%eval eval)
+;; end
 
 (define (%expand-macros expr)
   (if (pair? expr)
@@ -30,10 +30,12 @@
     lyst))
 
 ;; modified for escheme
+;; begin
 (define (eval expr . env)
   (if (null? env)
     (%%eval (%expand-macros expr))
     (%%eval (%expand-macros expr) (car env))))
+;; end
 
 (put 'macro '%macro
   (lambda (form)
@@ -111,7 +113,6 @@
     pair))
 
 (define (%expand-let-form form)
-  ;; (print "%expand-let-form")
   (cons
     (car form)
     (cons
@@ -122,6 +123,7 @@
       (%expand-list (cddr form)))))
 
 (compiler-syntax let %expand-let-form)
+;; (compiler-syntax let* %expand-let-form)
 (compiler-syntax letrec %expand-let-form)
 
 (macro define-integrable
@@ -130,3 +132,5 @@
 
 (macro declare
   (lambda (form) #f))
+
+;; [END]
