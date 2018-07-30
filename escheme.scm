@@ -1,4 +1,4 @@
-(define *version* "v1.0")
+(define *version* "(interpeter only)")
 (set-prompt "ece> ")
 
 (load "./boot/standard-functions.scm")
