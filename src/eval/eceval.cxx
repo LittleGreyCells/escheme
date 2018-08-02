@@ -306,8 +306,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 
 	       case n_map:
 	       {
-		  if (argstack.argc != 2)
-		     ERROR::severe( "map requires two arguments" );
+		  if (argstack.argc < 2)
+		     ERROR::severe( "map requires two or more arguments" );
 		  save_int( argstack.argc );
 		  save_reg( MEMORY::cons(null, null) );  // accume == (())
 		  next = EV_MAP_APPLY;
@@ -316,8 +316,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 
 	       case n_foreach:
 	       {
-		  if (argstack.argc != 2)
-		     ERROR::severe("foreach requires 2 arguments");
+		  if (argstack.argc < 2)
+		     ERROR::severe("foreach requires two or more arguments");
 		  save_int( argstack.argc );
 		  save_reg( null );              // no accume == ()
 		  next = EV_FOR_APPLY;
@@ -375,6 +375,13 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //
 	 // syntax: (map <func> <list>)
 	 //
+	 // Discussion
+	 //   To get this to work for (map <func> <list1> <list2> list) do the following:
+	 //   (1) val is fun
+	 //   (2) push the car of lists on the stack
+	 //   (3) apply the function
+	 //
+
 	 case EV_MAP_APPLY:
 	 {
 	    if ( nullp(argstack.top()) )
@@ -383,16 +390,22 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       val = car(val);                // val == <list>
 	       restore_int( argstack.argc );
 	       argstack.removeargc();
-	       restore_evs( cont );          // cont
+	       restore_evs( cont );           // cont
 	       next = cont;
 	    }
 	    else
 	    {
 	       // setup an application
 	       argstack.argc = 0;
-	       const int top = argstack.gettop();
-	       val = argstack[top-1];                  // FUN
-	       argstack.push( car(argstack[top]) );
+	       const int argc = intstack.top();
+	       const int p = argstack.gettop() - argc + 1;
+	       val = argstack[p];             // FUN
+	       for ( int i = 1; i < argc; ++i )
+	       {
+		   const SEXPR arg = argstack[p+i];
+		   argstack.push( car(arg) );
+		   argstack[p+i] = cdr(arg);
+	       }
 	       save_evs( EV_MAP_RESULT );
 	       next = APPLY_DISPATCH;
 	    }
@@ -417,7 +430,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       setcdr( getcdr(regstack[top]), x );
 	       setcdr( regstack[top], x );
 	    }
-	    argstack.top() = cdr( argstack.top() );
 	    next = EV_MAP_APPLY;
 	    break;
 	 }
@@ -439,19 +451,18 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    {
 	       // setup an application
 	       argstack.argc = 0;
-	       const int top = argstack.gettop();
-	       val = argstack[top-1];                    // FUN
-	       argstack.push( car(argstack[top]) );
-	       save_evs( EV_FOR_RESULT );
+	       const int argc = intstack.top();
+	       const int p = argstack.gettop() - argc + 1;
+	       val = argstack[p];             // FUN
+	       for ( int i = 1; i < argc; ++i )
+	       {
+		   const SEXPR arg = argstack[p+i];
+		   argstack.push( car(arg) );
+		   argstack[p+i] = cdr(arg);
+	       }
+	       save_evs( EV_FOR_APPLY );
 	       next = APPLY_DISPATCH;
 	    }
-	    break;
-	 }
-	    
-	 case EV_FOR_RESULT:
-	 {
-	    argstack.top() = cdr( argstack.top() );
-	    next = EV_FOR_APPLY;
 	    break;
 	 }
 	    
