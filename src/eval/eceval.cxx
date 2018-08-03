@@ -396,10 +396,10 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    else
 	    {
 	       // setup an application
-	       argstack.argc = 0;
 	       const int argc = intstack.top();
 	       const int p = argstack.gettop() - argc + 1;
 	       val = argstack[p];             // FUN
+	       argstack.argc = 0;
 	       for ( int i = 1; i < argc; ++i )
 	       {
 		   const SEXPR arg = argstack[p+i];
@@ -450,10 +450,10 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    else
 	    {
 	       // setup an application
-	       argstack.argc = 0;
 	       const int argc = intstack.top();
 	       const int p = argstack.gettop() - argc + 1;
 	       val = argstack[p];             // FUN
+	       argstack.argc = 0;
 	       for ( int i = 1; i < argc; ++i )
 	       {
 		   const SEXPR arg = argstack[p+i];
