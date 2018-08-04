@@ -103,7 +103,7 @@ namespace EVAL
    SEXPR get_evaluator_state();
 
    SEXPR lookup( SEXPR var, SEXPR env );
-   void normalize_definition( SEXPR exp, SEXPR& var, SEXPR& val );
+
    void set_variable_value( SEXPR var, SEXPR val, SEXPR env );
    void parse_formals( SEXPR formals, SEXPR& vars, BYTE& numv, BYTE& rargs );
    void set_closure_attributes( SEXPR closure, SEXPR fvars );

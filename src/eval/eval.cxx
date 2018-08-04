@@ -89,38 +89,6 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 }
 
 //
-// normalize_definition
-// 
-//   (define x <exp>)
-//       var == x
-//       val == <exp>
-//   (define (x <args>) <body>)  -> (define x (lambda <args> <body>))
-//       var == x
-//       val == (lambda (<args> <body>))
-//
-
-void EVAL::normalize_definition( SEXPR exp, SEXPR& var, SEXPR& val )
-{
-   const SEXPR cdr_exp = cdr(exp);
-   const SEXPR cadr_exp = car(cdr_exp);
-
-   if (_symbolp(cadr_exp))
-   {
-      // (define x <exp>)
-      var = cadr_exp;                // var = x
-      val = car(cdr(cdr_exp));       // val = <exp>
-   }
-   else
-   { 
-      // (define (x <args>) ...)
-      var = car(cadr_exp);           // var = x
-      regstack.push( cons(cdr(cadr_exp), cdr(cdr_exp)) );  // ((<args>)...)
-      val = cons(LAMBDA, null);      // val = (lambda)
-      setcdr(val, regstack.pop());   //     = (lambda (<args> ...)
-   }
-}
-
-//
 // Parse the Formal Parameters
 //
 //   parameter lists

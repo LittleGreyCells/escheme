@@ -661,16 +661,41 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	   
 	 //
 	 // syntax: (define <var> <exp>>
+	 // syntax: (define (<var> [<param>...]) [<exp> ...])
 	 //
 	 case EV_DEFINE:
 	 {
-	    normalize_definition( exp, unev, exp );
-	    save_reg(unev);
-	    save_reg(env);
-	    save_evs(cont);
-	    cont = EV_DEFINE_VALUE;
-	    next = EVAL_DISPATCH;
-	    break;
+	    SEXPR cdr_exp = cdr(exp);
+            SEXPR cadr_exp = car(cdr_exp);
+	   
+            if ( symbolp(cadr_exp) )
+            {
+                // (define <var> <exp>)
+                unev = cadr_exp;
+                exp = car(cdr(cdr_exp));
+                save_reg(unev);
+                save_reg(env);
+                save_evs(cont);
+                cont = EV_DEFINE_VALUE;
+                next = EVAL_DISPATCH;
+            }
+            else if ( consp(cadr_exp) )
+            {
+                // (define (<var> [<param>...]) [<exp> ...])
+                unev = car(cadr_exp);                 // <var>
+                save_reg(unev);
+                save_reg(env);
+                save_evs(cont);
+                // perform accelerated lambda creation
+                const SEXPR params = cdr(cadr_exp);   // ([<param>...])
+                const SEXPR code = cdr(cdr_exp);      // ([<exp>...])
+                val = MEMORY::closure(code, env);     // <code> <benv>
+                set_closure_attributes(val, params);
+                next = EV_DEFINE_VALUE;
+            }
+            else
+                ERROR::severe("ill-formed define", exp);
+            break;
 	 }
   
 	 case EV_DEFINE_VALUE:
