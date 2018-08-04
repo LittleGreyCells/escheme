@@ -20,6 +20,7 @@
      (perform-timed-run 100)
      (perform-timed-run 500)
      (perform-timed-run 1000)
+     
      (perform-timed-run 2000)
      (perform-timed-run 4000)
      (perform-timed-run 10000)
