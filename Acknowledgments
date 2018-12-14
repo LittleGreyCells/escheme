@@ -11,8 +11,8 @@ in an AI course. That marked the beginning of my interest in LISP and
 LISP dialects. I have used his XSCHEME compiler-based system to construct
 frameworks for software simulation and test.
 
-His XSCHEME system has a coherent and understandable structure. I have
-borrowed not only from its organization but also took inspiration from many of 
+His XSCHEME system has a coherent and understandable structure. I have borrowed
+not only from its organization but also have taken inspiration from many of 
 its solutions for primitive functions. However, the implemention of escheme 
 diverges in many areas. Principally it is an interperter based system. 
 And the implementation of the explicit control evaluator is due 
