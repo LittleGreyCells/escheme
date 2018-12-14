@@ -51,7 +51,7 @@ applications base to choose from for adding new capabities to escheme.
 Applications can be enhanced. Disparate applications and be integrated 
 utilizing a scheme REP loop opened on a socket or secure tunnel. Data types 
 and structuring are solved (s-expressions). Values can be communicated. 
-Programs as values can get sent and evaluated at their target location -- 
+Programs as values can be sent and evaluated at their target location -- 
 something more than RPC.
 
 See _docs/bindings_guide.txt_ to learn how to extend escheme with ones own 

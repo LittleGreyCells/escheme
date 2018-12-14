@@ -7,13 +7,15 @@ Scheme Macros -- A User's Guide
 Macros are a powerful syntactic feature of LISP-like languages. Since programs are indistinguishable from
 data, they can be manipulated, constructed and reconstructed. Macros in Scheme work behind the scenes
 transforming symbolic expressions into new symbolic forms before evaluation. Let me state that again: The
-result of macro expansion is then passed to eval to evaluate. The the usual read/eval/print loop is
+result of macro expansion is then passed to eval to evaluate. The usual read/eval/print loop is
 replaced with read/expand/eval/print loop.
 
-xscheme and escheme have macro support through the following two files:
+escheme provides macro support through the following two files:
 
 	macros.scm
 	qquote.scm
+
+These are borrowed from xscheme with suitible adaptation for the escheme interpreter.
 
 The first (macros.scm) implements macros proper. The second provides a very useful and powerful quasi-quote
 expander.
@@ -21,7 +23,7 @@ expander.
 2 How to Write Macros
 ---------------------
 
-Use the "macro" secial form.
+Use the "macro" special form.
 
     (macro <macro-name> <macro-definition>)
 

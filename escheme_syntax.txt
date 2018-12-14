@@ -91,7 +91,7 @@ syntax: (open-input-string <str>) -> <stringport>
 syntax: (open-output-string) -> <stringport>
 syntax: (open-output-string <stringport>)
 
-syntax: (not <exp>) -> <boolean>, etc.          
+syntax: (not <exp>) -> <boolean>  ;; for all primitives          
 syntax: (bound? <exp>)
 syntax: (null? <exp>)
 syntax: (atom? <exp>)

@@ -63,7 +63,7 @@ $(TARGET) : $(OBJS) $(NOISE)/linenoise.o
 	$(CXXC) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
 
 $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
-	gcc -Wall -W -Os -c $< -o $@
+	$(CC) -Wall -W -Os -c $< -o $@
 
 clean 	:
 	rm -f $(EVAL)/*.o $(CORE)/*.o $(NOISE)/*.o *~ $(TARGET)

@@ -45,7 +45,7 @@ If the function should not have arguments, assert the following;
   argstack.noargs();
 
 If arguments have been pushed on the stack, an error will be raised.
-If there are be arguments, continue to 2b.
+If there are arguments, continue to 2b.
 
 1.2.2 Create an ArgstackIterator
 
@@ -131,7 +131,7 @@ of the accessor functions designed to penetrate the escheme object.
 It is imperative that an object, which is constructed and intended to be
 returned by the function, be protected from garbage collection.
 This can be achieved by pushing an intermidate value, if needed, onto the 
-register stack and being careful to pop that value restoring the stack
+register stack and being careful to pop that value thus restoring the stack
 before leaving the function.
 
 Example: We write a function that returns the pair (1 . 2).

@@ -1,7 +1,7 @@
 Acknowledgments
 
-escheme would not be possible without the prior work of two scheme
-engineering efforts I would like to recognize.
+escheme would not be possible without the prior work of scheme
+engineering and educational efforts which I would like to recognize.
 
 1. XLISP and XSCHEME (David Betz)
 
@@ -12,17 +12,16 @@ LISP dialects. I have used his XSCHEME compiler-based system to construct
 frameworks for software simulation and test.
 
 His XSCHEME system has a coherent and understandable structure. I have
-borrowed heavily not only from its organization but also from many of its 
-solutions for primitive functions. However, the implemention of escheme 
+mimicked not only from its organization but also took inspiration from many of 
+its solutions for primitive functions. However, the implemention of escheme 
 diverges in many areas. Principally it is an interperter based system. 
 And the implementation of the explicit control evaluator is due 
 to my own protracted labors over a period of several years.
 
 2. SICP Explicit Control Evaluator (Harold Abelson and Gerald Sussman)
 
-While browsing The Aerospace Corporation library in the early 90s I discovered
-the seminal work "The Structure and Interpretation of Computer Programs"
-aka SICP.
+While browsing The Aerospace Corporation library in the early 90s I discovered 
+"The Structure and Interpretation of Computer Programs" aka SICP.
  
 How I had wished this text had been used for my undergraduate work in computer
 science. I devoured the text and relished Chapters 4 and 5 which describe
@@ -32,7 +31,7 @@ point for escheme. It has been expanded to handle many more special forms.
 
 Addendum for extensible-scheme-compiled
 
-Although I started with SICP model compiler in Chapter 5, I have adapted it 
-to almost make it unrecognizable. The virtual machine I designed for byte code
+Although I started with SICP model compiler in Chapter 5, I have modified it 
+to make it almost unrecognizable. The virtual machine I designed for byte code
 evaluation is far different from that described in SICP. The resulting compiler
 keeps pace.
