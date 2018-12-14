@@ -2,6 +2,12 @@ Form and Function of Supported Primitive Functions and Special Forms
 
 Primitive Functions
 
+The semantic syntax for the functions calls below:
+
+   (<function> [<args>...]) -> <result>
+
+       where "->" means "returns".
+
 syntax: (exit)
 
 syntax: (gc) -> <vector-gc-statistics>
