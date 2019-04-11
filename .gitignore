@@ -1,0 +1,4 @@
+escheme
+src/core/*.o
+src/eval/*.o
+src/linenoise/*.o

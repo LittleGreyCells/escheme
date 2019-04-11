@@ -52,6 +52,7 @@ DEFINES =
 
 escheme : $(OBJS) $(NOISE)/linenoise.o
 	$(C++) -o escheme $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
+	make clean
 
 %.o	: %.cxx
 	$(C++) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
