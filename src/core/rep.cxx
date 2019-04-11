@@ -3,12 +3,14 @@
 #include "rep.hxx"
 #include "error.hxx"
 #include "reader.hxx"
-#include "eval.hxx"
 #include "pio.hxx"
 #include "printer.hxx"
 #include "memory.hxx"
 #include "symtab.hxx"
 #include "regstack.hxx"
+
+#include "eval/eval.hxx"
+
 
 // symbol names for hanging sexprs
 const char* SYSTEM_REPLOOP       = "*system-rep-loop*";

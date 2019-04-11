@@ -5,11 +5,11 @@
 #ifndef eval_hxx
 #define eval_hxx
 
-#include "sexpr.hxx"
-#include "symtab.hxx"
-#include "argstack.hxx"
-#include "regstack.hxx"
-#include "intstack.hxx"
+#include "core/sexpr.hxx"
+#include "core/symtab.hxx"
+#include "core/argstack.hxx"
+#include "core/regstack.hxx"
+#include "core/intstack.hxx"
 
 #define save_evs(x)  intstack.push( int(x) )
 #define save_int(x)  intstack.push(x)

@@ -7,9 +7,10 @@
 #include "math.hxx"
 #include "memory.hxx"
 #include "regstack.hxx"
-#include "eval.hxx"
 #include "error.hxx"
 #include "ipcsoc.hxx"
+
+#include "eval/eval.hxx"
 #ifdef BYTE_CODE_EVALUATOR
 #include "assem.hxx"
 #endif

@@ -5,7 +5,8 @@
 #include "funtab.hxx"
 #include "reader.hxx"
 #include "pio.hxx"
-#include "eval.hxx"
+
+#include "eval/eval.hxx"
 
 int unix_argc;
 char** unix_argv;

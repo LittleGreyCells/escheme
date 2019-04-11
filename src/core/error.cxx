@@ -3,10 +3,10 @@
 
 #include "error.hxx"
 #include "printer.hxx"
-#include "eval.hxx"
 #include "symtab.hxx"
 #include "regstack.hxx"
 
+#include "eval/eval.hxx"
 
 void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
 {

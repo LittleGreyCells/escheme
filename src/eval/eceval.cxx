@@ -1,8 +1,9 @@
 #include "eval.hxx"
-#include "symtab.hxx"
-#include "memory.hxx"
-#include "printer.hxx"
-#include "funtab.hxx"
+
+#include "core/symtab.hxx"
+#include "core/memory.hxx"
+#include "core/printer.hxx"
+#include "core/funtab.hxx"
 
 #ifdef DO_ECE_CHECK
 #define REGISTER_CHECK( id, pred, reg ) register_check( id, pred, reg )

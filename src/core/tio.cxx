@@ -10,7 +10,7 @@
 #include "printer.hxx"
 #include "regstack.hxx"
 
-#include "linenoise.h"
+#include "linenoise/linenoise.h"
 
 static const char* history = "history.txt";
 static const int history_max_length = 100;

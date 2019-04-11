@@ -7,7 +7,6 @@
 
 #include "sexpr.hxx"
 #include "func.hxx"
-#include "eval.hxx"
 #include "argstack.hxx"
 #include "regstack.hxx"
 #include "error.hxx"
@@ -17,6 +16,8 @@
 #include "memory.hxx"
 #include "pio.hxx"
 #include "tio.hxx"
+
+#include "eval/eval.hxx"
 
 //
 // Attention! 

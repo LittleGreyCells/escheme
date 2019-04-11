@@ -1,10 +1,11 @@
+#include "eval.hxx"
+
 #include <cstdlib>
 
-#include "eval.hxx"
-#include "error.hxx"
-#include "symtab.hxx"
-#include "memory.hxx"
-#include "printer.hxx"
+#include "core/error.hxx"
+#include "core/symtab.hxx"
+#include "core/memory.hxx"
+#include "core/printer.hxx"
 
 using MEMORY::cons;
 using MEMORY::fixnum;

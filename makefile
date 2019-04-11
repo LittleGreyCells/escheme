@@ -1,15 +1,14 @@
 # GNU C++/C Compilers
-CXXC = g++
-CC   = gcc
+C++ = g++
+CC  = gcc
 
 CWD = $(shell pwd)
 
-TARGET = escheme
 SRCLOC = $(CWD)/src
 EVAL   = $(SRCLOC)/eval
 CORE   = $(SRCLOC)/core
-NOISE  = $(CWD)/linenoise
-INCLUDES = -I$(NOISE) -I$(CORE) -I$(EVAL)
+NOISE  = $(SRCLOC)/linenoise
+INCLUDES = -I$(SRCLOC)
 
 SRCS	= \
 	$(EVAL)/eval.cxx \
@@ -51,20 +50,16 @@ DEFINES =
 #DEFINES = -DDO_ECE_CHECK -DCHECKED_ACCESS 
 #DEFINES = -DGC_STATISTICS_DETAILED -DFS_STATISTICS_DETAILED
 
-all 	: $(TARGET)
-
-$(TARGET) : $(OBJS) $(NOISE)/linenoise.o
-	$(CXXC) -o $(TARGET) $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
-	rm $(EVAL)/*.o
-	rm $(CORE)/*.o
-	rm $(NOISE)/*.o
+escheme : $(OBJS) $(NOISE)/linenoise.o
+	$(C++) -o escheme $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
 
 %.o	: %.cxx
-	$(CXXC) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
+	$(C++) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
 
 $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 	$(CC) -Wall -W -Os -c $< -o $@
 
 clean 	:
-	rm -f $(EVAL)/*.o $(CORE)/*.o $(NOISE)/*.o *~ $(TARGET)
+	find . -name "*.o" -delete
+	find . -name "*~" -delete
 
