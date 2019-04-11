@@ -25,40 +25,41 @@ static void define_system()
    // The following top-level reads in escheme.scm and start rep loop.
    //
 
-   const char* system = "\
-(begin\
-   (define *version* \"<interpreter>\")\
-   (set-prompt \"noise> \")	       \
-   (let ((x 0))\
-     (call/cc (lambda (cc) (set! *toplevel* cc)))\
-     (if (= x 0)\
-       (begin\
-         (set! x 1)\
-         (load \"escheme.scm\")\
-          )))\
-     (display \"escheme \")\
-     (display *version*)\
-     (newline)\
-     (newline)\
-     (flush-output)\
-     (call/cc (lambda (cc) (set! *toplevel* cc)))\
-     (while #t\
-       (let ((sexpr (read *terminal*)))\
-         (add-history sexpr)\
-         (print (eval sexpr)))))\
-\
-(define (load file . noisily)\
-  (if (not (string? file))\
-      (error \"filename is not a string\")\
-      (let ((port (open-input-file file)))\
-        (if port\
-          (let ((sexpr (read port)))\
-            (while (not (eof-object? sexpr))\
-              (if noisily (begin (display \">> \") (print sexpr)))\
-	      (eval sexpr)\
-	      (set! sexpr (read port)))\
-            (close-port port)))\
-        port)))";
+   const char* system = R"(
+(begin
+   (define *version* "<interpreter>")
+   (set-prompt "noise> ")
+   (let ((x 0))
+     (call/cc (lambda (cc) (set! *toplevel* cc)))
+     (if (= x 0)
+       (begin
+         (set! x 1)
+         (load "escheme.scm")
+          )))
+     (display "escheme ")
+     (display *version*)
+     (newline)
+     (newline)
+     (flush-output)
+     (call/cc (lambda (cc) (set! *toplevel* cc)))
+     (while #t
+       (let ((sexpr (read *terminal*)))
+         (add-history sexpr)
+         (print (eval sexpr)))))
+
+(define (load file . noisily)
+  (if (not (string? file))
+      (error "filename is not a string")
+      (let ((port (open-input-file file)))
+        (if port
+          (let ((sexpr (read port)))
+            (while (not (eof-object? sexpr))
+              (if noisily (begin (display ">> ") (print sexpr)))
+	      (eval sexpr)
+	      (set! sexpr (read port)))
+            (close-port port)))
+        port)))
+)";
 
    const SEXPR port = PIO::open_on_string( MEMORY::string(system), pm_input );
   
