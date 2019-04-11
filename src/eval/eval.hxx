@@ -90,13 +90,6 @@ namespace EVAL
   
    SEXPR eceval( SEXPR sexpr );
 
-   SEXPR eval();
-   SEXPR apply();
-   SEXPR callcc();
-   SEXPR map();
-   SEXPR foreach();
-   SEXPR force();
-
    inline SEXPR the_environment() { return env; }
 
    void statistics();
