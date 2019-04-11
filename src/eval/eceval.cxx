@@ -23,26 +23,6 @@
 /////////////////////////////////////////////////////////////
 
 //
-// Unique surrogates for special primitives
-//
-//   syntax: (eval <expr> [<env>])
-//   syntax: (apply <fn> <arglist>)
-//   syntax: (call/cc <fn>)
-//   syntax: (map <fn> <list>)
-//   syntax: (foreach <fn> <list>)
-//   syntax: (force <promise>)
-//
-// These functions are never called. The evaluator instead reconfigures
-// itself and iterates. See apply_dispatch.
-//
-
-SEXPR EVAL::eval()    { return null; }
-SEXPR EVAL::apply()   { return null; }
-SEXPR EVAL::callcc()  { return null; }
-SEXPR EVAL::map()     { return null; }
-SEXPR EVAL::foreach() { return null; }
-SEXPR EVAL::force()   { return null; }
-
 //
 // The Explicit Control Evaluator ENTRY
 //

@@ -123,15 +123,12 @@ static std::vector<Function> funtab =
    { "gc",		     FUNC::gc		, n_func },
    { "fs",		     FUNC::fs		, n_func },
 
-   { "eval",		     EVAL::eval,           n_eval     },
-   { "%prim-eval",	     EVAL::eval,           n_eval     },
-   { "apply",                EVAL::apply,          n_apply    },
-   { "call/cc",              EVAL::callcc,         n_callcc   },
-   { "map",                  EVAL::map,            n_map      },
-   { "for-each",             EVAL::foreach,        n_foreach  },
-   { "force",                EVAL::force,          n_force    },
-
-   { "call-with-current-continuation", EVAL::callcc,   n_callcc   },
+   { "eval",		     0, n_eval     },
+   { "apply",                0, n_apply    },
+   { "call/cc",              0, n_callcc   },
+   { "map",                  0, n_map      },
+   { "for-each",             0, n_foreach  },
+   { "force",                0, n_force    },
 
    { "+",		     MATH::add		, n_func },
    { "-",		     MATH::sub		, n_func },
