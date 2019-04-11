@@ -1,6 +1,7 @@
+#include "rep.hxx"
+
 #include <cstdio>
 
-#include "rep.hxx"
 #include "error.hxx"
 #include "reader.hxx"
 #include "pio.hxx"
@@ -10,7 +11,6 @@
 #include "regstack.hxx"
 
 #include "eval/eval.hxx"
-
 
 // symbol names for hanging sexprs
 const char* SYSTEM_REPLOOP       = "*system-rep-loop*";

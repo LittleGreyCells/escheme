@@ -1,6 +1,7 @@
+#include "funtab.hxx"
+
 #include <vector>
 
-#include "funtab.hxx"
 #include "sexpr.hxx"
 #include "symtab.hxx"
 #include "func.hxx"
@@ -12,7 +13,7 @@
 
 #include "eval/eval.hxx"
 #ifdef BYTE_CODE_EVALUATOR
-#include "assem.hxx"
+#include "eval/assem.hxx"
 #endif
 
 struct Function

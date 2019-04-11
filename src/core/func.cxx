@@ -1,3 +1,5 @@
+#include "func.hxx"
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -6,7 +8,6 @@
 #include <algorithm>
 
 #include "sexpr.hxx"
-#include "func.hxx"
 #include "argstack.hxx"
 #include "regstack.hxx"
 #include "error.hxx"

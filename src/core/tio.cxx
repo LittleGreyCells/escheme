@@ -1,9 +1,10 @@
+#include "tio.hxx"
+
 #include <string>
 #include <cstdio>
 #include <string.h>
 #include <stdlib.h>
 
-#include "tio.hxx"
 #include "pio.hxx"
 #include "error.hxx"
 #include "memory.hxx"
