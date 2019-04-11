@@ -285,7 +285,7 @@ void EVAL::register_check( int id, PREDICATE pred, SEXPR reg )
 {
    if ( !pred(reg) )
    {
-      printf( "\ncheck(%u) failed: %p(k=%d)\n", id, reg->id(), nodekind(reg) );
+      printf( "\ncheck(%d) failed: %p(k=%d)\n", id, reg->id(), nodekind(reg) );
    }
 }
 
