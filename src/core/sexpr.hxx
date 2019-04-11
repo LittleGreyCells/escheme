@@ -220,14 +220,14 @@ struct Node
    Node()
    {}
 
-   Node( NodeKind k ) :
+   explicit Node( NodeKind k ) :
    kind(k), mark(0), form(0) {}
 
    Node( NodeKind k, SEXPR next ) :
       kind(k), mark(0), form(0) { u.link.next = next; }
 
    void setnext( SEXPR next ) { u.link.next = next; }
-   SEXPR getnext() { return u.link.next; }
+   SEXPR getnext() const { return u.link.next; }
 
    void* id() { return this; }
 };

@@ -7,7 +7,7 @@
 class REGSTACK : public TSTACK<SEXPR>
 {
 public:
-   REGSTACK( int stacksize ) : TSTACK<SEXPR>(stacksize) {}
+   explicit REGSTACK( int stacksize ) : TSTACK<SEXPR>(stacksize) {}
 
    virtual void underflow() { ERROR::severe("regstack underflow"); }
    virtual void overflow() { ERROR::severe("regstack overflow"); }
@@ -21,7 +21,7 @@ class RegstackChecker
    const char* name;
    int start;
 public:
-   RegstackChecker( const char* s ) : name(s) 
+   explicit RegstackChecker( const char* s ) : name(s) 
    {
       start = regstack.gettop();
    }

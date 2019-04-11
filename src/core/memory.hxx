@@ -71,7 +71,7 @@ struct GcSuspension
    void suspend_gc() { MEMORY::suspensions += 1; }
    void resume_gc() { MEMORY::suspensions -= 1; }
 
-   GcSuspension( const char* n ) : name(n) { suspend_gc(); }
+   explicit GcSuspension( const char* n ) : name(n) { suspend_gc(); }
    ~GcSuspension() { resume_gc(); }
 };
 

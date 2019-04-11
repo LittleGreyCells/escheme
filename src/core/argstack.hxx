@@ -8,7 +8,7 @@
 class ARGSTACK : public TSTACK<SEXPR>
 {
 public:
-   ARGSTACK( int stacksize ) : TSTACK<SEXPR>(stacksize), argc(0) {}
+   explicit ARGSTACK( int stacksize ) : TSTACK<SEXPR>(stacksize), argc(0) {}
 
    void push( SEXPR n ) { ++argc; TSTACK<SEXPR>::push(n); }
    SEXPR pop() { --argc; return TSTACK<SEXPR>::pop(); }

@@ -7,7 +7,7 @@
 class INTSTACK : public TSTACK<int>
 {
 public:
-   INTSTACK( int stacksize ) : TSTACK<int>(stacksize) {}
+   explicit INTSTACK( int stacksize ) : TSTACK<int>(stacksize) {}
 
    virtual void underflow() { ERROR::severe("control stack underflow"); }
    virtual void overflow() { ERROR::severe("control stack overflow"); }

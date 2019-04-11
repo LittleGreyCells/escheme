@@ -9,7 +9,7 @@ template <typename T>
 class TSTACK
 {
 public:
-   TSTACK<T>( int stacksize );
+   explicit TSTACK<T>( int stacksize );
   
    void push( T s )
    { 

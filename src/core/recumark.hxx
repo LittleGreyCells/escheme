@@ -9,7 +9,7 @@ class RECURSIVE_MARKER
 {
    SEXPR node;
 public:
-   RECURSIVE_MARKER( SEXPR n ) : node(n) { setmark(node); }
+   explicit RECURSIVE_MARKER( SEXPR n ) : node(n) { setmark(node); }
    ~RECURSIVE_MARKER() { resetmark(node); }
 }; 
 
