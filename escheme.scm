@@ -3,28 +3,37 @@
 
 (load "./boot/standard-functions.scm")
 
+(define (accume-options args options)
+  (if (null? args)
+      options
+      (let ((arg (car args)))
+        (if (equal? (substring arg 0 1) "-")
+            (accume-options (cdr args) (cons arg options))
+            (accume-options (cdr args) options)))))
+
 (let ((args (cdr (vector->list (getargs))))
-      (macros #t)
       (usage
        (lambda ()
-	 (display "usage: escheme [--nomacros | --help] [files...]")
+	 (display "usage: escheme [(-h | --help)] | [files...]")
 	 (newline)))
       (boot-macros 
        (lambda ()
 	 (load "./macros/macros.scm")
 	 (load "./macros/qquote.scm")
 	 (load "./boot/macro-definitions.scm"))))
-  (if (equal? (car args) "--help")
+  (if (or (memv "--help" args) (memv "-h" args))
       (begin
         (usage)
         (exit)))
-  (if (equal? (car args) "--nomacros")
-      (begin
-        (set! macros #f)
-        (set! *version* "(intepreter, no macros)")
-        (set! args (cdr args))))
-  (if macros
-      (boot-macros))
+  (let ((options (accume-options args nil)))
+    (if options
+        (begin
+          (display "extra options not expected ")
+          (display options)
+          (newline)
+          (usage)
+          (exit))))
+  (boot-macros)
   ;; load any list files...
   (while args
          (let ((result (load (car args))))
