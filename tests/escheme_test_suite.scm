@@ -637,6 +637,7 @@
     (let ((x (/ (avg (run-n-times timed-test n)) factor)))
       (display "-- ")
       (display x)
+      (display " seconds per iteration")
       (newline)))
   (newline)
   (display "gc: ") (print (gc))

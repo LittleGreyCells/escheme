@@ -1,40 +1,36 @@
-(define *version* "(interpeter only)")
+(define *version* "(interpeter)")
 (set-prompt "ece> ")
 
 (load "./boot/standard-functions.scm")
 
-(let ((args (getargs))
+(let ((args (cdr (vector->list (getargs))))
+      (macros #t)
       (usage
        (lambda ()
-	 (display "usage: escheme [--nomacros] [-h | --help]")
-	 (newline)
-	 (exit)))
+	 (display "usage: escheme [--nomacros | --help] [files...]")
+	 (newline)))
       (boot-macros 
        (lambda ()
 	 (load "./macros/macros.scm")
 	 (load "./macros/qquote.scm")
 	 (load "./boot/macro-definitions.scm"))))
-  (if (= (vector-length args) 1)
-      (boot-macros)
-      (if (> (vector-length args) 2)
-	  (begin
-	    (display "too many arguments given -- ")
-	    (display args)
-	    (newline)
-	    (usage))
-	  (let ((arg (vector-ref args 1)))
-	    (cond ((memv arg (list "-h" "--help"))
-		   (usage))
-		  ((memv arg (list "-m" "--macros"))
-		   (boot-macros))
-		  ((memv arg (list "--nomacros"))
-		   (set! *version* "v1.0 (no macros)")
-		   nil)
-		  (else
-		   (display "unrecognized arg [" )
-		   (display arg)
-		   (display " ]")
-		   (newline)
-		   (usage)))))))
+  (if (equal? (car args) "--help")
+      (begin
+        (usage)
+        (exit)))
+  (if (equal? (car args) "--nomacros")
+      (begin
+        (set! macros #f)
+        (set! *version* "(intepreter, no macros)")
+        (set! args (cdr args))))
+  (if macros
+      (boot-macros))
+  ;; load any list files...
+  (while args
+         (let ((result (load (car args))))
+           (if (null? result)
+               (error "load failed for" (car args)))
+           (set! args (cdr args))))
+  )
 
 ;; [EOF]
