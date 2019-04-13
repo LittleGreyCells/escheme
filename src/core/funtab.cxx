@@ -181,7 +181,11 @@ static std::vector<Function> funtab =
 
    { "system",                FUNC::unix_system       , n_func },
    { "getargs",               FUNC::unix_getargs      , n_func },
+   { "getenv",                FUNC::unix_getenv       , n_func },
    { "gettime",               FUNC::unix_gettime      , n_func },
+   { "chdir",                 FUNC::unix_change_dir   , n_func },
+   { "getcwd",                FUNC::unix_current_dir  , n_func },
+   { "getenv",                FUNC::unix_getenv       , n_func },
 
    { "open-input-file",	      FUNC::open_input_file   , n_func },
    { "open-output-file",      FUNC::open_output_file  , n_func },
@@ -332,9 +336,6 @@ static std::vector<Function> funtab =
 #endif
 
    { "%object-address",       FUNC::objaddr          , n_func },
-
-   { "chdir",                 FUNC::change_dir       , n_func },
-   { "getcwd",                FUNC::current_dir      , n_func },
 };
 
 

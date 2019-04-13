@@ -132,7 +132,10 @@ namespace FUNC
    // unix
    SEXPR unix_system();
    SEXPR unix_getargs();
+   SEXPR unix_getenv();
    SEXPR unix_gettime();
+   SEXPR unix_change_dir();
+   SEXPR unix_current_dir();
 
    // port
    SEXPR open_input_file();
@@ -279,10 +282,6 @@ namespace FUNC
 
    // object address
    SEXPR objaddr();
-
-   // unistd
-   SEXPR change_dir();
-   SEXPR current_dir();
 }
 
 #endif

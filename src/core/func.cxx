@@ -1211,6 +1211,18 @@ SEXPR FUNC::unix_getargs()
    return pop_reg();
 }
 
+SEXPR FUNC::unix_getenv()
+{
+   //
+   // syntax: (getenv <var>) -> <string-value>
+   //
+   ArgstackIterator iter;
+   const SEXPR var = guard(iter.getlast(), stringp);
+   const char* val = ::getenv( getstringdata(var) );
+
+   return ( val == nullptr ) ? MEMORY::string_null : MEMORY::string(val);
+}
+
 SEXPR FUNC::unix_gettime()
 {
    //
@@ -1228,6 +1240,31 @@ SEXPR FUNC::unix_gettime()
    setcdr( time, MEMORY::fixnum( ts.tv_nsec ) );
 
    return pop_reg();
+}
+
+SEXPR FUNC::unix_change_dir()
+{
+   //
+   // syntax: (chdir <string>) -> <fixnum>
+   //
+   ArgstackIterator iter;
+   const SEXPR path = guard(iter.getlast(), stringp);
+   const int result = ::chdir( getstringdata(path) );
+   return MEMORY::fixnum((FIXNUM)result);
+}
+
+SEXPR FUNC::unix_current_dir()
+{
+   //
+   // syntax: (getcwd) -> <string>
+   //
+   argstack.noargs();
+   char buffer[200];
+   const char* result = ::getcwd( buffer, sizeof(buffer) );
+   if ( result == NULL )
+      return null;
+   else
+      return MEMORY::string( buffer );
 }
 
 //
@@ -2269,27 +2306,3 @@ SEXPR FUNC::objaddr()
    return MEMORY::fixnum((FIXNUM)obj);
 }
 
-SEXPR FUNC::change_dir()
-{
-   //
-   // syntax: (chdir <string>) -> <fixnum>
-   //
-   ArgstackIterator iter;
-   const SEXPR path = guard(iter.getlast(), stringp);
-   const int result = ::chdir( getstringdata(path) );
-   return MEMORY::fixnum((FIXNUM)result);
-}
-
-SEXPR FUNC::current_dir()
-{
-   //
-   // syntax: (getcwd) -> <string>
-   //
-   argstack.noargs();
-   char buffer[200];
-   const char* result = ::getcwd( buffer, sizeof(buffer) );
-   if ( result == NULL )
-      return null;
-   else
-      return MEMORY::string( buffer );
-}
