@@ -38,8 +38,8 @@
   (while args
          (let ((result (load (car args))))
            (if (null? result)
-               (error "load failed for" (car args)))
-           (set! args (cdr args))))
+               (error "load failed for" (car args))))
+         (set! args (cdr args)))
   )
 
 ;; [EOF]

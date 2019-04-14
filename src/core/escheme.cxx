@@ -1,4 +1,3 @@
-#include "rep.hxx"
 #include "error.hxx"
 #include "memory.hxx"
 #include "symtab.hxx"
@@ -6,16 +5,11 @@
 #include "reader.hxx"
 #include "pio.hxx"
 
+#include "rep/rep.hxx"
 #include "eval/eval.hxx"
 
 int unix_argc;
 char** unix_argv;
-
-//
-// escheme
-//
-//   $ escheme [-h] [-f <file1> <file2> ...] [< <redirection-input-file>]
-//
 
 int main( int argc, char** argv )
 {

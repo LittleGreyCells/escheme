@@ -5,17 +5,18 @@ CC  = gcc
 CWD = $(shell pwd)
 
 SRCLOC = $(CWD)/src
+REP    = $(SRCLOC)/rep
 EVAL   = $(SRCLOC)/eval
 CORE   = $(SRCLOC)/core
 NOISE  = $(SRCLOC)/linenoise
 INCLUDES = -I$(SRCLOC)
 
 SRCS	= \
+	$(REP)/rep.cxx \
 	$(EVAL)/eval.cxx \
 	$(EVAL)/eceval.cxx \
 	$(CORE)/sexpr.cxx \
 	$(CORE)/escheme.cxx \
-	$(CORE)/rep.cxx \
 	$(CORE)/error.cxx \
 	$(CORE)/tstack.cxx \
 	$(CORE)/argstack.cxx \
@@ -52,7 +53,6 @@ DEFINES =
 
 escheme : $(OBJS) $(NOISE)/linenoise.o
 	$(C++) -o escheme $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
-	make clean
 
 %.o	: %.cxx
 	$(C++) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
@@ -63,4 +63,22 @@ $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 clean 	:
 	find . -name "*.o" -delete
 	find . -name "*~" -delete
+
+install : escheme
+	mkdir -p /usr/share/escheme
+	mkdir -p /usr/share/escheme/boot
+	mkdir -p /usr/share/escheme/macros
+	cp escheme.scm  /usr/share/escheme
+	cp boot/*.scm   /usr/share/escheme/boot
+	cp macros/*.scm /usr/share/escheme/macros
+	cp escheme /usr/local/bin/escheme_interpreter
+	echo 'ESCHEME=/usr/share/escheme escheme_interpreter $$@' > /usr/local/bin/escheme
+	chmod +x /usr/local/bin/escheme
+
+uninstall :
+	if [ -d /usr/share/escheme ]; \
+	then \
+	   rm -rf /usr/share/escheme; \
+	   rm -f /usr/local/bin/escheme_interpreter; \
+	fi
 

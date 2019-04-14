@@ -2,14 +2,13 @@
 
 #include <cstdio>
 
-#include "error.hxx"
-#include "reader.hxx"
-#include "pio.hxx"
-#include "printer.hxx"
-#include "memory.hxx"
-#include "symtab.hxx"
-#include "regstack.hxx"
-
+#include "core/error.hxx"
+#include "core/reader.hxx"
+#include "core/pio.hxx"
+#include "core/printer.hxx"
+#include "core/memory.hxx"
+#include "core/symtab.hxx"
+#include "core/regstack.hxx"
 #include "eval/eval.hxx"
 
 // symbol names for hanging sexprs
@@ -27,6 +26,7 @@ static void define_system()
    //
 
    const char* system = R"(
+
 (begin
    (define *version* "<interpreter>")
    (set-prompt "noise> ")
@@ -62,22 +62,20 @@ static void define_system()
         port)))
 
 (define (system-path file)
-  (let ((home (getenv "ESCHEME_HOME")))
+  (let ((home (getenv "ESCHEME")))
     (if (= (string-length home) 0)
         file
         (string-append home "/" file))))
+
 )";
 
    const SEXPR port = PIO::open_on_string( MEMORY::string(system), pm_input );
-  
-   // protect the port from gc
-   regstack.push(port);
-
+   
+   GcSuspension( "define-system" );
+   
    setvalue( SYMTAB::enter(SYSTEM_REPLOOP), READER::read(port) );
    setvalue( SYMTAB::enter(SYSTEM_LOADER), READER::read(port) );
    setvalue( SYMTAB::enter(SYSTEM_PATH), READER::read(port) );
-
-   regstack.pop();
 }
 
 void rep_loop()
@@ -87,6 +85,7 @@ void rep_loop()
    try
    {
       define_system();
+      
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_LOADER)) );
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_PATH)) );
    }
@@ -104,7 +103,7 @@ void rep_loop()
 
    SEXPR exp = getvalue( SYMTAB::enter(SYSTEM_REPLOOP) );
 
-   while (true)
+   while ( true )
    {
       try
       {
