@@ -133,6 +133,8 @@ namespace FUNC
    SEXPR unix_system();
    SEXPR unix_getargs();
    SEXPR unix_getenv();
+   SEXPR unix_setenv();
+   SEXPR unix_unsetenv();
    SEXPR unix_gettime();
    SEXPR unix_change_dir();
    SEXPR unix_current_dir();

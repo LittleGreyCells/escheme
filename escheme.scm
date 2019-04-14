@@ -1,7 +1,7 @@
 (define *version* "(interpeter)")
 (set-prompt "ece> ")
 
-(load "./boot/standard-functions.scm")
+(load (system-path "boot/standard-functions.scm"))
 
 (define (accume-options args options)
   (if (null? args)
@@ -18,9 +18,9 @@
 	 (newline)))
       (boot-macros 
        (lambda ()
-	 (load "./macros/macros.scm")
-	 (load "./macros/qquote.scm")
-	 (load "./boot/macro-definitions.scm"))))
+	 (load (system-path "macros/macros.scm"))
+	 (load (system-path "macros/qquote.scm"))
+	 (load (system-path "boot/macro-definitions.scm")))))
   (if (or (memv "--help" args) (memv "-h" args))
       (begin
         (usage)

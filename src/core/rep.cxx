@@ -15,6 +15,7 @@
 // symbol names for hanging sexprs
 const char* SYSTEM_REPLOOP       = "*system-rep-loop*";
 const char* SYSTEM_LOADER        = "*system-loader*";
+const char* SYSTEM_PATH          = "*system-path*";
 const char* TOPLEVEL             = "*toplevel*";
 
 static void define_system()
@@ -34,7 +35,7 @@ static void define_system()
      (if (= x 0)
        (begin
          (set! x 1)
-         (load "escheme.scm")
+         (load (system-path "escheme.scm"))
           )))
      (display "escheme ")
      (display *version*)
@@ -59,6 +60,12 @@ static void define_system()
 	      (set! sexpr (read port)))
             (close-port port)))
         port)))
+
+(define (system-path file)
+  (let ((home (getenv "ESCHEME_HOME")))
+    (if (= (string-length home) 0)
+        file
+        (string-append home "/" file))))
 )";
 
    const SEXPR port = PIO::open_on_string( MEMORY::string(system), pm_input );
@@ -68,6 +75,7 @@ static void define_system()
 
    setvalue( SYMTAB::enter(SYSTEM_REPLOOP), READER::read(port) );
    setvalue( SYMTAB::enter(SYSTEM_LOADER), READER::read(port) );
+   setvalue( SYMTAB::enter(SYSTEM_PATH), READER::read(port) );
 
    regstack.pop();
 }
@@ -80,6 +88,7 @@ void rep_loop()
    {
       define_system();
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_LOADER)) );
+      EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_PATH)) );
    }
    catch (...)
    {

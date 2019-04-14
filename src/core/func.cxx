@@ -1223,6 +1223,35 @@ SEXPR FUNC::unix_getenv()
    return ( val == nullptr ) ? MEMORY::string_null : MEMORY::string(val);
 }
 
+SEXPR FUNC::unix_setenv()
+{
+   //
+   // syntax: (setenv <var> <val> <replace>) -> <fixnum>
+   //
+   ArgstackIterator iter;
+   const SEXPR var = guard(iter.getarg(), stringp);
+   const SEXPR val = guard(iter.getarg(), stringp);
+   FIXNUM replace = 1;
+   if ( iter.more() )
+      replace = getfixnum( guard(iter.getlast(), fixnump) );
+
+   const int result = ::setenv( getstringdata(var),
+                                getstringdata(val),
+                                replace );
+   return MEMORY::fixnum( result );
+}
+
+SEXPR FUNC::unix_unsetenv()
+{
+   //
+   // syntax: (unsetenv <var>) -> <fixnum>
+   //
+   ArgstackIterator iter;
+   const SEXPR var = guard(iter.getlast(), stringp);
+   const int result = ::unsetenv( getstringdata(var) );
+   return MEMORY::fixnum( result );
+}
+
 SEXPR FUNC::unix_gettime()
 {
    //

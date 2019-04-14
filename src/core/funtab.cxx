@@ -182,6 +182,8 @@ static std::vector<Function> funtab =
    { "system",                FUNC::unix_system       , n_func },
    { "getargs",               FUNC::unix_getargs      , n_func },
    { "getenv",                FUNC::unix_getenv       , n_func },
+   { "setenv",                FUNC::unix_setenv       , n_func },
+   { "unsetenv",              FUNC::unix_unsetenv     , n_func },
    { "gettime",               FUNC::unix_gettime      , n_func },
    { "chdir",                 FUNC::unix_change_dir   , n_func },
    { "getcwd",                FUNC::unix_current_dir  , n_func },
