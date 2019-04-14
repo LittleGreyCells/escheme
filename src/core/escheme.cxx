@@ -4,8 +4,8 @@
 #include "funtab.hxx"
 #include "reader.hxx"
 #include "pio.hxx"
+#include "rep.hxx"
 
-#include "rep/rep.hxx"
 #include "eval/eval.hxx"
 
 int unix_argc;

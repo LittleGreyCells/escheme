@@ -5,18 +5,17 @@ CC  = gcc
 CWD = $(shell pwd)
 
 SRCLOC = $(CWD)/src
-REP    = $(SRCLOC)/rep
 EVAL   = $(SRCLOC)/eval
 CORE   = $(SRCLOC)/core
 NOISE  = $(SRCLOC)/linenoise
 INCLUDES = -I$(SRCLOC)
 
 SRCS	= \
-	$(REP)/rep.cxx \
 	$(EVAL)/eval.cxx \
 	$(EVAL)/eceval.cxx \
 	$(CORE)/sexpr.cxx \
 	$(CORE)/escheme.cxx \
+	$(CORE)/rep.cxx \
 	$(CORE)/error.cxx \
 	$(CORE)/tstack.cxx \
 	$(CORE)/argstack.cxx \
