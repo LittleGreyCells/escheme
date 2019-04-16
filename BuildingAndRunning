@@ -9,11 +9,11 @@ In the root directory type 'make' to build the executable:
 
 Running
 
-To run the interpreter, invoke escheme. The banner is printed and the linenoise prompt is
-displayed:
+To run the interpreter in the build directory invoke escheme. The banner is printed and the
+linenoise prompt is displayed:
 
    $ ./escheme
-   escheme (interpreter)
+   escheme v1.0 (interpreter)
 
    ece>
 
@@ -36,9 +36,6 @@ The scheme interpeter and its supporting files can be installed on Unix/Linux sy
 The interpreter can now be invoked anywhere, not just off of the build directory, using the
 pathless executable name "escheme". The executable is installed in /usr/local/bin which
 should be included in the path definition, if not already.
-
-One can still invoke the build directory interpreter using "./escheme". Although this might
-be a tad confusing.
 
 Lastly the interpreter can be uninstalled.
 

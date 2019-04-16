@@ -1,4 +1,4 @@
-(define *version* "(interpeter)")
+(define *version* "v1.0 (interpeter)")
 (set-prompt "ece> ")
 
 (load (system-path "boot/standard-functions.scm"))
@@ -34,12 +34,12 @@
           (usage)
           (exit))))
   (boot-macros)
-  ;; load any list files...
-  (while args
-         (let ((result (load (car args))))
-           (if (null? result)
-               (error "load failed for" (car args))))
-         (set! args (cdr args)))
+  (let ((try-load
+         (lambda (file)
+           (let ((result (load file)))
+             (if (null? result)
+                 (error "load failed for" file))))))
+    (for-each try-load args))
   )
 
 ;; [EOF]

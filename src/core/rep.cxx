@@ -1,6 +1,8 @@
 #include "rep.hxx"
 
 #include <cstdio>
+#include <cstdlib>
+#include <string>
 
 #include "error.hxx"
 #include "reader.hxx"
@@ -18,15 +20,9 @@ const char* SYSTEM_LOADER        = "*system-loader*";
 const char* SYSTEM_PATH          = "*system-path*";
 const char* TOPLEVEL             = "*toplevel*";
 
-static void define_system()
+static void define_system( const char* name, const char* evar )
 {
-   // define rep loop
-
-   //
-   // The following top-level reads in escheme.scm and start rep loop.
-   //
-
-   const char* system = R"(
+   std::string system = R"(
 
 (begin
    (define *version* "<interpreter>")
@@ -38,7 +34,7 @@ static void define_system()
          (set! x 1)
          (load (system-path "escheme.scm"))
           )))
-     (display "escheme ")
+     (display "$name ")
      (display *version*)
      (newline)
      (newline)
@@ -63,14 +59,20 @@ static void define_system()
         port)))
 
 (define (system-path file)
-  (let ((home (getenv "ESCHEME")))
+  (let ((home (getenv "$evar")))
     (if (= (string-length home) 0)
         file
         (string-append home "/" file))))
 
 )";
 
-   const SEXPR port = PIO::open_on_string( MEMORY::string(system), pm_input );
+   std::string pattern_name = "$name";
+   std::string pattern_evar = "$evar";
+   
+   system.replace( system.find(pattern_name), pattern_name.size(), name );
+   system.replace( system.find(pattern_evar), pattern_evar.size(), evar );
+
+   const SEXPR port = PIO::open_on_string( MEMORY::string(system.c_str()), pm_input );
    
    GcSuspension( "define-system" );
    
@@ -85,7 +87,7 @@ void rep_loop()
 
    try
    {
-      define_system();
+      define_system( "escheme", "ESCHEME" );
       
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_LOADER)) );
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_PATH)) );

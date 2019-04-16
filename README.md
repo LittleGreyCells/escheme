@@ -11,13 +11,8 @@ functions are added to support environments, input/output, the host OS
 (linux/unix) and access escheme internals.
 
 Abelson and Sussman's SICP* in Ch5 describes an explicit control evalutor for 
-scheme. That material provided the impetus for escheme. The name escheme is 
-derived from "ece-scheme", which is unfortunately a mouthful, so it was 
-shortened. It is not related to emacs or eLisp in any way.
-
-The escheme interpreter implementation takes SICP's explicit control 
-evaluator and extends it beyond its simple core, adding a number of 
-special forms (cond, while, access, let and letrec).
+scheme. That material provided the impetus for escheme.  It is not related
+to emacs or eLisp in any way.
 
 (*) Structure and Interpretation of Computer Programs (aka SICP)
     by Harold Abelson and Gerald Sussman
@@ -37,9 +32,9 @@ while honoring C++ block finalization.
 | ---------------- | ---------------------------------------------------|
 |  src/eval    |    evaluator|
 |  src/core    |    core sources|
+|  src/linenoise|  readline package|
 |  boot      | bootstrapping files to select interpreter configurations |
 |  macros   |  macro and quasiquote|
-|  linenoise|  readline package|
 |  tests  |    files for escheme regression testing|
 |  docs |      documentation which may or may not be accurate|
 
