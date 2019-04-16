@@ -2,7 +2,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <string>
 
 #include "error.hxx"
 #include "reader.hxx"
@@ -20,9 +19,9 @@ const char* SYSTEM_LOADER        = "*system-loader*";
 const char* SYSTEM_PATH          = "*system-path*";
 const char* TOPLEVEL             = "*toplevel*";
 
-static void define_system( const char* name, const char* evar )
+static void define_system()
 {
-   std::string system = R"(
+   const char* system = R"(
 
 (begin
    (define *version* "<interpreter>")
@@ -34,7 +33,7 @@ static void define_system( const char* name, const char* evar )
          (set! x 1)
          (load (system-path "escheme.scm"))
           )))
-     (display "$name ")
+     (display "escheme ")
      (display *version*)
      (newline)
      (newline)
@@ -59,20 +58,14 @@ static void define_system( const char* name, const char* evar )
         port)))
 
 (define (system-path file)
-  (let ((home (getenv "$evar")))
+  (let ((home (getenv "ESCHEME")))
     (if (= (string-length home) 0)
         file
         (string-append home "/" file))))
 
 )";
 
-   std::string pattern_name = "$name";
-   std::string pattern_evar = "$evar";
-   
-   system.replace( system.find(pattern_name), pattern_name.size(), name );
-   system.replace( system.find(pattern_evar), pattern_evar.size(), evar );
-
-   const SEXPR port = PIO::open_on_string( MEMORY::string(system.c_str()), pm_input );
+   const SEXPR port = PIO::open_on_string( MEMORY::string(system), pm_input );
    
    GcSuspension( "define-system" );
    
@@ -87,7 +80,7 @@ void rep_loop()
 
    try
    {
-      define_system( "escheme", "ESCHEME" );
+      define_system();
       
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_LOADER)) );
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_PATH)) );
@@ -100,8 +93,8 @@ void rep_loop()
 
    //
    // REP Loop
-   //   a single call into the interpreter
-   //   exit on exceptions
+   //   a single call into the interpreter.
+   //   exit on exceptions and evaluate the toplevel continuation.
    //
 
    SEXPR exp = getvalue( SYMTAB::enter(SYSTEM_REPLOOP) );
@@ -110,7 +103,7 @@ void rep_loop()
    {
       try
       {
-	 exp = EVAL::eceval(exp);
+	 EVAL::eceval( exp );
 	 return;
       }
       catch ( ERROR::SevereError& )

@@ -54,7 +54,7 @@ DEFINES =
 
 $(APP) : $(OBJS) $(NOISE)/linenoise.o
 	$(C++) -o $@ $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
-	ln -s $(APP) escheme
+	ln -sf $(APP) escheme
 
 %.o	: %.cxx
 	$(C++) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
