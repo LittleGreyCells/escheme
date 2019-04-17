@@ -1,7 +1,5 @@
 #include "funtab.hxx"
 
-#include <vector>
-
 #include "sexpr.hxx"
 #include "symtab.hxx"
 #include "func.hxx"
@@ -29,7 +27,7 @@ static SEXPR unimplemented()
    return null; 
 }
 
-static std::vector<Function> funtab =
+static const Function funtab[] =
 {
    { "exit",		     FUNC::exit 	, n_func },
    { "eval-state",	     EVAL::get_evaluator_state , n_func },
@@ -345,8 +343,12 @@ void FUNTAB::initialize()
 {
    regstack.push(null);
 
-   for ( auto& fn : funtab )
+   constexpr int NFUNCS = sizeof(funtab) / sizeof(funtab[0]);
+   
+   for ( int i = 0; i < NFUNCS; ++i )
    {
+      const auto& fn = funtab[i];
+      
       regstack.top() = MEMORY::prim( fn.func, fn.kind );
       setprimname( regstack.top(), fn.name );
       SYMTAB::enter( fn.name, regstack.top() );

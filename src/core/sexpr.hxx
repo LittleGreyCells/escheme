@@ -9,7 +9,6 @@
 
 enum ConfigurationConstants
 {
-   MAX_SYMBOL_LENGTH  = 80,     // reader's limitation
    MAX_INTEGER_LENGTH = 80,
    ECE_HISTORY_LENGTH = 100,
    NODE_BLOCK_SIZE    = 5000,

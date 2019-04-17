@@ -151,9 +151,9 @@ static bool issym( int ch )
    }
 }
 
-SEXPR READER::number( char* s )
+static SEXPR number( std::string& s )
 {
-   char* p = s;
+   const char* p = s.c_str();
 
    /* check for a sign */
    if (*p == '+' || *p == '-')
@@ -190,44 +190,35 @@ SEXPR READER::number( char* s )
    if ((n == 0 && m == 0) || *p)
       return null;
 
-   /* convert the string to a number */
-   if (*s == '+')
-      s++;
-
-   n = strlen(s) - 1;
-   if (s[n] == '.')
-      s[n] = 0;
-
-   return d ? MEMORY::flonum(atof(s)) : MEMORY::fixnum(atol(s));
+   return d ? MEMORY::flonum( atof( s.c_str() ) ) :
+              MEMORY::fixnum( atol( s.c_str() ) );
 }
 
-static void getsymbolname( SEXPR inport, char s[] )
+static void getsymbolname( SEXPR inport, std::string& s )
 {
    int ch;
-   unsigned i;
 
-   for (i = 0; (ch = PIO::get(inport)) != EOF && issym(ch); )
-      if (i < MAX_SYMBOL_LENGTH-1)
-	 s[i++] = tolower(ch);
-   s[i] = '\0';
+   for ( ; (ch = PIO::get(inport)) != EOF && issym(ch); )
+      s.push_back( tolower(ch) );
+
    PIO::unget(inport, ch);
 }
 
 SEXPR READER::read_symbol( SEXPR inport )
 {
-   char s[MAX_SYMBOL_LENGTH];
+   std::string s;
 
    getsymbolname( inport, s );
 
-   if (s[0] == '\0')
+   if ( s.length() == 0 )
    {
       ERROR::severe("expecting symbol name");
       return null;
    }
    else
    {
-      SEXPR n = number(s);
-      return anyp(n) ? n : SYMTAB::enter(s);
+      SEXPR n = number( s );
+      return anyp(n) ? n : SYMTAB::enter( s.c_str() );
    }
 }
 
@@ -304,7 +295,7 @@ SEXPR READER::read_fixnum( SEXPR inport, int base )
 
 SEXPR READER::read_special( SEXPR inport )
 {
-   char s[MAX_SYMBOL_LENGTH];
+   std::string s;
 
    int ch = scan(inport);
 
@@ -320,13 +311,13 @@ SEXPR READER::read_special( SEXPR inport )
       {
 	 getsymbolname( inport, s );
 
-	 if (strcasecmp(s, "newline") == 0)
+	 if ( strcasecmp( s.c_str(), "newline" ) == 0 )
 	    ch = '\n';
-	 else if (strcasecmp(s, "space") == 0)
+	 else if ( strcasecmp( s.c_str(), "space" ) == 0 )
 	    ch = ' ';
-	 else if (strlen(s) > 1)
+	 else if ( s.length() > 1 )
 	    ERROR::severe("unknown special symbol");
-	 else if (strlen(s) == 0)
+	 else if ( s.length() == 0 )
 	    ch = PIO::get(inport);
 	 else
 	    ch = s[0];
@@ -353,19 +344,19 @@ SEXPR READER::read_special( SEXPR inport )
       {
 	 getsymbolname( inport, s );
 
-	 if (strcasecmp(s, "true") == 0)
+	 if ( strcasecmp( s.c_str(), "true" ) == 0 )
 	    return SYMTAB::symbol_true;
-	 else if (strcasecmp(s, "false") == 0)
+	 else if ( strcasecmp( s.c_str(), "false" ) == 0 )
 	    return SYMTAB::symbol_false;
-	 else if (strcasecmp(s, "null") == 0)
+	 else if ( strcasecmp( s.c_str(), "null") == 0 )
 	    return null;
-	 else if (s[0] == '\0')
+	 else if ( s.length() == 0 )
 	    ERROR::severe("expected special symbol after #!");
 	 else
 	 {
-	    char ss[MAX_SYMBOL_LENGTH];
-	    SPRINTF(ss, "#!%s", s);
-	    return SYMTAB::enter(ss);
+            std::string ss = "#!";
+            ss += s;
+	    return SYMTAB::enter( ss.c_str() );
 	 }
       }
 
@@ -375,9 +366,9 @@ SEXPR READER::read_special( SEXPR inport )
 
 	 getsymbolname( inport, s );
 
-	 if (strcasecmp(s, "t") == 0)
+	 if ( strcasecmp( s.c_str(), "t" ) == 0 )
 	    return SYMTAB::symbol_true;
-	 else if (strcasecmp(s, "f") == 0)
+	 else if ( strcasecmp( s.c_str(), "f" ) == 0)
 	    return SYMTAB::symbol_false;
 	 else
 	 {

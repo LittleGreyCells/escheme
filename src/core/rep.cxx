@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <string>
+
 #include "error.hxx"
 #include "reader.hxx"
 #include "pio.hxx"
@@ -21,8 +23,7 @@ const char* TOPLEVEL             = "*toplevel*";
 
 static void define_system()
 {
-   const char* system = R"(
-
+   const std::string system = R"(
 (begin
    (define *version* "<interpreter>")
    (set-prompt "noise> ")
@@ -62,7 +63,6 @@ static void define_system()
     (if (= (string-length home) 0)
         file
         (string-append home "/" file))))
-
 )";
 
    const SEXPR port = PIO::open_on_string( MEMORY::string(system), pm_input );

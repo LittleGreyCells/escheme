@@ -2,6 +2,8 @@
 #define reader_hxx
 
 #include <cstdio>
+#include <string>
+
 #include "sexpr.hxx"
 #include "pio.hxx"
 
@@ -34,7 +36,7 @@ namespace READER
    SEXPR read_quote( SEXPR inport, SEXPR flavor );
    SEXPR read_comma( SEXPR inport );
    SEXPR read_fixnum( SEXPR inport, int base );
-   SEXPR number( char* s );
+   //SEXPR number( std::string& s );
 
    int scan( SEXPR inport );
 }

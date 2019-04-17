@@ -378,14 +378,14 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 SEXPR MEMORY::string( const char* s )     // (<length> . s)
 {
    const UINT32 length = strlen(s);
-   if (length == 0)
+   if ( length == 0 )
    {
       return string_null;
    }
    else
    {
-      SEXPR n = MEMORY::string(length);
-      strcpy(getstringdata(n), s);
+      SEXPR n = MEMORY::string( length );
+      strcpy( getstringdata(n), s );
       return n;
    }
 }

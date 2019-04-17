@@ -5,7 +5,9 @@
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
+
 #include <algorithm>
+#include <string>
 
 #include "sexpr.hxx"
 #include "argstack.hxx"
@@ -671,7 +673,6 @@ SEXPR FUNC::symbol_to_string()
 }
 
 static auto gensym_number = 0u;
-static char gensym_prefix[MAX_SYMBOL_LENGTH+1] = "g";
 
 SEXPR FUNC::gensym()
 {
@@ -679,22 +680,22 @@ SEXPR FUNC::gensym()
    // syntax: (gensym [<sym>|<str>|<fix>]) -> uninterned symbol
    //
    ArgstackIterator iter;
+   
+   std::string new_sym = "g";
 
-   if (iter.more())
+   if ( iter.more() )
    {
       const SEXPR arg = iter.getlast();
 
-      if (symbolp(arg))
+      if ( symbolp(arg) )
       {
-	 strncpy(gensym_prefix, getname(arg), MAX_SYMBOL_LENGTH);
-	 gensym_prefix[MAX_SYMBOL_LENGTH] = '\0';
+         new_sym = getname(arg);
       }
-      else if (stringp(arg))
+      else if ( stringp(arg) )
       {
-	 strncpy(gensym_prefix, getstringdata(arg), MAX_SYMBOL_LENGTH);
-	 gensym_prefix[MAX_SYMBOL_LENGTH] = '\0';
+	 new_sym = getstringdata(arg);
       }
-      else if (fixnump(arg))
+      else if ( fixnump(arg) )
       {
 	 gensym_number = static_cast<decltype(gensym_number)>(getfixnum(arg));
       }
@@ -702,11 +703,12 @@ SEXPR FUNC::gensym()
 	 ERROR::severe("gensym requires [sym|str|fix]");
    }
 
-   char new_sym[MAX_SYMBOL_LENGTH];
+   char number[20];
+   SPRINTF( number, "%u", gensym_number++ );
 
-   SPRINTF(new_sym, "%s%u", gensym_prefix, gensym_number++);
+   new_sym += number;
   
-   return MEMORY::symbol(new_sym);
+   return MEMORY::symbol( new_sym.c_str() );
 }
 
 SEXPR FUNC::symbol_value()
