@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <string>
 
 #include "reader.hxx"
 #include "symtab.hxx"
@@ -233,18 +234,16 @@ SEXPR READER::read_symbol( SEXPR inport )
 SEXPR READER::read_string( SEXPR inport )
 {
    int ch;
-   char s[MAX_STRING_LENGTH];
-   unsigned i;
+   std::string s;
 
-   for (i = 0; ((ch = PIO::get(inport)) != EOF) && (ch != '"'); )
+   for ( ; ((ch = PIO::get(inport)) != EOF) && (ch != '"'); )
    {
       if (ch == '\\')
 	 ch = PIO::get(inport);
-      if ((ch != EOF) && (i < MAX_STRING_LENGTH-1))
-	 s[i++] = ch;
+      if ( ch != EOF )
+	 s.push_back( ch );
    }
-   s[i] = '\0';
-   return MEMORY::string(s);
+   return MEMORY::string( s );
 }
 
 SEXPR READER::read_vector( SEXPR inport, char terminator )

@@ -30,20 +30,13 @@ void MEMORY::register_marker( Marker marker )
    markers.push_back( marker );
 }
 
-//////////////////////////////////////////
 //
 // Node Block Pool
 //
-//////////////////////////////////////////
 
 long  MEMORY::TotalNodeCount  = 0;
 long  MEMORY::FreeNodeCount   = 0;
 int   MEMORY::CollectionCount = 0;
-
-#define freename(n)        delete getname(n)
-#define freestringdata(n)  delete getstringdata(n)
-#define freevectordata(n)  delete getvectordata(n)
-#define freebvecdata(n)    delete getbvecdata(n)
 
 static SEXPR FreeNodeList;
 
@@ -76,8 +69,29 @@ static void NewNodeBlock()
 }
 
 //
-// End NodeBlockPool
+// Private Allocation/Deallocation Functions
 //
+
+static SEXPR newnode( NodeKind kind )
+{
+   if (nullp(FreeNodeList))
+   {
+      MEMORY::gc();
+
+      // don't wait till 0, before allocating a new block.
+      //   make the threshold 1/5 of the NODE_BLOCK_SIZE.
+      if ( MEMORY::FreeNodeCount < NODE_BLOCK_SIZE / 5 )
+	 NewNodeBlock();
+   }
+
+   MEMORY::FreeNodeCount -= 1;
+
+   SEXPR n = FreeNodeList;
+   FreeNodeList = FreeNodeList->getnext();
+   n->kind = kind;
+
+   return n;
+}
 
 //
 // Garbage Collection
@@ -107,12 +121,6 @@ static void badnode( SEXPR n )
    SPRINTF(buffer, "bad node (%p,%d) during gc", n->id(), nodekind(n));
    ERROR::fatal(buffer);
 }
-
-//
-// Mark this node and all reachable substructures
-//
-
-// marking Functions
 
 #define markedp(n) ((n)->mark)
 #define setmark(n) ((n)->mark = 1)
@@ -232,11 +240,6 @@ void MEMORY::mark( TSTACK<SEXPR>& stack )
       mark( stack[i] );
 }
 
-//
-// Sweep up the unused (unreachable) nodes
-//   This should be called after all reachable nodes are marked
-//   All unmarked nodes are collected into the free node list
-//
 static void sweep()
 {
    FreeNodeList = null;
@@ -263,19 +266,19 @@ static void sweep()
 	    switch (nodekind(p))
 	    {
 	       case n_symbol:
-		  freename(p);
+		  delete[] getname( p );
 		  break;
 
 	       case n_string:
-		  freestringdata(p);
+		  delete[] getstringdata( p );
 		  break;
 
 	       case n_vector:
-		  freevectordata(p);
+		  delete[] getvectordata( p );
 		  break;
 
 	       case n_bvec:
-		  freebvecdata(p);
+		  delete[] getbvecdata( p );
 		  break;
 
 	       case n_environment:
@@ -283,6 +286,11 @@ static void sweep()
 		     frameStore.free( getenvframe(p) ); 
 		  break;
 
+               case n_port:
+                  if ( getfile(p) != NULL )
+                     fclose( getfile(p) );
+                  break;
+                  
 	       default:
 		  break;
 	    }
@@ -320,52 +328,6 @@ void MEMORY::gc()
    sweep();
 }
 
-//////////////////////////////////////////////////////
-//
-// Private Allocation Functions
-//
-/////////////////////////////////////////////////////
-
-static SEXPR newnode( NodeKind kind )
-{
-   if (nullp(FreeNodeList))
-   {
-      MEMORY::gc();
-
-      // don't wait till 0, before allocating a new block.
-      //   make the threshold 1/5 of the NODE_BLOCK_SIZE.
-      if ( MEMORY::FreeNodeCount < NODE_BLOCK_SIZE / 5 )
-	 NewNodeBlock();
-   }
-
-   MEMORY::FreeNodeCount -= 1;
-
-   SEXPR n = FreeNodeList;
-   FreeNodeList = FreeNodeList->getnext();
-   n->kind = kind;
-
-   return n;
-}
-
-static SEXPR* newvectordata( UINT32 length )
-{
-   SEXPR* v = new SEXPR[length];
-   for (UINT32 i = 0; i < length; ++i)
-      v[i] = null;
-   return v;
-}
-
-static BYTE* newbvecdata( UINT32 length )
-{
-   BYTE* v = new BYTE[length];
-   for (UINT32 i = 0; i < length; ++i)
-      v[i] = 0;
-   return v;
-}
-
-static char* newstringdata( UINT32 length ) { return new char[length]; }
-static char* newsymbolname( UINT32 length ) { return new char[length]; }
-
 //
 // Public Allocation Functions
 //
@@ -395,7 +357,7 @@ SEXPR MEMORY::symbol( const char* s )      // (<name> <value>  <plist>)
 {
    regstack.push( cons(null, null) );
    SEXPR n = newnode(n_symbol);
-   char* str = newsymbolname(strlen(s)+1);
+   char* str = new char[strlen(s)+1];
    strcpy(str, s);
    setname(n, str);
    setsymbolpair( n, regstack.pop() );
@@ -405,7 +367,7 @@ SEXPR MEMORY::symbol( const char* s )      // (<name> <value>  <plist>)
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
    SEXPR n = newnode(n_string);
-   char* str = newstringdata(length+1);
+   char* str = new char[length+1];
    strcpy(str, "");
    setstringlength(n, length);
    setstringindex(n, 0);
@@ -415,15 +377,29 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 
 SEXPR MEMORY::string( const char* s )     // (<length> . s)
 {
-   const UINT32 slen = strlen(s);
-   if (slen == 0)
+   const UINT32 length = strlen(s);
+   if (length == 0)
    {
       return string_null;
    }
    else
    {
-      SEXPR n = MEMORY::string(slen);
+      SEXPR n = MEMORY::string(length);
       strcpy(getstringdata(n), s);
+      return n;
+   }
+}
+
+SEXPR MEMORY::string( const std::string& s )     // (<length> . s)
+{
+   if ( s.length() == 0 )
+   {
+      return string_null;
+   }
+   else
+   {
+      SEXPR n = MEMORY::string( s.length() );
+      strcpy( getstringdata(n), s.c_str() );
       return n;
    }
 }
@@ -449,26 +425,30 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
    SEXPR n = newnode(n_vector);
    setvectorlength(n, length);
-   setvectordata(n, newvectordata(length));
+   SEXPR* v = new SEXPR[length];
+   for (UINT32 i = 0; i < length; ++i)
+      v[i] = null;
+   setvectordata(n, v);
    return n;
 }
 
 SEXPR MEMORY::string_resize( SEXPR string, UINT32 delta )
 {
+   printf( "resizing string %p by delta %u\n", static_cast<void*>(string), delta);
+   
    guard(string, stringp);
 
-   const UINT32 old_length = getstringlength(string);
-   const UINT32 new_length = old_length + delta;
+   const auto new_length = getstringlength(string) + delta;
 
    if (new_length > MAX_STRING_SIZE)
       ERROR::severe( "string exceeds maximum size" );
       
-   char* old_data = getstringdata(string);
-   char* new_data = new char[new_length];
+   auto& old_data = getstringdata(string);
+   auto new_data = new char[new_length];
       
    strcpy(new_data, old_data);
 
-   delete old_data;
+   delete[] old_data;
 
    setstringlength(string, new_length);
    setstringdata(string, new_data);
@@ -487,7 +467,10 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
 {
    SEXPR n = newnode(n_bvec);
    setbveclength(n, length);
-   setbvecdata(n, newbvecdata(length));
+   BYTE* v = new BYTE[length];
+   for (UINT32 i = 0; i < length; ++i)
+      v[i] = 0;
+   setbvecdata(n, v);
    return n;
 }
 

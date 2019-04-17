@@ -149,7 +149,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	 case n_map:
 	 case n_foreach:
 	 case n_force:
-	    SPRINTF(buffer, "{prim:%s}", getprimname(n));
+	    SPRINTF(buffer, "{primitive:%s}", getprimname(n));
 	    PIO::put(outport, buffer);
 	    break;
 
@@ -159,7 +159,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_string_port:
-	    SPRINTF(buffer, "{sport:%p}", n->id() );
+	    SPRINTF(buffer, "{string-port:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
@@ -169,14 +169,14 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_continuation:
-	    SPRINTF(buffer, "{cont:%p}", n->id() );
+	    SPRINTF(buffer, "{continuation:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
 	 case n_bvec:
 	    if ( 0 )
 	    {
-	       SPRINTF(buffer, "{bvec:%p}", n->id() );
+	       SPRINTF(buffer, "{byte-vector:%p}", n->id() );
 	       PIO::put(outport, buffer);
 	    }
 	    else
@@ -196,7 +196,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_environment:
-	    SPRINTF(buffer, "{env:%p}", n->id() );
+	    SPRINTF(buffer, "{environment:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 
@@ -211,7 +211,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_free:
-	    SPRINTF(buffer, "{free:%p}", n->id() );
+	    SPRINTF(buffer, "{free-cell:%p}", n->id() );
 	    PIO::put(outport, buffer);
 	    break;
 

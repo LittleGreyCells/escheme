@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <array>
+#include <string>
 
 #include "sexpr.hxx"
 #include "tstack.hxx"
@@ -34,6 +35,7 @@ namespace MEMORY
    SEXPR flonum( FLONUM flonum );
    SEXPR string( UINT32 length );
    SEXPR string( const char* string );
+   SEXPR string( const std::string& string );
    SEXPR character( CHAR ch );
    SEXPR cons( SEXPR car, SEXPR cdr );
    SEXPR prim( FUNCTION func, NodeKind kind = n_func );
