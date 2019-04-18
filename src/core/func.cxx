@@ -1433,7 +1433,7 @@ SEXPR FUNC::open_output_string()
    // syntax: (open-output-string)
    //
    argstack.noargs();
-   push_reg( MEMORY::string(10) );
+   push_reg( MEMORY::string(2000) );
    SEXPR port = PIO::open_on_string( top_reg(), pm_output );
    pop_reg();
    return port;
@@ -2314,7 +2314,7 @@ SEXPR FUNC::char_to_integer()
    //
    ArgstackIterator iter;
    const SEXPR ch = guard(iter.getlast(), charp);
-   return MEMORY::fixnum((FIXNUM)getcharacter(ch));
+   return MEMORY::fixnum( static_cast<FIXNUM>(getcharacter(ch)) );
 }
 
 SEXPR FUNC::integer_to_char()
@@ -2324,7 +2324,7 @@ SEXPR FUNC::integer_to_char()
    //
    ArgstackIterator iter;
    const SEXPR num = guard(iter.getlast(), fixnump);
-   return MEMORY::character((CHAR)getfixnum(num));
+   return MEMORY::character( static_cast<CHAR>(getfixnum(num)) );
 }
 
 SEXPR FUNC::objaddr()
@@ -2334,6 +2334,6 @@ SEXPR FUNC::objaddr()
    //
    ArgstackIterator iter;
    const SEXPR obj = iter.getlast();
-   return MEMORY::fixnum((FIXNUM)obj);
+   return MEMORY::fixnum( reinterpret_cast<FIXNUM>(obj) );
 }
 

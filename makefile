@@ -65,7 +65,7 @@ $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 clean 	:
 	find . -name "*.o" -delete
 	find . -name "*~" -delete
-	rm escheme
+	rm -f escheme
 
 install : $(APP)
 	mkdir -p /usr/share/$(APP)

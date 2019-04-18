@@ -434,8 +434,6 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 
 SEXPR MEMORY::string_resize( SEXPR string, UINT32 delta )
 {
-   printf( "resizing string %p by delta %u\n", static_cast<void*>(string), delta);
-   
    guard(string, stringp);
 
    const auto new_length = getstringlength(string) + delta;
