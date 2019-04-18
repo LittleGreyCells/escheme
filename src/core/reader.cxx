@@ -218,7 +218,7 @@ SEXPR READER::read_symbol( SEXPR inport )
    else
    {
       SEXPR n = number( s );
-      return anyp(n) ? n : SYMTAB::enter( s.c_str() );
+      return anyp(n) ? n : SYMTAB::enter( s );
    }
 }
 
@@ -356,7 +356,7 @@ SEXPR READER::read_special( SEXPR inport )
 	 {
             std::string ss = "#!";
             ss += s;
-	    return SYMTAB::enter( ss.c_str() );
+	    return SYMTAB::enter( ss );
 	 }
       }
 

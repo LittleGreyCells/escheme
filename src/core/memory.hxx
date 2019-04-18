@@ -31,6 +31,7 @@ namespace MEMORY
 
    // allocators
    SEXPR symbol( const char* name );
+   SEXPR symbol( const std::string& name );
    SEXPR fixnum( FIXNUM fixnum );
    SEXPR flonum( FLONUM flonum );
    SEXPR string( UINT32 length );
@@ -52,7 +53,7 @@ namespace MEMORY
    SEXPR code( SEXPR bcodes, SEXPR sexprs );
 
    // modifier(s)
-   SEXPR string_resize( SEXPR string, UINT32 delta );
+   void resize( SEXPR string, UINT32 delta );
   
    // garbage collection
 

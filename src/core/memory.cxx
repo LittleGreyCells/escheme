@@ -364,6 +364,17 @@ SEXPR MEMORY::symbol( const char* s )      // (<name> <value>  <plist>)
    return n;
 }
 
+SEXPR MEMORY::symbol( const std::string& s )      // (<name> <value>  <plist>)
+{
+   regstack.push( cons(null, null) );
+   SEXPR n = newnode(n_symbol);
+   char* str = new char[s.length()+1];
+   strcpy( str, s.c_str() );
+   setname(n, str);
+   setsymbolpair( n, regstack.pop() );
+   return n;
+}
+
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
    SEXPR n = newnode(n_string);
@@ -432,7 +443,7 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
    return n;
 }
 
-SEXPR MEMORY::string_resize( SEXPR string, UINT32 delta )
+void MEMORY::resize( SEXPR string, UINT32 delta )
 {
    guard(string, stringp);
 
@@ -450,8 +461,6 @@ SEXPR MEMORY::string_resize( SEXPR string, UINT32 delta )
 
    setstringlength(string, new_length);
    setstringdata(string, new_data);
-
-   return string;
 }
 
 SEXPR MEMORY::continuation()

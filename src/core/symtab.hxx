@@ -1,6 +1,8 @@
 #ifndef symtab_hxx
 #define symtab_hxx
 
+#include <string>
+
 #include "sexpr.hxx"
 
 #define QUOTE  		SYMTAB::symbol_quote
@@ -57,10 +59,11 @@ namespace SYMTAB
 
    SEXPR enter( const char* name );
    SEXPR enter( const char* name, SEXPR value );
+   
    SEXPR enter( SEXPR symbol );
-
-   // private
-   unsigned hash( const char* s );
+   
+   SEXPR enter( const std::string& name );
+   SEXPR enter( const std::string& name, SEXPR value );
 }
 
 using SYMTAB::symbol_true;

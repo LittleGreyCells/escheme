@@ -16,9 +16,9 @@ SEXPR PIO::eof_object;
 FILE* PIO::transcript = 0;
 
 
-SEXPR PIO::open( const char* name, short mode, const char* ftype )
+SEXPR PIO::open( SEXPR name, short mode, const char* ftype )
 {
-   FILE* file = fopen(name, ftype);
+   FILE* file = fopen( getstringdata(name), ftype );
   
    if (file == NULL)
    {
@@ -177,9 +177,7 @@ static void append_char( SEXPR str, int ch )
 {
    // append the character, expanding if needed
    if (getstringindex(str) >= getstringlength(str))
-   {
-      str = MEMORY::string_resize( str, 1000 );
-   }
+      MEMORY::resize( str, 1000 );
    getstringdata(str)[getstringindex(str)++] = ch;
    getstringdata(str)[getstringindex(str)] = 0;
 }
@@ -231,15 +229,15 @@ void PIO::put( SEXPR outport, int ch )
    }
 }
 
-void PIO::transcript_on( const char* name )
+void PIO::transcript_on( SEXPR name )
 {
    if ( transcript )
       fclose( transcript );
 
-   transcript = fopen( name, "w" );
+   transcript = fopen( getstringdata(name), "w" );
 
    if ( transcript == NULL )
-      ERROR::severe( "unable to open transcript file", MEMORY::string(name) );
+      ERROR::severe( "unable to open transcript file", name );
 }
 
 void PIO::transcript_off()

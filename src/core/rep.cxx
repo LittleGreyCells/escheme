@@ -16,10 +16,10 @@
 #include "eval/eval.hxx"
 
 // symbol names for hanging sexprs
-const char* SYSTEM_REPLOOP       = "*system-rep-loop*";
-const char* SYSTEM_LOADER        = "*system-loader*";
-const char* SYSTEM_PATH          = "*system-path*";
-const char* TOPLEVEL             = "*toplevel*";
+const char* SYSTEM_REPLOOP = "*system-rep-loop*";
+const char* SYSTEM_LOADER  = "*system-loader*";
+const char* SYSTEM_PATH    = "*system-path*";
+const char* TOPLEVEL       = "*toplevel*";
 
 static void define_system()
 {

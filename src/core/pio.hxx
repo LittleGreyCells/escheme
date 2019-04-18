@@ -19,7 +19,7 @@ namespace PIO
    
    void initialize();
    
-   SEXPR open( const char* name, short mode, const char* ftype );
+   SEXPR open( SEXPR fname, short mode, const char* ftype );
    SEXPR open_on_string( SEXPR str, short mode );
    
    void close( SEXPR port );
@@ -39,7 +39,7 @@ namespace PIO
    inline void put( const char* s ) { put(stdout_port, s); }
    inline void put( int ch ) { put(stdout_port, ch); }
 
-   void transcript_on( const char* name );
+   void transcript_on( SEXPR fname );
    void transcript_off();
 }
 

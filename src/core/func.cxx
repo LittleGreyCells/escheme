@@ -1309,7 +1309,7 @@ SEXPR FUNC::open_input_file()
    //
    ArgstackIterator iter;
    const SEXPR fname = guard(iter.getlast(), stringp);
-   return PIO::open(getstringdata(fname), pm_input, "r");
+   return PIO::open( fname, pm_input, "r" );
 }
 
 SEXPR FUNC::open_output_file()
@@ -1319,7 +1319,7 @@ SEXPR FUNC::open_output_file()
    //
    ArgstackIterator iter;
    const SEXPR fname = guard(iter.getlast(), stringp);
-   return PIO::open(getstringdata(fname), pm_output, "w");
+   return PIO::open( fname, pm_output, "w" );
 }
 
 SEXPR FUNC::open_append_file()
@@ -1329,7 +1329,7 @@ SEXPR FUNC::open_append_file()
    //
    ArgstackIterator iter;
    const SEXPR fname = guard(iter.getlast(), stringp);
-   return PIO::open(getstringdata(fname), pm_output, "a");
+   return PIO::open( fname, pm_output, "a" );
 }
 
 SEXPR FUNC::open_update_file()
@@ -1339,7 +1339,7 @@ SEXPR FUNC::open_update_file()
    //
    ArgstackIterator iter;
    const SEXPR fname = guard(iter.getlast(), stringp);
-   return PIO::open(getstringdata(fname), pm_input|pm_output, "r+");
+   return PIO::open( fname, pm_input|pm_output, "r+" );
 }
 
 SEXPR FUNC::close_port()
@@ -2178,7 +2178,7 @@ SEXPR FUNC::transcript_on()
 {
    ArgstackIterator iter;
    SEXPR fname = guard(iter.getlast(), stringp);
-   PIO::transcript_on( getstringdata(fname) );
+   PIO::transcript_on( fname );
    return null;
 }
 

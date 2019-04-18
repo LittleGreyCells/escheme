@@ -36,14 +36,7 @@ SEXPR SYMTAB::symbol_let;
 SEXPR SYMTAB::symbol_letrec;
 SEXPR SYMTAB::symbol_access;
 
-SEXPR SYMTAB::enter( const char* name, SEXPR value )
-{
-   SEXPR s = SYMTAB::enter(name);
-   setvalue(s, value);
-   return s;
-}
-
-unsigned SYMTAB::hash( const char* s )
+static unsigned hash( const char* s )
 {
    UINT32 i = 0;
 
@@ -52,7 +45,13 @@ unsigned SYMTAB::hash( const char* s )
    return i % NBUCKETS;
 }
 
-// create and intern a new symbol using the name provided
+SEXPR SYMTAB::enter( const char* name, SEXPR value )
+{
+   SEXPR s = SYMTAB::enter(name);
+   setvalue(s, value);
+   return s;
+}
+
 SEXPR SYMTAB::enter( const char* symbol_name )
 {
    const UINT32 h = hash(symbol_name);
@@ -63,6 +62,34 @@ SEXPR SYMTAB::enter( const char* symbol_name )
       {
 	 SEXPR s = getcar(n);
 	 if ( strcmp(name(s), symbol_name) == 0 )
+	    return s;
+      }
+   }
+
+   regstack.push( MEMORY::symbol(symbol_name) );
+   setvalue( regstack.top(), UNBOUND );
+   vectorset( table, h, MEMORY::cons(regstack.top(), vectorref(table, h)) );
+   return regstack.pop();
+}
+
+SEXPR SYMTAB::enter( const std::string& name, SEXPR value )
+{
+   SEXPR s = SYMTAB::enter(name);
+   setvalue(s, value);
+   return s;
+}
+
+SEXPR SYMTAB::enter( const std::string& symbol_name )
+{
+   const char* sn = symbol_name.c_str();
+   const UINT32 h = hash( sn );
+
+   if ( anyp(vectorref(table, h)) )
+   {
+      for ( SEXPR n = vectorref(table, h); anyp(n); n = getcdr(n) )
+      {
+	 SEXPR s = getcar(n);
+	 if ( strcmp(name(s), sn) == 0 )
 	    return s;
       }
    }
