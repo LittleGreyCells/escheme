@@ -1825,10 +1825,10 @@ SEXPR FUNC::integer_to_string()
    ArgstackIterator iter;
    const SEXPR s = guard(iter.getlast(), fixnump);
 
-   char image[MAX_INTEGER_LENGTH];
-   SPRINTF(image, "%ld", getfixnum(s));
+   char buf[MAX_IMAGE_LENGTH];
+   SPRINTF( buf, "%ld", getfixnum(s) );
   
-   return MEMORY::string(image);
+   return MEMORY::string( buf );
 }
 
 SEXPR FUNC::string_to_integer()

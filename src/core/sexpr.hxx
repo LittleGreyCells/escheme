@@ -9,7 +9,7 @@
 
 enum ConfigurationConstants
 {
-   MAX_INTEGER_LENGTH = 80,
+   MAX_IMAGE_LENGTH   = 256,
    ECE_HISTORY_LENGTH = 100,
    NODE_BLOCK_SIZE    = 5000,
    ARGSTACK_SIZE      = 500,

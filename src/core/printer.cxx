@@ -1,8 +1,10 @@
 #include "printer.hxx"
+
+#include "sexpr.hxx"
 #include "error.hxx"
 #include "recumark.hxx"
 
-static char buffer[256];
+static char buffer[MAX_IMAGE_LENGTH];
 
 static void error( const char* s )
 {
@@ -77,6 +79,18 @@ void PRINTER::print_vector( SEXPR outport, const SEXPR n, int style )
    PIO::put(outport, ')');
 }
 
+static void print_string( SEXPR outport, const char* p, int style )
+{
+   if ( style )
+      PIO::put( outport, '"' );
+   
+   while ( *p )
+      PIO::put( outport, *p++ );
+   
+   if ( style )
+      PIO::put( outport, '"' );
+}
+
 void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 {
    if (nullp(n))
@@ -96,7 +110,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_symbol:
-	    PIO::put(outport, getname(n));
+            print_string( outport, getname(n), 0 );
 	    break;
 
 	 case n_fixnum:
@@ -110,11 +124,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_string:
-	    if (style)
-	       SPRINTF(buffer, "\"%s\"", getstringdata(n));
-	    else
-	       SPRINTF(buffer, "%s", getstringdata(n));
-	    PIO::put(outport, buffer);
+            print_string( outport, getstringdata(n), style );
 	    break;
 
 	 case n_char:
