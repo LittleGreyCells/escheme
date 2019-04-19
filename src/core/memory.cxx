@@ -450,7 +450,7 @@ void MEMORY::resize( SEXPR string, UINT32 delta )
    const auto new_length = getstringlength(string) + delta;
 
    if (new_length > MAX_STRING_SIZE)
-      ERROR::severe( "string exceeds maximum size" );
+      ERROR::severe( "string length exceeds maximum size", MEMORY::fixnum(new_length) );
       
    auto& old_data = getstringdata(string);
    auto new_data = new char[new_length];

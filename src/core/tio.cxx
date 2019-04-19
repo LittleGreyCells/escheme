@@ -1,9 +1,10 @@
 #include "tio.hxx"
 
-#include <string>
 #include <cstdio>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstring>
+
+#include <string>
 
 #include "pio.hxx"
 #include "error.hxx"
@@ -90,29 +91,13 @@ void TIO::history_init()
 
 void TIO::history_add( SEXPR sexpr )
 {
-   // convert sexpr -> text
-
-   // since we don't have string ports we do file i/o
-   std::string temp = "/tmp/sexpr";
-   FILE* file = fopen( temp.c_str(), "w" );
-   SEXPR port = MEMORY::port( file, pm_output );
+   const SEXPR port = PIO::open_on_string( MEMORY::string(500), pm_output );
    PRINTER::print( port, sexpr );
-   PIO::close( port );
 
-   // read back the contents as text
-   std::string text;
-   file = fopen( temp.c_str(), "r" );
-   while ( !feof(file) )
-   {
-      char buffer[500];
-      const char* s = fgets( buffer, sizeof(buffer), file );
-      if ( s != NULL )
-	 text.append( s );
-   }
-   fclose( file );
-   
-   // add it to the history
-   linenoiseHistoryAdd( text.c_str() );
+   SEXPR str = getstringportstring(port);
+
+   // linenoise makes a copy when it adds it to the history.
+   linenoiseHistoryAdd( getstringdata(str) );
    linenoiseHistorySave( history );
 }
 

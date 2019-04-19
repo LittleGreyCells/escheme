@@ -9,47 +9,41 @@
 
 enum ConfigurationConstants
 {
-   MAX_IMAGE_LENGTH   = 256,
-   ECE_HISTORY_LENGTH = 100,
    NODE_BLOCK_SIZE    = 5000,
    ARGSTACK_SIZE      = 500,
    REGSTACK_SIZE      = 1000,
    INTSTACK_SIZE      = 1000,
+   ECE_HISTORY_LENGTH = 100,
+   MAX_IMAGE_LENGTH   = 256,
    MAX_STRING_SIZE    = 0xFFFFFFFE,
 };
 
 enum NodeKind
 {
-   n_free,         // 0   // unassigned
-
-   n_null,         // 1
-   n_symbol,       // 2
-   n_fixnum,       // 3
-   n_flonum,       // 4
-   n_char,         // 5
-
-   n_string,       // 6
-   n_cons,         // 7
-   n_vector,       // 8
-   n_bvec,         // 9
-   n_environment,  // 10
-
-   n_promise,      // 11
-   n_closure,      // 12
-   n_continuation, // 13
-   n_port,         // 14
-   n_string_port,  // 15
-
-   n_func,         // 16
-   n_eval,         // 17
-   n_apply,        // 18
-   n_callcc,       // 19
-   n_map,          // 20
-
-   n_foreach,      // 21
-   n_force,        // 22
-   n_code,         // 23
-
+   n_free,
+   n_null,
+   n_symbol,
+   n_fixnum,
+   n_flonum,
+   n_char,
+   n_string,
+   n_cons,
+   n_vector,
+   n_bvec,
+   n_environment,
+   n_promise,
+   n_closure,
+   n_continuation,
+   n_port,
+   n_string_port,
+   n_func,
+   n_eval,
+   n_apply,
+   n_callcc,
+   n_map,
+   n_foreach,
+   n_force,
+   n_code,
    NUMKINDS        // keep me last
 };
 
