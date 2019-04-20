@@ -58,7 +58,7 @@ to escheme.
 
 Consult the file _BuildingAndRunning_ to build the interpreter.
 
-For a complete list of escheme functions consult _escheme_syntax.txt_ in the 
+For a complete list of escheme functions (and a help system) consult syntax.scm/syntax-help.scm in the 
 root directory.
 
 
