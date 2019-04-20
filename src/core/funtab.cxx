@@ -145,6 +145,7 @@ static const Function funtab[] =
    { "ceiling",              MATH::ceiling      , n_func },
    { "round",                MATH::round        , n_func },
    { "1+",                   MATH::inc          , n_func },
+   { "1-",                   MATH::dec          , n_func },
    { "-1+",                  MATH::dec          , n_func },
    { "inc",                  MATH::inc          , n_func },
    { "dec",                  MATH::dec          , n_func },
