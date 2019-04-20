@@ -33,7 +33,7 @@ while honoring C++ block finalization.
 |  src/eval    |    evaluator|
 |  src/core    |    core sources|
 |  src/linenoise|  readline package|
-|  boot      | bootstrapping files to select interpreter configurations |
+|  boot      | bootstrapping files |
 |  macros   |  macro and quasiquote|
 |  tests  |    files for escheme regression testing|
 |  docs |      documentation which may or may not be accurate|
@@ -43,9 +43,9 @@ while honoring C++ block finalization.
 The utility of an extensible, lightweight, embedded dynamic language cannot be 
 over-emphasized. One has the full scope of the underlying operating system and 
 applications base to choose from for adding new capabities to escheme. 
-Applications can be enhanced. Disparate applications and be integrated 
+Applications can be enhanced. Disparate applications can be integrated 
 utilizing a scheme REP loop opened on a socket or secure tunnel. Data types 
-and structuring are solved (s-expressions). Values can be communicated. 
+and structuring are solved (s-expressions). Values can be readily communicated. 
 Programs as values can be sent and evaluated at their target location -- 
 something more than RPC.
 
