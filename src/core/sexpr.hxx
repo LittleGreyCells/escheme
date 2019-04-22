@@ -348,7 +348,6 @@ void vectorset(SEXPR n, UINT32 i, SEXPR x);
 #define getframevars(fr)    (vectorref(fr,0))
 #define getframeclosure(fr) (vectorref(fr,1))
 #define frameref(fr,i)      (vectorref(fr,2+(i)))
-
 #define setframevars(fr,x)    getframevars(fr) = (x)
 #define setframeclosure(fr,x) getframeclosure(fr) = (x)
 #define frameset(fr,i,x)      frameref(fr,i) = (x)
@@ -455,16 +454,6 @@ SEXPR& getclosurebenv(SEXPR n);
 SEXPR& getclosurevars(SEXPR n);
 BYTE& getclosurenumv(SEXPR n);
 BYTE& getclosurerargs(SEXPR n);
-#else
-#define getclosurecode(n) ((n)->u.closure.code)
-#define getclosurepair(n) ((n)->u.closure.pair)
-#define getclosurebenv(n) (getclosurepair(n)->u.cons.car)
-#define getclosurevars(n) (getclosurepair(n)->u.cons.cdr)
-#define getclosurenumv(n) ((n)->aux1)
-#define getclosurerargs(n) ((n)->aux2)
-#endif
-
-#ifdef CHECKED_ACCESS
 void setclosurecode(SEXPR n, SEXPR x);
 void setclosurepair(SEXPR n, SEXPR x);
 void setclosurebenv(SEXPR n, SEXPR x);
@@ -472,6 +461,12 @@ void setclosurevars(SEXPR n, SEXPR x);
 void setclosurenumv(SEXPR n, BYTE x);
 void setclosurerargs(SEXPR n, BYTE x);
 #else
+#define getclosurecode(n) ((n)->u.closure.code)
+#define getclosurepair(n) ((n)->u.closure.pair)
+#define getclosurebenv(n) (getclosurepair(n)->u.cons.car)
+#define getclosurevars(n) (getclosurepair(n)->u.cons.cdr)
+#define getclosurenumv(n) ((n)->aux1)
+#define getclosurerargs(n) ((n)->aux2)
 #define setclosurecode(n,x) getclosurecode(n) = (x)
 #define setclosurepair(n,x) getclosurepair(n) = (x)
 #define setclosurebenv(n,x) getclosurebenv(n) = (x)

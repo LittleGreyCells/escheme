@@ -334,66 +334,67 @@ SEXPR MEMORY::character( CHAR ch )   // (<char>)
    return n;
 }
 
+namespace MEMORY
+{
+   SEXPR new_symbol( const char* s, int length )
+   {
+      regstack.push( cons(null, null) );
+      SEXPR n = newnode(n_symbol);
+      char* str = new char[length+1];
+      strcpy(str, s);
+      setname(n, str);
+      setsymbolpair( n, regstack.pop() );
+      return n;
+   }
+}
+
 SEXPR MEMORY::symbol( const char* s )      // (<name> <value>  <plist>)
 {
-   regstack.push( cons(null, null) );
-   SEXPR n = newnode(n_symbol);
-   char* str = new char[strlen(s)+1];
-   strcpy(str, s);
-   setname(n, str);
-   setsymbolpair( n, regstack.pop() );
-   return n;
+   return new_symbol( s, strlen(s) );
 }
 
 SEXPR MEMORY::symbol( const std::string& s )      // (<name> <value>  <plist>)
 {
-   regstack.push( cons(null, null) );
-   SEXPR n = newnode(n_symbol);
-   char* str = new char[s.length()+1];
-   strcpy( str, s.c_str() );
-   setname(n, str);
-   setsymbolpair( n, regstack.pop() );
-   return n;
+   return new_symbol( s.c_str(), s.length() );
 }
 
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
    SEXPR n = newnode(n_string);
    char* str = new char[length+1];
-   strcpy(str, "");
+   str[0] = '\0';
    setstringlength(n, length);
    setstringindex(n, 0);
    setstringdata(n, str);
    return n;
 }
 
-SEXPR MEMORY::string( const char* s )     // (<length> . s)
+namespace MEMORY
 {
-   const UINT32 length = strlen(s);
-   if ( length == 0 )
+   SEXPR new_string( const char* s, int length )
    {
-      return string_null;
-   }
-   else
-   {
-      SEXPR n = MEMORY::string( length );
-      strcpy( getstringdata(n), s );
-      return n;
+      if ( length == 0 )
+      {
+         return string_null;
+      }
+      else
+      {
+         SEXPR n = MEMORY::string( length );
+         strcpy( getstringdata(n), s );
+         return n;
+      }
    }
 }
 
-SEXPR MEMORY::string( const std::string& s )     // (<length> . s)
+
+SEXPR MEMORY::string( const char* s )
 {
-   if ( s.length() == 0 )
-   {
-      return string_null;
-   }
-   else
-   {
-      SEXPR n = MEMORY::string( s.length() );
-      strcpy( getstringdata(n), s.c_str() );
-      return n;
-   }
+   return new_string( s, strlen(s) );
+}
+
+SEXPR MEMORY::string( const std::string& s )
+{
+   return new_string( s.c_str(), s.length() );
 }
 
 SEXPR MEMORY::string_port()               // (<length> . <string>)
