@@ -64,8 +64,9 @@ void ERROR::print_frame( SEXPR env )
 {
    if ( anyp(env) && envp(env) )
    {
-      FRAME frame = getenvframe(env);
+      SEXPR frame = getenvframe(env);
       SEXPR closure = getframeclosure(frame);
+      
       if ( closurep(closure) )
       {
 	 PRINTER::print( getclosurevars(closure) );

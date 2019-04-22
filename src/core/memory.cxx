@@ -6,9 +6,6 @@
 #include "error.hxx"
 #include "regstack.hxx"
 
-using std::array;
-using std::list;
-
 //
 // the global objects
 //
@@ -18,12 +15,10 @@ SEXPR MEMORY::vector_null;
 SEXPR MEMORY::listbuilder;
 
 #ifdef GC_STATISTICS_DETAILED
-array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
+std::array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
 #endif
 
-FrameStore frameStore;
-
-list<MEMORY::Marker> markers;
+std::list<MEMORY::Marker> markers;
 
 void MEMORY::register_marker( Marker marker )
 {
@@ -42,10 +37,10 @@ static SEXPR FreeNodeList;
 
 struct NodeBlock
 {
-   array<Node, NODE_BLOCK_SIZE> nodes;
+   std::array<Node, NODE_BLOCK_SIZE> nodes;
 };
 
-static list<NodeBlock*> blocks;
+static std::list<NodeBlock*> blocks;
 
 // 
 // Allocate a new node block
@@ -157,16 +152,7 @@ void MEMORY::mark( SEXPR n )
       case n_environment:
       {
 	 setmark(n);
-	 // mark the frame if not nullptr
-	 FRAME frame = getenvframe(n);
-	 if ( frame != nullptr )
-	 {
-	    mark( getframevars(frame) );
-	    const int nslots = getframenslots(frame);
-	    for (int i = 0; i < nslots; ++i)
-	       mark( frameref(frame, i) );
-	 }
-	 // mark the base env
+         mark( getenvframe(n) );
 	 mark( getenvbase(n) );
 	 break;
       }
@@ -279,11 +265,6 @@ static void sweep()
 
 	       case n_bvec:
 		  delete[] getbvecdata( p );
-		  break;
-
-	       case n_environment:
-		  if ( getenvframe(p) )
-		     frameStore.free( getenvframe(p) ); 
 		  break;
 
                case n_port:
@@ -505,27 +486,15 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
    return n;
 }
 
-SEXPR MEMORY::environment( FRAME frame, SEXPR env )   // (<frame> . <env>)
-{
-   SEXPR n = newnode(n_environment);
-   setenvframe(n, frame);
-   setenvbase(n, env);
-   return n;
-}
-
 SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> . <env>)
 {
    SEXPR n = newnode(n_environment);
+   regstack.push( n );
    setenvbase(n, env);
-   FRAME frame = frameStore.alloc( nvars );
+   SEXPR frame = vector( nvars+2 );
    setframevars(frame, vars);
    setenvframe(n, frame);
-   return n;
-}
-
-FRAME MEMORY::frame( UINT32 nslots )
-{
-   return frameStore.alloc( nslots );
+   return regstack.pop();
 }
 
 SEXPR MEMORY::promise( SEXPR exp )

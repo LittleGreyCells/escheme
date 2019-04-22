@@ -44,6 +44,7 @@
 
 (define count 0)
 (define failures 0)
+(define quiet #t)
 
 (define (assert x)
   (if (not x)
@@ -258,14 +259,16 @@
   (let ((results nil)
 	(m 0))
     (while (> n 0)
-      (let ((x (f)))
-	(set! m (+ m 1))
-	(if (< m 100)
-	    (set! results (cons x results))))
-      (display n)
-      (display " ")
-      (flush-output)
-      (set! n (- n 1)))
+           (if (not quiet)
+               (begin
+                 (display n)
+                 (display " ")
+                 (flush-output)))
+           (let ((x (f)))
+             (set! m (+ m 1))
+             (if (< m 100)
+                 (set! results (cons x results))))
+           (set! n (- n 1)))
     results
     ))
 
@@ -276,8 +279,11 @@
       (display x)
       (display " seconds per iteration")
       (newline)))
-  (newline)
-  (display "gc: ") (print (gc))
-  (display-done))
+  (if (not quiet)
+      (begin
+        (newline)
+        (display "gc: ") (print (gc))
+        (display-done)))
+  )
 
 

@@ -938,26 +938,8 @@ SEXPR FUNC::fs()
 
    push_reg( MEMORY::vector(4) );
 
-   vectorset( top_reg(), 0, MEMORY::fixnum( frameStore.nframes     ) );
-   vectorset( top_reg(), 1, MEMORY::fixnum( frameStore.nzeroallocs ) );
-
-#ifdef FS_STATISTICS_DETAILED
-   const int nsizes = frameStore.size();
-
-   SEXPR outstanding = MEMORY::vector(nsizes);
-   vectorset( top_reg(), 2, outstanding );
-
-   SEXPR available = MEMORY::vector(nsizes);
-   vectorset( top_reg(), 3, available );
-
-   for ( int i = 0; i < nsizes; ++i )
-   {
-      vectorset( outstanding, i, MEMORY::fixnum( frameStore.outstanding[i] ) );
-      vectorset( available,   i, MEMORY::fixnum( frameStore.available[i]   ) );
-   }
+   // TBD
    
-#endif
-
    return pop_reg();
 }
 
@@ -1012,9 +994,9 @@ SEXPR FUNC::env_bindings()
    const SEXPR env = guard(arg, envp);
 
    // convert a frame into a list of bindings
-   FRAME frame = getenvframe(env);
+   SEXPR  frame = getenvframe(env);
 
-   if (frame)
+   if ( frame != MEMORY::vector_null )
    {
       ListBuilder bindings;
 

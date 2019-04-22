@@ -107,22 +107,16 @@ UINT32 list_length( const SEXPR x )
    return length;
 }
 
-void fset( FRAME frame, UINT32 index, SEXPR value )
+void fset( SEXPR frame, UINT32 index, SEXPR value )
 {
-   if ( frame == nullptr )
-      ERROR::severe( "fset on null frame");
-
    if ( index >= getframenslots(frame) )
       ERROR::severe( "fset range error");
 
    frameset( frame, index, value );
 }
 
-SEXPR fref( FRAME frame, UINT32 index )
+SEXPR fref( SEXPR frame, UINT32 index )
 {
-   if ( frame == nullptr )
-      ERROR::severe( "fref on null frame");
-
    if ( index >= getframenslots(frame) )
       ERROR::severe( "fref range error");
 
@@ -312,9 +306,9 @@ void setclosurevars(SEXPR n, SEXPR x) { getclosurevars(n) = x; }
 void setclosurenumv(SEXPR n, BYTE x) { getclosurenumv(n) = x; }
 void setclosurerargs(SEXPR n, BYTE x) { getclosurerargs(n) = x; }
 
-FRAME& getenvframe(SEXPR n) { typecheck(n,envp); return n->u.environ.frame; }
+SEXPR& getenvframe(SEXPR n) { typecheck(n,envp); return n->u.environ.frame; }
 SEXPR& getenvbase(SEXPR n) { typecheck(n,envp); return n->u.environ.baseenv; }
-void setenvframe(SEXPR n, FRAME x) { getenvframe(n) = x; }
+void setenvframe(SEXPR n, SEXPR x) { getenvframe(n) = x; }
 void setenvbase(SEXPR n, SEXPR x) { getenvbase(n) = x; }
 
 UINT32& getbveclength(SEXPR n) { typecheck(n,bvecp); return n->u.bvec.length; }
@@ -325,9 +319,9 @@ void setbvecdata(SEXPR n, BYTE* x) { getbvecdata(n) = x; }
 void bvecset(SEXPR n, UINT32 i, BYTE x) { bvecref(n,i) = x; }
 
 FILE*& getfile(SEXPR n) { typecheck(n,portp); return n->u.port.p.file; }
-INT16& getmode(SEXPR n) { typecheck(n,anyportp); return n->u.port.mode; }
+BYTE& getmode(SEXPR n) { typecheck(n,anyportp); return n->u.port.mode; }
 void setfile(SEXPR n, FILE* x) { getfile(n) = x; }
-void setmode(SEXPR n, INT16 x) { getmode(n) = x; }
+void setmode(SEXPR n, BYTE x) { getmode(n) = x; }
 
 SEXPR& getstringportstring(SEXPR n) { typecheck(n,stringportp); return n->u.port.p.string; }
 void setstringportstring(SEXPR n, SEXPR x) { getstringportstring(n) = x; }
@@ -342,7 +336,9 @@ SEXPR& promise_getval(SEXPR n) { typecheck(n,promisep); return n->u.promise.val;
 void promise_setexp(SEXPR n, SEXPR x) { promise_getexp(n) = x; }
 void promise_setval(SEXPR n, SEXPR x) { promise_getval(n) = x; }
 
-FUNCTION& getfunc(SEXPR n) { typecheck(n, primp); return ((n)->u.func); }
+FUNCTION& getfunc(SEXPR n) { typecheck(n, primp); return ((n)->u.prim.func); }
 void setfunc(SEXPR n, FUNCTION x) { getfunc(n) = (x); }
+const char*& getprimname(SEXPR n) { typecheck(n, primp); return ((n)->u.prim.name); }
+void setprimname(SEXPR n, const char* x) { getprimname(n) = (x); }
 
 #endif

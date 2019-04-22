@@ -7,11 +7,6 @@
 
 #include "sexpr.hxx"
 #include "tstack.hxx"
-#include "framestore.hxx"
-
-using std::array;
-
-extern FrameStore frameStore;
 
 namespace MEMORY
 {
@@ -20,7 +15,7 @@ namespace MEMORY
    extern int  CollectionCount;
 
 #ifdef GC_STATISTICS_DETAILED
-   extern array<UINT32, NUMKINDS> ReclamationCounts;
+   extern std::array<UINT32, NUMKINDS> ReclamationCounts;
 #endif
 
    extern SEXPR string_null;
@@ -42,13 +37,11 @@ namespace MEMORY
    SEXPR prim( FUNCTION func, NodeKind kind = n_func );
    SEXPR port( FILE* file, short mode );
    SEXPR closure( SEXPR code, SEXPR env );
-   SEXPR environment( FRAME frame, SEXPR env );
    SEXPR environment( UINT32 nvars, SEXPR vars, SEXPR env );
    SEXPR vector( UINT32 length );
    SEXPR continuation();
    SEXPR byte_vector( UINT32 length );
    SEXPR string_port();
-   FRAME frame( UINT32 nslots );
    SEXPR promise( SEXPR exp );
    SEXPR code( SEXPR bcodes, SEXPR sexprs );
 

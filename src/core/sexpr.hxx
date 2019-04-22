@@ -79,20 +79,8 @@ using UINT32  = unsigned int;
 struct Node;
 using SEXPR = Node*;
 
-struct Frame;
-using FRAME = Frame*;
-
 using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
-
-struct Frame
-{
-   FRAME next;
-   SEXPR vars;
-   SEXPR closure;
-   UINT32 nslots;
-   SEXPR slot[1];        // varying numbers
-};
 
 struct PRIMITIVE
 {
@@ -102,7 +90,7 @@ struct PRIMITIVE
 
 struct ENVIRON
 {
-   FRAME frame;
+   SEXPR frame;
    SEXPR baseenv;
 };
 
@@ -132,8 +120,7 @@ struct SYMBOL
 
 struct PORT
 {
-   INT16 ungot;
-   INT16 mode;
+   BYTE mode;
    union 
    {
       FILE* file;         // file port
@@ -251,8 +238,8 @@ SEXPR value( SEXPR n );
 SEXPR set( SEXPR symbol, SEXPR value );
 
 // frame
-void fset( FRAME frame, UINT32 index, SEXPR value );
-SEXPR fref( FRAME frame, UINT32 index );
+void fset( SEXPR frame, UINT32 index, SEXPR value );
+SEXPR fref( SEXPR frame, UINT32 index );
 
 
 /////////////////////////////////////////////////////////////////
@@ -356,6 +343,16 @@ void vectorset(SEXPR n, UINT32 i, SEXPR x);
 #define vectorset(n,i,x) vectorref(n,i) = (x)
 #endif
 
+// frame
+#define getframenslots(fr)  (getvectorlength(fr)-2)
+#define getframevars(fr)    (vectorref(fr,0))
+#define getframeclosure(fr) (vectorref(fr,1))
+#define frameref(fr,i)      (vectorref(fr,2+(i)))
+
+#define setframevars(fr,x)    getframevars(fr) = (x)
+#define setframeclosure(fr,x) getframeclosure(fr) = (x)
+#define frameset(fr,i,x)      frameref(fr,i) = (x)
+
 // continuation
 #define cont_getstate(n) ((n)->u.cons.car)
 #define cont_setstate(n,x) cont_getstate(n) = (x)
@@ -441,6 +438,8 @@ void setflonum(SEXPR n, FLONUM x);
 #ifdef CHECKED_ACCESS
 FUNCTION& getfunc(SEXPR n);
 void setfunc(SEXPR n, FUNCTION x);
+const char*& getprimname(SEXPR n);
+void setprimname(SEXPR n, const char* x);
 #else
 #define getfunc(n) ((n)->u.prim.func)
 #define setfunc(n,x) getfunc(n) = (x)
@@ -483,9 +482,9 @@ void setclosurerargs(SEXPR n, BYTE x);
 
 // environment
 #ifdef CHECKED_ACCESS
-FRAME& getenvframe(SEXPR n);
+SEXPR& getenvframe(SEXPR n);
 SEXPR& getenvbase(SEXPR n);
-void setenvframe(SEXPR n, FRAME x);
+void setenvframe(SEXPR n, SEXPR x);
 void setenvbase(SEXPR n, SEXPR x);
 #else
 #define getenvframe(n) ((n)->u.environ.frame)
@@ -494,24 +493,12 @@ void setenvbase(SEXPR n, SEXPR x);
 #define setenvbase(n,x) getenvbase(n) = (x)
 #endif
 
-// frame
-#define getframenslots(fr) ((fr)->nslots)
-#define getframevars(fr) ((fr)->vars)
-#define getframeclosure(fr) ((fr)->closure)
-#define getframenext(fr) ((fr)->next)
-#define frameref(fr,i) ((fr)->slot[(i)])
-#define setframenslots(fr,n) getframenslots(fr) = (n)
-#define setframevars(fr,x) getframevars(fr) = (x)
-#define setframeclosure(fr,x) getframeclosure(fr) = (x)
-#define setframenext(fr,x) getframenext(fr) = (x)
-#define frameset(fr,i,x) frameref(fr,i) = (x)
-
 // port
 #ifdef CHECKED_ACCESS
 FILE*& getfile(SEXPR n);
-INT16& getmode(SEXPR n);
+BYTE& getmode(SEXPR n);
 void setfile(SEXPR n, FILE* x);
-void setmode(SEXPR n, INT16 x);
+void setmode(SEXPR n, BYTE x);
 #else
 #define getfile(n) ((n)->u.port.p.file)
 #define getmode(n) ((n)->u.port.mode)

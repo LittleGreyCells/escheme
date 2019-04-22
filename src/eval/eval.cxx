@@ -24,8 +24,7 @@ SEXPR EVAL::theGlobalEnv;
 // New: A frame-based representation
 //
 //   <env> = ( <frame> . <env> )
-//   <frame> = Frame( nslots, slots[ <var> <val> <var> <val> ...] )
-// 
+//
 // The following functions are dependent upon the representation:
 //
 //   lookup
@@ -38,17 +37,13 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 {
    for (; anyp(env); env = getenvbase(env))
    {
-      FRAME frame = getenvframe(env);
-
-      if (frame)
+      SEXPR frame = getenvframe(env);
+      SEXPR vars = getframevars(frame);
+      
+      for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
       {
-	 SEXPR vars = getframevars(frame);
-
-	 for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
-	 {
-	    if (getcar(vars) == var) 
-	       return frameref(frame, i);
-	 }
+         if (getcar(vars) == var) 
+            return frameref(frame, i);
       }
    }
 
@@ -68,20 +63,16 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 
    for (; anyp(env); env = getenvbase(env))
    {
-      FRAME frame = getenvframe(env);
+      SEXPR frame = getenvframe(env);
+      SEXPR vars = getframevars(frame);
 
-      if (frame)
+      for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
       {
-	 SEXPR vars = getframevars(frame);
-
-	 for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
-	 {
-	    if (getcar(vars) == var)
-	    {
-	       frameset(frame, i, val);
-	       return;
-	    }
-	 }
+         if (getcar(vars) == var)
+         {
+            frameset(frame, i, val);
+            return;
+         }
       }
    }
 
@@ -196,7 +187,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
    SEXPR env = MEMORY::environment( nformal, getclosurevars(closure), benv );
    regstack.push( env ); 
 
-   FRAME frame = getenvframe(env);
+   SEXPR frame = getenvframe(env);
 
    setframeclosure( frame, closure );
 
