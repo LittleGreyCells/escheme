@@ -178,7 +178,12 @@ void MEMORY::mark( SEXPR n )
   
       case n_symbol:
 	 setmark(n);
+#if 0
 	 mark( getsymbolpair(n) );
+#else
+	 mark( getvalue(n) );
+	 mark( getplist(n) );
+#endif
 	 break;
     
       case n_closure:
@@ -338,6 +343,7 @@ namespace MEMORY
 {
    SEXPR new_symbol( const char* s, int length )
    {
+#if 0
       regstack.push( cons(null, null) );
       SEXPR n = newnode(n_symbol);
       char* str = new char[length+1];
@@ -345,6 +351,15 @@ namespace MEMORY
       setname(n, str);
       setsymbolpair( n, regstack.pop() );
       return n;
+#else
+      SEXPR n = newnode(n_symbol);
+      char* str = new char[length+1];
+      strcpy(str, s);
+      setname(n, str);
+      setvalue(n, null);
+      setplist(n, null);
+      return n;
+#endif
    }
 }
 

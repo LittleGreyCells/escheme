@@ -106,17 +106,29 @@ struct VECTOR
    SEXPR* data;
 };
 
+#if 1
 struct CLOSURE
 {
    SEXPR code;
    SEXPR pair;            // ( code . ( benv . vars ) )
 };
+#else
+#endif
 
+#if 0
 struct SYMBOL
 {
    char* name;
    SEXPR pair;            // ( name . ( value . plist ) )
 };
+#else
+struct SYMBOL
+{
+   char* name;
+   SEXPR value;
+   SEXPR plist;
+};
+#endif
 
 struct PORT
 {
@@ -360,6 +372,7 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define setcharacter(n,ch) getcharacter(n) = (ch)
 
 // symbol
+#if 0
 #define getname(n) ((n)->u.symbol.name)
 #define getsymbolpair(n) ((n)->u.symbol.pair)
 #define getvalue(n) (getsymbolpair(n)->u.cons.car)
@@ -368,6 +381,14 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define setsymbolpair(n,x) getsymbolpair(n) = (x)
 #define setvalue(n,x) getvalue(n) = (x)
 #define setplist(n,x) getplist(n) = (x)
+#else
+#define getname(n) ((n)->u.symbol.name)
+#define getvalue(n) ((n)->u.symbol.value)
+#define getplist(n) ((n)->u.symbol.plist)
+#define setname(n,x) getname(n) = (x)
+#define setvalue(n,x) getvalue(n) = (x)
+#define setplist(n,x) getplist(n) = (x)
+#endif
 
 // number
 #define getfixnum(n) ((n)->u.fixnum)
