@@ -178,19 +178,16 @@ void MEMORY::mark( SEXPR n )
   
       case n_symbol:
 	 setmark(n);
-#if 0
-	 mark( getsymbolpair(n) );
-#else
 	 mark( getvalue(n) );
 	 mark( getplist(n) );
-#endif
 	 break;
     
       case n_closure:
       {
 	 setmark(n);
 	 mark( getclosurecode(n) );
-	 mark( getclosurepair(n) );
+	 mark( getclosurebenv(n) );
+	 mark( getclosurevars(n) );
 	 break;
       }
 
@@ -343,15 +340,6 @@ namespace MEMORY
 {
    SEXPR new_symbol( const char* s, int length )
    {
-#if 0
-      regstack.push( cons(null, null) );
-      SEXPR n = newnode(n_symbol);
-      char* str = new char[length+1];
-      strcpy(str, s);
-      setname(n, str);
-      setsymbolpair( n, regstack.pop() );
-      return n;
-#else
       SEXPR n = newnode(n_symbol);
       char* str = new char[length+1];
       strcpy(str, s);
@@ -359,7 +347,6 @@ namespace MEMORY
       setvalue(n, null);
       setplist(n, null);
       return n;
-#endif
    }
 }
 
@@ -495,10 +482,10 @@ SEXPR MEMORY::port( FILE* file, short mode )          // (<file>)
 
 SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> <vars>] )
 {
-   regstack.push( cons(env, null) );
    SEXPR n = newnode(n_closure);
    setclosurecode(n, code);
-   setclosurepair( n, regstack.pop() );
+   setclosurebenv(n, env);
+   setclosurevars(n, null);
    return n;
 }
 

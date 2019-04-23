@@ -69,13 +69,13 @@
            (display "================================> ")
            (display n)
            (newline)
-           (test1 200)
-           (test2 200)
-           (test3 10)
+           (test1 400)
+           (test2 400)
+           (test3 20)
            (print (gc))
            (set! n (dec n))
            )))
 
-(driver 5)
+(driver 50)
 (exit)
 
