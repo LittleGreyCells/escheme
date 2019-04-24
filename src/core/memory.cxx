@@ -255,6 +255,11 @@ static void sweep()
 	    {
 	       case n_symbol:
 		  delete[] getname( p );
+                  delete[] getdata( p );
+		  break;
+
+	       case n_closure:
+                  delete[] getclosuredata( p );
 		  break;
 
 	       case n_string:
@@ -336,16 +341,18 @@ SEXPR MEMORY::character( CHAR ch )   // (<char>)
    return n;
 }
 
-namespace MEMORY
+namespace
 {
+   inline
    SEXPR new_symbol( const char* s, int length )
    {
       SEXPR n = newnode(n_symbol);
       char* str = new char[length+1];
       strcpy(str, s);
       setname(n, str);
+      setdata(n, new SEXPR[2]);
       setvalue(n, null);
-      setplist(n, null);
+      setplist(n, null);      
       return n;
    }
 }
@@ -371,13 +378,14 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
    return n;
 }
 
-namespace MEMORY
+namespace
 {
+   inline
    SEXPR new_string( const char* s, int length )
    {
       if ( length == 0 )
       {
-         return string_null;
+         return MEMORY::string_null;
       }
       else
       {
@@ -387,7 +395,6 @@ namespace MEMORY
       }
    }
 }
-
 
 SEXPR MEMORY::string( const char* s )
 {
@@ -483,6 +490,7 @@ SEXPR MEMORY::port( FILE* file, short mode )          // (<file>)
 SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> <vars>] )
 {
    SEXPR n = newnode(n_closure);
+   setclosuredata(n, new SEXPR[3]);
    setclosurecode(n, code);
    setclosurebenv(n, env);
    setclosurevars(n, null);

@@ -108,16 +108,15 @@ struct VECTOR
 
 struct CLOSURE
 {
-   SEXPR code;
-   SEXPR benv;
-   SEXPR vars;
+   BYTE numv;
+   BYTE rargs;
+   SEXPR* data;
 };
 
 struct SYMBOL
 {
    char* name;
-   SEXPR value;
-   SEXPR plist;
+   SEXPR* data;
 };
 
 struct PORT
@@ -167,8 +166,6 @@ struct PROMISE
 //   mark   # used by memory management
 //   form   # used by eval for fast dispatch
 //   recu   # used by printer to guard against recursive printing
-//   aux1   # used for other rep
-//   aux2   # used for other rep
 //
 
 struct Node
@@ -177,8 +174,6 @@ struct Node
    BYTE mark;
    BYTE form;
    BYTE recu;
-   BYTE aux1;
-   BYTE aux2;
    union
    {
       LINKAGE link;
@@ -363,9 +358,11 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 
 // symbol
 #define getname(n) ((n)->u.symbol.name)
-#define getvalue(n) ((n)->u.symbol.value)
-#define getplist(n) ((n)->u.symbol.plist)
+#define getdata(n) ((n)->u.symbol.data)
+#define getvalue(n) (getdata(n)[0])
+#define getplist(n) (getdata(n)[1])
 #define setname(n,x) getname(n) = (x)
+#define setdata(n,x) getdata(n) = (x)
 #define setvalue(n,x) getvalue(n) = (x)
 #define setplist(n,x) getplist(n) = (x)
 
@@ -383,12 +380,14 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 
 // closure
 // get
-#define getclosurecode(n) ((n)->u.closure.code)
-#define getclosurebenv(n) ((n)->u.closure.benv)
-#define getclosurevars(n) ((n)->u.closure.vars)
-#define getclosurenumv(n) ((n)->aux1)
-#define getclosurerargs(n) ((n)->aux2)
+#define getclosuredata(n) ((n)->u.closure.data)
+#define getclosurecode(n) (getclosuredata(n)[0])
+#define getclosurebenv(n) (getclosuredata(n)[1])
+#define getclosurevars(n) (getclosuredata(n)[2])
+#define getclosurenumv(n) ((n)->u.closure.numv)
+#define getclosurerargs(n) ((n)->u.closure.rargs)
 // set
+#define setclosuredata(n,x) getclosuredata(n) = (x)
 #define setclosurecode(n,x) getclosurecode(n) = (x)
 #define setclosurebenv(n,x) getclosurebenv(n) = (x)
 #define setclosurevars(n,x) getclosurevars(n) = (x)

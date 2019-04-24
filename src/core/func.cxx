@@ -994,29 +994,20 @@ SEXPR FUNC::env_bindings()
    const SEXPR env = guard(arg, envp);
 
    // convert a frame into a list of bindings
-   SEXPR  frame = getenvframe(env);
-
-   if ( frame != MEMORY::vector_null )
+   SEXPR frame = getenvframe(env);
+   ListBuilder bindings;
+   SEXPR vars = getframevars(frame);
+   
+   for (int i = 0; anyp(vars); ++i)
    {
-      ListBuilder bindings;
-
-      SEXPR vars = getframevars(frame);
+      push_reg( MEMORY::cons( getcar(vars), frameref(frame, i)) );
+      bindings.add( top_reg() );
+      pop_reg();
       
-      for (int i = 0; anyp(vars); ++i)
-      {
-	 push_reg( MEMORY::cons( getcar(vars), frameref(frame, i)) );
-	 bindings.add( top_reg() );
-	 pop_reg();
-
-	 vars = getcdr(vars);
-      }
-
-      return bindings.get();
+      vars = getcdr(vars);
    }
-   else
-   {
-      return null;
-   }
+   
+   return bindings.get();
 }
 
 SEXPR FUNC::make_environment()
