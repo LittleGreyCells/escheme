@@ -1415,11 +1415,13 @@ SEXPR FUNC::open_output_string()
 SEXPR FUNC::get_output_string()
 {
    //
-   // syntax: (open-output-string <stringport>)
+   // syntax: (get-output-string <stringport>)
    //
    ArgstackIterator iter;
    const SEXPR port = guard(iter.getlast(), stringportp);
-   return getstringportstring(port);
+   // return a copy of the output string
+   const SEXPR str = getstringportstring(port);
+   return MEMORY::string( getstringdata(str) );
 }
 
 
