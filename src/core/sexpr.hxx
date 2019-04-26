@@ -122,6 +122,7 @@ struct SYMBOL
 struct PORT
 {
    BYTE mode;
+   UINT32 index;
    union 
    {
       FILE* file;         // file port
@@ -131,8 +132,7 @@ struct PORT
 
 struct STRING
 {
-   UINT32 length;         // the allocated length
-   UINT32 index;          // the working index
+   UINT32 length;
    char* data;
 };
 
@@ -197,7 +197,7 @@ struct Node
    {}
 
    explicit Node( NodeKind k ) :
-   kind(k), mark(0), form(0) {}
+      kind(k), mark(0), form(0) {}
 
    Node( NodeKind k, SEXPR next ) :
       kind(k), mark(0), form(0) { u.link.next = next; }
@@ -338,10 +338,8 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 
 // string
 #define getstringlength(n) ((n)->u.string.length)
-#define getstringindex(n) ((n)->u.string.index)
 #define getstringdata(n) ((n)->u.string.data)
 #define setstringlength(n,x) getstringlength(n) = (x)
-#define setstringindex(n,x) getstringindex(n) = (x)
 #define setstringdata(n,x) getstringdata(n) = (x)
 
 // byte vector
@@ -409,6 +407,8 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 // string port
 #define getstringportstring(n) ((n)->u.port.p.string)
 #define setstringportstring(n,x) getstringportstring(n) = (x)
+#define getstringportindex(n) ((n)->u.port.index)
+#define setstringportindex(n,x) getstringportindex(n) = (x)
 
 // code
 #define code_getbcodes(n) ((n)->u.code.bcodes)

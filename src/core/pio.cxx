@@ -37,6 +37,7 @@ SEXPR PIO::open_on_string( SEXPR str, short mode )
    SEXPR port = MEMORY::string_port();
    setmode(port, mode);
    setstringportstring(port, str);
+   setstringportindex(port, 0);
    return port;
 }
 
@@ -125,14 +126,15 @@ int PIO::get( SEXPR inport )
    {
       // string input
       SEXPR s = getstringportstring(inport);
-      const int ch = getstringdata(s)[getstringindex(s)];
+      UINT32& index = getstringportindex(inport);
+      const int ch = getstringdata(s)[index];
       if (ch == 0)
       {
 	 return EOF;
       }
       else
       {
-	 getstringindex(s)++;
+	 index++;
 	 return ch;
       }
    }
@@ -161,10 +163,10 @@ void PIO::unget( SEXPR inport, int ch )
    {
       if (ch != EOF)
       {
+         UINT32& index = getstringportindex(inport);
 	 // string input (adjust)
-	 SEXPR s = getstringportstring(inport);
-	 if (getstringindex(s) > 0)
-	    getstringindex(s)--;
+	 if ( index > 0)
+	    index--;
       }
    }
    else
@@ -173,13 +175,17 @@ void PIO::unget( SEXPR inport, int ch )
    }
 }
 
-static void append_char( SEXPR str, int ch )
+static void append_char( SEXPR outport, int ch )
 {
+   SEXPR str = getstringportstring(outport);
+   UINT32& index = getstringportindex(outport);
+   
    // append the character, expanding if needed
-   if (getstringindex(str) >= getstringlength(str))
+   if (index >= getstringlength(str))
       MEMORY::resize( str, 1000 );
-   getstringdata(str)[getstringindex(str)++] = ch;
-   getstringdata(str)[getstringindex(str)] = 0;
+   
+   getstringdata(str)[index++] = ch;
+   getstringdata(str)[index] = 0;
 }
 
 void PIO::put( SEXPR outport, const char* s )
@@ -197,9 +203,8 @@ void PIO::put( SEXPR outport, const char* s )
    else if ( outstringportp(outport) )
    {
       // string output
-      SEXPR str = getstringportstring(outport);
       while (*s)
-	 append_char(str, *s++);
+	 append_char(outport, *s++);
    }
    else
    {
@@ -221,7 +226,7 @@ void PIO::put( SEXPR outport, int ch )
    }
    else if ( outstringportp(outport) )
    {
-      append_char( getstringportstring(outport), ch );
+      append_char( outport, ch );
    }
    else
    {

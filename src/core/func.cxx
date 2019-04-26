@@ -1419,7 +1419,6 @@ SEXPR FUNC::get_output_string()
    //
    ArgstackIterator iter;
    const SEXPR port = guard(iter.getlast(), stringportp);
-   // return a copy of the output string
    const SEXPR str = getstringportstring(port);
    return MEMORY::string( getstringdata(str) );
 }

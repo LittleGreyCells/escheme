@@ -373,7 +373,6 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
    char* str = new char[length+1];
    str[0] = '\0';
    setstringlength(n, length);
-   setstringindex(n, 0);
    setstringdata(n, str);
    return n;
 }
@@ -411,6 +410,7 @@ SEXPR MEMORY::string_port()               // (<length> . <string>)
    SEXPR n = newnode(n_string_port);
    setmode(n, 0);
    setstringportstring(n, null);
+   setstringportindex(n, 0);
    return n;
 }
 
@@ -438,20 +438,22 @@ void MEMORY::resize( SEXPR string, UINT32 delta )
 {
    guard(string, stringp);
 
-   const auto new_length = getstringlength(string) + delta;
+   const auto old_length = getstringlength(string);
+   const auto new_length = old_length + delta;
 
    if (new_length > MAX_STRING_SIZE)
       ERROR::severe( "string length exceeds maximum size", MEMORY::fixnum(new_length) );
       
    auto& old_data = getstringdata(string);
    auto new_data = new char[new_length];
-      
+
    strcpy(new_data, old_data);
 
    delete[] old_data;
 
    setstringlength(string, new_length);
    setstringdata(string, new_data);
+
 }
 
 SEXPR MEMORY::continuation()
