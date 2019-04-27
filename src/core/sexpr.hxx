@@ -193,8 +193,7 @@ struct Node
       PROMISE promise;
    } u;
 
-   Node()
-   {}
+   Node() {}
 
    explicit Node( NodeKind k ) :
       kind(k), mark(0), form(0) {}

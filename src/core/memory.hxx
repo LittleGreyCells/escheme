@@ -20,7 +20,8 @@ namespace MEMORY
 
    extern SEXPR string_null;
    extern SEXPR vector_null;
-   extern SEXPR listbuilder;
+   extern SEXPR listtail;
+   extern SEXPR listhead;
 
    void initialize();
 
@@ -72,20 +73,29 @@ struct GcSuspension
 };
 
 
-class ListBuilder
+struct ListBuilder
 {
-   SEXPR list;
-public:
-   ListBuilder() : list(MEMORY::listbuilder) { setcdr( list, null ); }
-   ~ListBuilder() { setcdr( MEMORY::listbuilder, null ); }
+   ListBuilder()
+   {
+      MEMORY::listtail = MEMORY::listhead;
+      setcdr( MEMORY::listtail, null );
+   }
+
+   ~ListBuilder()
+   {
+      setcdr( MEMORY::listhead, null );
+   }
 
    void add( SEXPR item )
    {
-      setcdr( list, MEMORY::cons(item, null) );
-      list = getcdr( list );
+      setcdr( MEMORY::listtail, MEMORY::cons(item, null) );
+      MEMORY::listtail = getcdr( MEMORY::listtail );
    }
 
-   SEXPR get() { return getcdr( MEMORY::listbuilder ); }
+   SEXPR get()
+   {
+      return getcdr( MEMORY::listhead );
+   }
 };
 
 #endif

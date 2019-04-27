@@ -1,8 +1,9 @@
+#include "memory.hxx"
+
 #include <string.h>
 #include <array>
 #include <list>
 
-#include "memory.hxx"
 #include "error.hxx"
 #include "regstack.hxx"
 
@@ -12,7 +13,8 @@
 
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
-SEXPR MEMORY::listbuilder;
+SEXPR MEMORY::listtail;
+SEXPR MEMORY::listhead;
 
 #ifdef GC_STATISTICS_DETAILED
 std::array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
@@ -306,7 +308,8 @@ void MEMORY::gc()
    // mark memory managed roots
    mark( string_null );
    mark( vector_null );
-   mark( listbuilder );
+   mark( listtail );
+   mark( listhead );
 
    // notify all clients to mark their active roots
    for ( auto marker : markers )
@@ -545,5 +548,6 @@ void MEMORY::initialize()
    NewNodeBlock();
    string_null = string(UINT32(0));
    vector_null = vector(UINT32(0));
-   listbuilder = cons(null, null);
+   listtail = null;
+   listhead = cons(null, null);
 }
