@@ -83,6 +83,7 @@ struct ListBuilder
 
    ~ListBuilder()
    {
+      MEMORY::listtail = null;
       setcdr( MEMORY::listhead, null );
    }
 
