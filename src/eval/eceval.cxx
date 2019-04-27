@@ -309,6 +309,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       {
 		  ArgstackIterator iter;
 		  SEXPR promise = guard(iter.getlast(), promisep);
+                  
 		  argstack.removeargc();
 		  if ( nullp(promise_getexp(promise)) )
 		  {
@@ -398,6 +399,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    // result is in regstack[top]
 	    SEXPR x = MEMORY::cons(val, null);
 	    const int top = regstack.gettop();
+            
 	    if ( nullp(car(regstack[top])) )
 	    {
 	       // val == (() . ())
@@ -616,11 +618,9 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //
 	 case EV_ACCESS:
 	 {
-	    {
-	       const SEXPR cdr_exp = cdr(exp);
-	       unev = car(cdr_exp);
-	       exp = car(cdr(cdr_exp));
-	    }
+            const SEXPR cdr_exp = cdr(exp);
+            unev = car(cdr_exp);      // <symbol>
+            exp = car(cdr(cdr_exp));  // <env>
 	    save_reg(unev);
 	    save_reg(env);
 	    save_evs(cont);
@@ -663,15 +663,15 @@ SEXPR EVAL::eceval( SEXPR sexpr )
             else if ( consp(cadr_exp) )
             {
                 // (define (<var> [<param>...]) [<exp> ...])
-                unev = car(cadr_exp);                 // <var>
+                unev = car(cadr_exp);             // <var>
                 save_reg(unev);
                 save_reg(env);
                 save_evs(cont);
                 // perform accelerated lambda creation
-                const SEXPR params = cdr(cadr_exp);   // ([<param>...])
-                const SEXPR code = cdr(cdr_exp);      // ([<exp>...])
-                val = MEMORY::closure(code, env);     // <code> <benv>
-                set_closure_attributes(val, params);
+                aux = cdr(cadr_exp);              // params: ([<param>...])
+                exp = cdr(cdr_exp);               // code: ([<exp>...])
+                val = MEMORY::closure(exp, env);  // <code> <benv>
+                set_closure_attributes(val, aux);
                 next = EV_DEFINE_VALUE;
             }
             else
@@ -704,11 +704,11 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //
 	 case EV_LAMBDA:
 	 {
-	    const SEXPR cdr_exp = cdr(exp);
-	    const SEXPR params = car(cdr_exp);
-	    const SEXPR code = cdr(cdr_exp);
-	    val = MEMORY::closure(code, env);     // <code> <benv>
-	    set_closure_attributes(val, params);
+	    // params = car(cdr(exp))
+	    // code == cdr(cdr(exp))
+            exp = cdr(exp);
+	    val = MEMORY::closure(cdr(exp), env);     // <code> <benv>
+	    set_closure_attributes(val, car(exp));
 	    next = cont;
 	    break;
 	 }
@@ -905,11 +905,12 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 case EV_LETREC:
 	 {
 	    save_evs(cont);
-	    const SEXPR cdr_exp = cdr(exp);
-	    unev = car(cdr_exp);                      // bindings; ((v1 e1) (v2 e2) ...)
-	    exp = cdr(cdr_exp);                       // body: (<body>)       
+	    exp = cdr(exp);
+	    unev = car(exp);                          // bindings; ((v1 e1) (v2 e2) ...)
+	    exp = cdr(exp);                           // body: (<body>)
 	    save_reg( exp );                          // save the body
 	    save_reg( extend_env_vars( unev, env ) ); // save xenv
+            // no additional allocations
 	    if ( next == EV_LETREC )
 	       env = regstack.top();
 	    frameindex = 0;
@@ -1005,28 +1006,27 @@ const int BvReserved = 3;
 
 SEXPR EVAL::create_continuation()
 {
-   // allocate and populate the 'continuation'
    const int regs_depth = regstack.getdepth();
    const int args_depth = argstack.getdepth();
    const int ints_depth = intstack.getdepth();
-
    const int state_len = ContSingletons + regs_depth + args_depth;
 
-   SEXPR cc = MEMORY::continuation();
-   regstack.push( cc );
-
-   SEXPR state = MEMORY::vector(state_len);
-   cont_setstate( cc, state );
+   regstack.push( MEMORY::continuation() );
+   cont_setstate( regstack.top(), MEMORY::vector(state_len) );
    
-   // byte vector
-   //   length accomodates the intstack and the three(3) stack depth values
+   // byte vector includes the intstack and the three(3) stack depth values
    const int ByteVectorLength = ints_depth + BvReserved;
    SEXPR bv = MEMORY::byte_vector( ByteVectorLength*sizeof(INT16) );
+   
    INT16* pint16 = reinterpret_cast<INT16*>(getbvecdata(bv));
 
    pint16[0] = regs_depth;
    pint16[1] = args_depth;
    pint16[2] = ints_depth;
+
+   // no additional allocations
+   
+   SEXPR state = cont_getstate( regstack.top() );
 
    vectorset( state, 0, env );
    vectorset( state, 1, unev );
@@ -1034,13 +1034,13 @@ SEXPR EVAL::create_continuation()
    
    int j = ContSingletons;
 
-   for (int i = 0; i < regs_depth; ++i)
+   for ( int i = 0; i < regs_depth; ++i )
       vectorset( state, j++, regstack[i] );
    
-   for (int i = 0; i < args_depth; ++i)
+   for ( int i = 0; i < args_depth; ++i )
       vectorset( state, j++, argstack[i] ); 
    
-   for (int i = 0; i < ints_depth; ++i)
+   for ( int i = 0; i < ints_depth; ++i )
       pint16[BvReserved+i] = intstack[i];
    
    return regstack.pop();
@@ -1048,6 +1048,8 @@ SEXPR EVAL::create_continuation()
 
 void EVAL::restore_continuation( SEXPR cc )
 {
+   // no allocations
+   
    SEXPR state = cont_getstate( cc );
 
    env = vectorref( state, 0 );
@@ -1062,13 +1064,13 @@ void EVAL::restore_continuation( SEXPR cc )
 
    int j = ContSingletons;
    
-   for (int i = 0; i < regs_depth; ++i)
+   for ( int i = 0; i < regs_depth; ++i )
       regstack[i] = vectorref( state, j++ );
    
-   for (int i = 0; i < args_depth; ++i)
+   for ( int i = 0; i < args_depth; ++i )
       argstack[i] = vectorref( state, j++ );
       
-   for (int i = 0; i < ints_depth; ++i)
+   for ( int i = 0; i < ints_depth; ++i )
       intstack[i] = pint16[BvReserved+i];
    
    regstack.newtop( regs_depth );
