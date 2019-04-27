@@ -6,9 +6,9 @@ R3RS scheme interpreter utilizing an explicit control evaluator
 ## Introduction
 
 escheme is an aspiring R3RS implementation of the algorithmic language scheme, 
-supporting approximately 90% of the standard. Further, many additional 
+supporting approximately 90% of the standard. Many additional 
 functions are added to support environments, input/output, the host OS 
-(linux/unix) and access escheme internals.
+(linux/unix) and access escheme internals. Bignums are not supported.
 
 Abelson and Sussman's SICP* in Ch5 describes an explicit control evalutor for 
 scheme. That material provided the impetus for escheme.  It is not related
@@ -39,15 +39,6 @@ while honoring C++ block finalization.
 |  docs |      documentation which may or may not be accurate|
 
 ## Extending escheme
-
-The utility of an extensible, lightweight, embedded dynamic language cannot be 
-over-emphasized. One has the full scope of the underlying operating system and 
-applications base to choose from for adding new capabities to escheme. 
-Applications can be enhanced. Disparate applications can be integrated 
-utilizing a scheme REP loop opened on a socket or secure tunnel. Data types 
-and structuring are solved (s-expressions). Values can be readily communicated. 
-Programs as values can be sent and evaluated at their target location -- 
-something more than RPC.
 
 See _docs/bindings_guide.txt_ to learn how to extend escheme with ones own 
 primitive functions implemented in C or C++. It covers both passing escheme 
