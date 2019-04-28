@@ -37,10 +37,10 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 {
    for (; anyp(env); env = getenvbase(env))
    {
-      SEXPR frame = getenvframe(env);
+      FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
       
-      for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
+      for ( int i = 0; anyp(vars); ++i, vars = getcdr(vars) )
       {
          if (getcar(vars) == var) 
             return frameref(frame, i);
@@ -63,10 +63,10 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 
    for (; anyp(env); env = getenvbase(env))
    {
-      SEXPR frame = getenvframe(env);
+      FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
 
-      for (int i = 0; anyp(vars); ++i, vars = getcdr(vars))
+      for ( int i = 0; anyp(vars); ++i, vars = getcdr(vars) )
       {
          if (getcar(vars) == var)
          {
@@ -187,7 +187,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
    SEXPR env = MEMORY::environment( nformal, getclosurevars(closure), benv );
    regstack.push( env ); 
 
-   SEXPR frame = getenvframe(env);
+   FRAME frame = getenvframe(env);
 
    setframeclosure( frame, closure );
 

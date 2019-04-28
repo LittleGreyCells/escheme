@@ -932,13 +932,15 @@ SEXPR FUNC::gc()
 SEXPR FUNC::fs()
 {
    // *
-   // syntax: (fs) -> <statistics>
+   // syntax: (fs) -> <framestore-statistics>
    //
    argstack.noargs();
 
-   push_reg( MEMORY::vector(4) );
+   const int N = MEMORY::frameStore.count.size();
+   push_reg( MEMORY::vector(N) );
 
-   // TBD
+   for ( int i = 0; i < N; ++i )
+      vectorset( top_reg(), i, MEMORY::fixnum( MEMORY::frameStore.count[i] ) );
    
    return pop_reg();
 }
@@ -994,7 +996,7 @@ SEXPR FUNC::env_bindings()
    const SEXPR env = guard(arg, envp);
 
    // convert a frame into a list of bindings
-   SEXPR frame = getenvframe(env);
+   FRAME frame = getenvframe(env);
    ListBuilder bindings;
    SEXPR vars = getframevars(frame);
    

@@ -7,12 +7,14 @@
 
 #include "sexpr.hxx"
 #include "tstack.hxx"
+#include "framestore.hxx"
 
 namespace MEMORY
 {
    extern long TotalNodeCount;
    extern long FreeNodeCount;
    extern int  CollectionCount;
+   extern FrameStore frameStore;
 
 #ifdef GC_STATISTICS_DETAILED
    extern std::array<UINT32, NUMKINDS> ReclamationCounts;

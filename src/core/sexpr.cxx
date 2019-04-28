@@ -107,7 +107,7 @@ UINT32 list_length( const SEXPR x )
    return length;
 }
 
-void fset( SEXPR frame, UINT32 index, SEXPR value )
+void fset( FRAME frame, UINT32 index, SEXPR value )
 {
    if ( index >= getframenslots(frame) )
       ERROR::severe( "fset range error");
@@ -115,7 +115,7 @@ void fset( SEXPR frame, UINT32 index, SEXPR value )
    frameset( frame, index, value );
 }
 
-SEXPR fref( SEXPR frame, UINT32 index )
+SEXPR fref( FRAME frame, UINT32 index )
 {
    if ( index >= getframenslots(frame) )
       ERROR::severe( "fref range error");

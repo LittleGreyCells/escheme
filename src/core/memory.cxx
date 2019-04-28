@@ -6,6 +6,7 @@
 
 #include "error.hxx"
 #include "regstack.hxx"
+#include "framestore.hxx"
 
 //
 // the global objects
@@ -19,6 +20,8 @@ SEXPR MEMORY::listhead;
 #ifdef GC_STATISTICS_DETAILED
 std::array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
 #endif
+
+FrameStore MEMORY::frameStore;
 
 std::list<MEMORY::Marker> markers;
 
@@ -154,7 +157,13 @@ void MEMORY::mark( SEXPR n )
       case n_environment:
       {
 	 setmark(n);
-         mark( getenvframe(n) );
+         // frame
+         FRAME frame = getenvframe(n);
+         mark( getframevars(frame) );
+         const int nslots = getframenslots(frame);
+         for ( int i = 0; i < nslots; ++i )
+            mark( frameref(frame, i) );
+         // benv
 	 mark( getenvbase(n) );
 	 break;
       }
@@ -172,8 +181,8 @@ void MEMORY::mark( SEXPR n )
       case n_vector:
       {
 	 setmark(n);
-	 const UINT32 length = getvectorlength(n);
-	 for (UINT32 i = 0; i < length; ++i)
+	 const int length = getvectorlength(n);
+	 for ( int i = 0; i < length; ++i )
 	    mark( vectorref(n, i) );
 	 break;
       }
@@ -226,7 +235,7 @@ void MEMORY::mark( SEXPR n )
 void MEMORY::mark( TSTACK<SEXPR>& stack )
 {
    const int depth = stack.getdepth();
-   for (int i = 0; i < depth; ++i)
+   for ( int i = 0; i < depth; ++i )
       mark( stack[i] );
 }
 
@@ -280,6 +289,10 @@ static void sweep()
                   if ( getfile(p) != NULL )
                      fclose( getfile(p) );
                   break;
+
+               case n_environment:
+                  MEMORY::frameStore.free( getenvframe(p) );
+		  break;                  
                   
 	       default:
 		  break;
@@ -431,7 +444,7 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
    SEXPR n = newnode(n_vector);
    setvectorlength(n, length);
    SEXPR* v = new SEXPR[length];
-   for (UINT32 i = 0; i < length; ++i)
+   for (int i = 0; i < length; ++i)
       v[i] = null;
    setvectordata(n, v);
    return n;
@@ -471,7 +484,7 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
    SEXPR n = newnode(n_bvec);
    setbveclength(n, length);
    BYTE* v = new BYTE[length];
-   for (UINT32 i = 0; i < length; ++i)
+   for (int i = 0; i < length; ++i)
       v[i] = 0;
    setbvecdata(n, v);
    return n;
@@ -504,13 +517,13 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
 
 SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> . <env>)
 {
-   SEXPR n = newnode(n_environment);
-   regstack.push( n );
-   setenvbase(n, env);
-   SEXPR frame = vector( nvars+2 );
+   FRAME frame = frameStore.alloc( nvars );
    setframevars(frame, vars);
+
+   SEXPR n = newnode(n_environment);
+   setenvbase(n, env);
    setenvframe(n, frame);
-   return regstack.pop();
+   return n;
 }
 
 SEXPR MEMORY::promise( SEXPR exp )

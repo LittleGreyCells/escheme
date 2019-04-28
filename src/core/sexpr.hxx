@@ -79,8 +79,24 @@ using UINT32  = unsigned int;
 struct Node;
 using SEXPR = Node*;
 
+struct Frame;
+using FRAME = Frame*;
+
 using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
+
+struct Frame
+{
+   FRAME next;
+   SEXPR vars;
+   SEXPR closure;
+   UINT32 size;
+   UINT32 nslots;
+   SEXPR slot[1];        // varying numbers
+};
+
+#define FRAMESIZE_NB( nslots ) ((sizeof(Frame) - sizeof(SEXPR)) + (sizeof(SEXPR) * (nslots)))
+#define FRAMESIZE_NDW( nslots) (((sizeof(Frame) - sizeof(SEXPR))/sizeof(SEXPR)) + nslots)
 
 struct PRIMITIVE
 {
@@ -90,7 +106,7 @@ struct PRIMITIVE
 
 struct ENVIRON
 {
-   SEXPR frame;
+   FRAME frame;
    SEXPR baseenv;
 };
 
@@ -234,8 +250,8 @@ SEXPR value( SEXPR n );
 SEXPR set( SEXPR symbol, SEXPR value );
 
 // frame
-void fset( SEXPR frame, UINT32 index, SEXPR value );
-SEXPR fref( SEXPR frame, UINT32 index );
+void fset( FRAME frame, UINT32 index, SEXPR value );
+SEXPR fref( FRAME frame, UINT32 index );
 
 
 /////////////////////////////////////////////////////////////////
@@ -322,15 +338,6 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define setvectordata(n,x) getvectordata(n) = (x)
 #define vectorset(n,i,x) vectorref(n,i) = (x)
 
-// frame
-#define getframenslots(fr)  (getvectorlength(fr)-2)
-#define getframevars(fr)    (vectorref(fr,0))
-#define getframeclosure(fr) (vectorref(fr,1))
-#define frameref(fr,i)      (vectorref(fr,2+(i)))
-#define setframevars(fr,x)    getframevars(fr) = (x)
-#define setframeclosure(fr,x) getframeclosure(fr) = (x)
-#define frameset(fr,i,x)      frameref(fr,i) = (x)
-
 // continuation
 #define cont_getstate(n) ((n)->u.cons.car)
 #define cont_setstate(n,x) cont_getstate(n) = (x)
@@ -396,6 +403,18 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define getenvbase(n) ((n)->u.environ.baseenv)
 #define setenvframe(n,x) getenvframe(n) = (x)
 #define setenvbase(n,x) getenvbase(n) = (x)
+
+// frame
+#define getframenslots(fr) ((fr)->nslots)
+#define getframevars(fr) ((fr)->vars)
+#define getframeclosure(fr) ((fr)->closure)
+#define getframesize(fr) ((fr)->size)
+#define frameref(fr,i) ((fr)->slot[(i)])
+#define setframenslots(fr,n) getframenslots(fr) = (n)
+#define setframevars(fr,x) getframevars(fr) = (x)
+#define setframeclosure(fr,x) getframeclosure(fr) = (x)
+#define setframesize(fr,x) getframesize(fr) = (x)
+#define frameset(fr,i,x) frameref(fr,i) = (x)
 
 // port
 #define getfile(n) ((n)->u.port.p.file)
