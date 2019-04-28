@@ -3,7 +3,6 @@
 #include "core/symtab.hxx"
 #include "core/memory.hxx"
 #include "core/printer.hxx"
-#include "core/funtab.hxx"
 
 #ifdef DO_ECE_CHECK
 #define REGISTER_CHECK( id, pred, reg ) register_check( id, pred, reg )
@@ -22,7 +21,6 @@
 //
 /////////////////////////////////////////////////////////////
 
-//
 //
 // The Explicit Control Evaluator ENTRY
 //
@@ -309,7 +307,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       {
 		  ArgstackIterator iter;
 		  SEXPR promise = guard(iter.getlast(), promisep);
-                  
 		  argstack.removeargc();
 		  if ( nullp(promise_getexp(promise)) )
 		  {
@@ -357,13 +354,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //
 	 // syntax: (map <func> <list>)
 	 //
-	 // Discussion
-	 //   To get this to work for (map <func> <list1> <list2> list) do the following:
-	 //   (1) val is fun
-	 //   (2) push the car of lists on the stack
-	 //   (3) apply the function
-	 //
-
 	 case EV_MAP_APPLY:
 	 {
 	    if ( nullp(argstack.top()) )
@@ -399,7 +389,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    // result is in regstack[top]
 	    SEXPR x = MEMORY::cons(val, null);
 	    const int top = regstack.gettop();
-            
 	    if ( nullp(car(regstack[top])) )
 	    {
 	       // val == (() . ())
@@ -996,6 +985,11 @@ SEXPR EVAL::eceval( SEXPR sexpr )
    return null;
 }
 
+
+//
+// continuations
+//
+
 // the number of single entries in the continuation
 //   these precede the stack contents
 const int ContSingletons = 3;
@@ -1025,7 +1019,6 @@ SEXPR EVAL::create_continuation()
    pint16[2] = ints_depth;
 
    // no additional allocations
-   
    SEXPR state = cont_getstate( regstack.top() );
 
    vectorset( state, 0, env );
