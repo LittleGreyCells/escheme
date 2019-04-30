@@ -94,55 +94,27 @@ void EVAL::parse_formals( SEXPR formals, SEXPR& vars, BYTE& numv, BYTE& rargs )
    numv = 0;
    rargs = false;
 
-   if (nullp(formals))
-   {
-      vars = null;
-      return;
-   }
-
-   // varlist = (())
-   SEXPR varlist = cons(null, null);
-
-   // protect the varlist
-   regstack.push(varlist);
+   ListBuilder varlist;
 
    // validate and normalize the varlist
-   while (anyp(formals))
+   while ( anyp(formals) )
    {
-      SEXPR item;
-
       numv++;
 
-      if (_symbolp(formals))
+      if ( _symbolp(formals) )
       {
 	 rargs = true;      
-	 item = cons(formals, null);
+	 varlist.add( formals );
 	 formals = null;
       }
       else
       {
-	 const SEXPR fv = guard(car(formals), symbolp);
-	 item = cons(fv, null);
+	 varlist.add( guard(car(formals), symbolp) );
 	 formals = cdr(formals);
-      }
-
-      if (nullp(getcar(varlist)))
-      {
-	 // first item
-	 setcar(varlist, item);
-	 setcdr(varlist, item);
-      }
-      else
-      {
-	 // subsequent item
-	 setcdr(getcdr(varlist), item);
-	 setcdr(varlist, item);
       }
    }
 
-   vars = getcar(varlist);
-
-   regstack.pop();
+   vars = varlist.get();
 }
 
 void EVAL::set_closure_attributes( SEXPR closure, SEXPR formals )
@@ -178,16 +150,15 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
    // formal parameter attributes required:
    //   (<numv> <simple-var-list>)
 
-   const auto nactual = static_cast<UINT32>(argstack.getargc());
-   const auto nformal = static_cast<UINT32>(getclosurenumv(closure));
+   const auto nactual = static_cast<int>(argstack.getargc());
+   const auto nformal = static_cast<int>(getclosurenumv(closure));
    const SEXPR benv = getclosurebenv(closure);
    const bool rargs = getclosurerargs(closure);
 
    // create an extended environment
-   SEXPR env = MEMORY::environment( nformal, getclosurevars(closure), benv );
-   regstack.push( env ); 
+   regstack.push( MEMORY::environment( nformal, getclosurevars(closure), benv ) );
 
-   FRAME frame = getenvframe(env);
+   FRAME frame = getenvframe( regstack.top() );
 
    setframeclosure( frame, closure );
 
@@ -208,7 +179,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       int p = argstack.getfirstargindex();
      
       // BIND required
-      for ( unsigned i = 0; i < nactual; ++i )
+      for ( int i = 0; i < nactual; ++i )
 	 frameset( frame, i, argstack[p++] );
    }
    else
@@ -217,7 +188,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       //
       //   <fargs> := (a1 a2 ... aN-1 . aN)
       //
-      const unsigned nrequired = nformal - 1;
+      const int nrequired = nformal - 1;
 
       if ( nactual < nrequired )
 	 arg_error( "too few arguments", nactual, nrequired );
@@ -225,12 +196,12 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       int p = argstack.getfirstargindex();
      
       // BIND required
-      for ( unsigned i = 0; i < nrequired; ++i )
+      for ( int i = 0; i < nrequired; ++i )
 	 frameset( frame, i, argstack[p++] );
 
       // BIND rest
       regstack.push(null);
- 
+      
       for ( int i = p + (nactual - nformal); i >= p; --i )
 	 regstack.top() = cons( argstack[i], regstack.top() );
      
@@ -255,7 +226,6 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
       return benv;
 
    ListBuilder vars;
-
    int nvars = 0;
 
    while ( anyp(bindings) )
@@ -287,28 +257,24 @@ SEXPR EVAL::get_evaluator_state()
    const int as_depth = argstack.getdepth();
    const int is_depth = intstack.getdepth();
 
+   regstack.push( MEMORY::vector( rs_depth ) );
+   for ( int i = 0; i < rs_depth; ++i )
+      vectorset( regstack.top(), i, regstack[i] );
+
+   regstack.push( MEMORY::vector( as_depth ) );
+   for ( int i = 0; i < as_depth; ++i )
+      vectorset( regstack.top(), i, argstack[i] );
+
+   regstack.push( MEMORY::vector( is_depth ) );
+   for ( int i = 0; i < is_depth; ++i )
+      vectorset( regstack.top(), i, MEMORY::fixnum(intstack[i]) );
+
    SEXPR evs = MEMORY::vector(3);
-   regstack.push( evs );
+   vectorset( evs, 2, regstack.pop() );
+   vectorset( evs, 1, regstack.pop() );
+   vectorset( evs, 0, regstack.pop() );
    
-   SEXPR regs = MEMORY::vector( rs_depth  );
-   vectorset( evs, 0, regs );
-
-   for (int i = 0; i < rs_depth; ++i )
-      vectorset( regs, i, regstack[i] );
-
-   SEXPR args = MEMORY::vector( as_depth );
-   vectorset( evs, 1, args );
-
-   for (int i = 0; i < as_depth; ++i )
-      vectorset( args, i, argstack[i] );
-
-   SEXPR ints = MEMORY::vector( is_depth );
-   vectorset( evs, 2, ints );
-
-   for (int i = 0; i < is_depth; ++i )
-      vectorset( ints, i, MEMORY::fixnum(intstack[i]) );
-
-   return regstack.pop();
+   return evs;
 }
 
 static void eval_marker()
