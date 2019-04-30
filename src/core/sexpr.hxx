@@ -15,7 +15,7 @@ enum ConfigurationConstants
    INTSTACK_SIZE      = 1000,
    ECE_HISTORY_LENGTH = 100,
    MAX_IMAGE_LENGTH   = 256,
-   MAX_STRING_SIZE    = 0xFFFFFFFE,
+   MAX_STRING_SIZE    = 0xFFFE,
 };
 
 enum NodeKind
@@ -132,7 +132,7 @@ struct CLOSURE
 struct SYMBOL
 {
    char* name;
-   SEXPR* data;
+   SEXPR pair;
 };
 
 struct PORT
@@ -362,11 +362,11 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 
 // symbol
 #define getname(n) ((n)->u.symbol.name)
-#define getdata(n) ((n)->u.symbol.data)
-#define getvalue(n) (getdata(n)[0])
-#define getplist(n) (getdata(n)[1])
+#define getpair(n) ((n)->u.symbol.pair)
+#define getvalue(n) getcar(getpair(n))
+#define getplist(n) getcdr(getpair(n))
 #define setname(n,x) getname(n) = (x)
-#define setdata(n,x) getdata(n) = (x)
+#define setpair(n,x) getpair(n) = (x)
 #define setvalue(n,x) getvalue(n) = (x)
 #define setplist(n,x) getplist(n) = (x)
 
@@ -424,8 +424,8 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 
 // string port
 #define getstringportstring(n) ((n)->u.port.p.string)
-#define setstringportstring(n,x) getstringportstring(n) = (x)
 #define getstringportindex(n) ((n)->u.port.index)
+#define setstringportstring(n,x) getstringportstring(n) = (x)
 #define setstringportindex(n,x) getstringportindex(n) = (x)
 
 // code

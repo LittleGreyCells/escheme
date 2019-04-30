@@ -703,12 +703,12 @@ SEXPR FUNC::gensym()
 	 ERROR::severe("gensym requires [sym|str|fix]");
    }
 
-   char number[20];
+   char number[80];
    SPRINTF( number, "%u", gensym_number++ );
 
    new_sym += number;
   
-   return MEMORY::symbol( new_sym.c_str() );
+   return MEMORY::symbol( new_sym );
 }
 
 SEXPR FUNC::symbol_value()

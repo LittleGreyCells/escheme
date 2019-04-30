@@ -189,8 +189,7 @@ void MEMORY::mark( SEXPR n )
   
       case n_symbol:
 	 setmark(n);
-	 mark( getvalue(n) );
-	 mark( getplist(n) );
+	 mark( getpair(n) );
 	 break;
     
       case n_closure:
@@ -266,7 +265,6 @@ static void sweep()
 	    {
 	       case n_symbol:
 		  delete[] getname( p );
-                  delete[] getdata( p );
 		  break;
 
 	       case n_closure:
@@ -362,13 +360,12 @@ namespace
    inline
    SEXPR new_symbol( const char* s, int length )
    {
+      regstack.push( MEMORY::cons(null, null) );
       SEXPR n = newnode(n_symbol);
       char* str = new char[length+1];
       strcpy(str, s);
       setname(n, str);
-      setdata(n, new SEXPR[2]);
-      setvalue(n, null);
-      setplist(n, null);      
+      setpair(n, regstack.pop());
       return n;
    }
 }
