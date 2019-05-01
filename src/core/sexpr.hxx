@@ -16,6 +16,8 @@ enum ConfigurationConstants
    ECE_HISTORY_LENGTH = 100,
    MAX_IMAGE_LENGTH   = 256,
    MAX_STRING_SIZE    = 0xFFFE,
+   VARPOOL_START_SIZE = 5000,
+   VARPOOL_EXPANSION  = 5000,
 };
 
 enum NodeKind
@@ -84,6 +86,8 @@ using FRAME = Frame*;
 
 using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
+
+using DWORD = void*;
 
 struct Frame
 {
@@ -190,6 +194,9 @@ struct Node
    BYTE mark;
    BYTE form;
    BYTE recu;
+   BYTE nage;
+   BYTE xtra;
+   UINT16 ndwords;
    union
    {
       LINKAGE link;
@@ -212,10 +219,10 @@ struct Node
    Node() {}
 
    explicit Node( NodeKind k ) :
-      kind(k), mark(0), form(0) {}
+      kind(k), mark(0), form(0), nage(0) {}
 
    Node( NodeKind k, SEXPR next ) :
-      kind(k), mark(0), form(0) { u.link.next = next; }
+      kind(k), mark(0), form(0), nage(0) { u.link.next = next; }
 
    void setnext( SEXPR next ) { u.link.next = next; }
    SEXPR getnext() const { return u.link.next; }
@@ -439,5 +446,9 @@ SEXPR guard( SEXPR s, PREDICATE predicate );
 #define promise_getval(n) ((n)->u.promise.val)
 #define promise_setexp(n,x) promise_getexp(n) = (x)
 #define promise_setval(n,x) promise_getval(n) = (x)
+
+// varpool
+#define getndwords(n) ((n)->ndwords)
+#define setndwords(n,x) getndwords(n) = (x)
 
 #endif

@@ -8,6 +8,18 @@
 #include "regstack.hxx"
 #include "framestore.hxx"
 
+//#define VARPOOL_BVEC
+#define VARPOOL_VECTOR
+//#define VARPOOL_STRING
+//#define VARPOOL_SYMNAME
+//#define VARPOOL_FRAME
+
+#define markedp(n) ((n)->mark)
+#define setmark(n) ((n)->mark = 1)
+#define resetmark(n) ((n)->mark = 0)
+
+#include "varpool.hxx"
+
 //
 // the global objects
 //
@@ -94,6 +106,93 @@ static SEXPR newnode( NodeKind kind )
 }
 
 //
+// Variable Sized Object Pool
+//
+
+const unsigned TENURE = 8;
+const unsigned MAXAGE = 127;
+
+bool MEMORY::ns_copy = false;
+
+NewSpace newspace( "ns", VARPOOL_START_SIZE );
+
+unsigned MEMORY::NewSpaceSwapCount = 0;
+unsigned MEMORY::NewSpaceSize      = newspace.getsize();
+
+unsigned MEMORY::get_ns_highwater() { return newspace.getindex(); }
+
+//
+// Copy To New Space Inactive
+//
+
+inline BYTE* ns_copy_bvec( SEXPR n ) 
+{ 
+   return (BYTE*)newspace.copy_to_inactive( getbvecdata(n), getndwords(n) );
+}
+
+inline char* ns_copy_string( SEXPR n ) 
+{ 
+   return (char*)newspace.copy_to_inactive( getstringdata(n), getndwords(n) );
+}
+
+inline SEXPR* ns_copy_vector( SEXPR n )
+{
+   return (SEXPR*)newspace.copy_to_inactive( getvectordata(n), getvectorlength(n) );
+}
+
+inline FRAME ns_copy_frame( SEXPR n )
+{
+   FRAME fr = getenvframe(n);
+   return (FRAME)newspace.copy_to_inactive( fr, getframesize(fr) );
+}
+
+inline char* ns_copy_symbolname( SEXPR n )
+{
+   return (char*)newspace.copy_to_inactive( getname(n), getndwords(n) );
+}
+
+//
+// Tenure into Heap
+//
+
+inline BYTE* tenure_bvec( SEXPR n ) 
+{
+   return 0;
+}
+
+inline char* tenure_string( SEXPR n ) 
+{
+   char* str = new char[NBYTES(getndwords(n))];
+   return (char*)std::memcpy( str, getstringdata(n), NBYTES(getndwords(n)) );
+}
+
+inline SEXPR* tenure_vector( SEXPR n )
+{
+   SEXPR* v = new SEXPR[getvectorlength(n)];
+   return (SEXPR*)std::memcpy( v, getvectordata(n), NBYTES(getvectorlength(n)) );
+}
+
+inline FRAME tenure_frame( SEXPR n )
+{
+   return 0;
+}
+
+inline char* tenure_symbolname( SEXPR n )
+{
+   return 0;
+}
+
+//
+// Aging
+//
+
+inline void increment_age( SEXPR n ) 
+{ 
+   if ( n->nage < MAXAGE ) 
+      ++n->nage; 
+}
+
+//
 // Garbage Collection
 //
 //   GC consists of mark and sweep phases. The mark phase marks all nodes
@@ -121,10 +220,6 @@ static void badnode( SEXPR n )
    SPRINTF(buffer, "bad node (%p,%d) during gc", n->id(), nodekind(n));
    ERROR::fatal(buffer);
 }
-
-#define markedp(n) ((n)->mark)
-#define setmark(n) ((n)->mark = 1)
-#define resetmark(n) ((n)->mark = 0)
 
 void MEMORY::mark( SEXPR n )
 {
@@ -182,6 +277,16 @@ void MEMORY::mark( SEXPR n )
       {
 	 setmark(n);
 	 const int length = getvectorlength(n);
+#ifdef VARPOOL_VECTOR
+	 if ( ns_copy )
+	 {
+	    increment_age( n );
+	    if ( n->nage < TENURE )
+	       setvectordata( n, ns_copy_vector(n) );
+	    else if ( n->nage == TENURE )
+	       setvectordata( n, tenure_vector(n) );
+	 }
+#endif
 	 for ( int i = 0; i < length; ++i )
 	    mark( vectorref(n, i) );
 	 break;
@@ -276,7 +381,12 @@ static void sweep()
 		  break;
 
 	       case n_vector:
+#ifdef VARPOOL_VECTOR
+                  if ( p->nage >= TENURE )
+                     delete[] getvectordata( p );
+#else
 		  delete[] getvectordata( p );
+#endif
 		  break;
 
 	       case n_bvec:
@@ -309,12 +419,19 @@ static void sweep()
    }
 }
 
-void MEMORY::gc()
+void MEMORY::gc( bool copy )
 {
    if (suspensions > 0)
       return;
 
    CollectionCount += 1;
+
+   ns_copy = copy;
+
+   if ( ns_copy )
+   {
+      newspace.prep();
+   }
 
    // mark memory managed roots
    mark( string_null );
@@ -328,6 +445,13 @@ void MEMORY::gc()
 
    // collect the unused nodes
    sweep();
+
+   if ( ns_copy )
+   {
+      NewSpaceSwapCount += 1;
+      newspace.swap();
+      ns_copy = false;
+   }
 }
 
 //
@@ -438,12 +562,18 @@ SEXPR MEMORY::cons( SEXPR car, SEXPR cdr )  // (<car> . <cdr> )
 
 SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
+   // newspace or heap
+#ifdef VARPOOL_VECTOR
+   SEXPR* data = (SEXPR*)newspace.alloc( length );
+#else
+   SEXPR* data = new SEXPR[length];
+#endif
+   for ( int i = 0; i < length; ++i )
+      data[i] = null;
+   // node space
    SEXPR n = newnode(n_vector);
    setvectorlength(n, length);
-   SEXPR* v = new SEXPR[length];
-   for (int i = 0; i < length; ++i)
-      v[i] = null;
-   setvectordata(n, v);
+   setvectordata(n, data);
    return n;
 }
 
@@ -466,7 +596,6 @@ void MEMORY::resize( SEXPR string, UINT32 delta )
 
    setstringlength(string, new_length);
    setstringdata(string, new_data);
-
 }
 
 SEXPR MEMORY::continuation()

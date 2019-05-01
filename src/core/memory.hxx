@@ -16,6 +16,11 @@ namespace MEMORY
    extern int  CollectionCount;
    extern FrameStore frameStore;
 
+   extern unsigned NewSpaceSwapCount;
+   extern unsigned NewSpaceSize;
+
+   unsigned get_ns_highwater();
+
 #ifdef GC_STATISTICS_DETAILED
    extern std::array<UINT32, NUMKINDS> ReclamationCounts;
 #endif
@@ -57,7 +62,8 @@ namespace MEMORY
    void register_marker( Marker );
 
    extern int suspensions;
-   void gc();
+   extern bool ns_copy;
+   void gc( bool copy=false );
 
    void mark( SEXPR n );
    void mark( TSTACK<SEXPR>& s );

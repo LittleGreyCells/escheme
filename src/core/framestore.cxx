@@ -30,8 +30,8 @@ FRAME FrameStore::alloc( UINT32 nslots )
    else
    {
       // allocate a new frame from heap
-      const size_t frameSize = FRAMESIZE_NB( nslots );   
-      frame = (FRAME) ::operator new (frameSize);
+      const size_t frameSize = FRAMESIZE_NDW( nslots );   
+      frame = (FRAME) new DWORD[frameSize];
       
       setframesize( frame, (UINT32)frameSize );
       setframenslots( frame, nslots );

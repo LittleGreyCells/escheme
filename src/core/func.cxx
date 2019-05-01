@@ -901,32 +901,56 @@ SEXPR FUNC::write_char()
 // memory management
 //
 
+static SEXPR gc_stats()
+{
+   SEXPR gc_stats = MEMORY::vector(2);
+   push_reg( gc_stats );
+
+   // nodes stats
+   push_reg( MEMORY::vector(4) );
+   vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
+   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount ) );
+   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
+#ifdef GC_STATISTICS_DETAILED
+   const int N = MEMORY::ReclamationCounts.size();
+   SEXPR reclamations = MEMORY::vector(N);
+   for (int i = 0; i < N; ++i)
+      vectorset( reclamations, i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
+   vectorset( top_reg(), 3, reclamations );
+#endif
+   vectorset( gc_stats, 0, pop_reg() );
+
+   // varpool stats
+   // newspace
+   push_reg( MEMORY::vector(3) );
+   vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::NewSpaceSwapCount ) );
+   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::NewSpaceSize ) );
+   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::get_ns_highwater() ) );
+   vectorset( gc_stats, 1, pop_reg() );
+
+   return pop_reg();
+}
+
 SEXPR FUNC::gc()
 {
    // *
    // syntax: (gc) -> <statistics>
    //
    argstack.noargs();
-
    MEMORY::gc();
 
-   push_reg( MEMORY::vector(4) );
+   return gc_stats();
+}
 
-   vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
-   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount  ) );
-   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount   ) );
+SEXPR FUNC::gc_copy()
+{
+   // *
+   // syntax: (gc-copy) -> <statistics>
+   //
+   argstack.noargs();
+   MEMORY::gc( true );
 
-#ifdef GC_STATISTICS_DETAILED
-   const int ncounts = MEMORY::ReclamationCounts.size();
-   SEXPR v = MEMORY::vector(ncounts);
-
-   for ( int i = 0; i < ncounts; ++i )
-      vectorset( v, i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
-
-   vectorset( top_reg(), 3, v );
-#endif
-
-   return pop_reg();
+   return gc_stats();
 }
 
 SEXPR FUNC::fs()
