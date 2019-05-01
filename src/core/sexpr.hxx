@@ -22,30 +22,30 @@ enum ConfigurationConstants
 
 enum NodeKind
 {
-   n_free,
-   n_null,
+   n_free,         // 0
+   n_null,         // 1
    n_symbol,
    n_fixnum,
    n_flonum,
-   n_char,
+   n_char,         // 5
    n_string,
    n_cons,
    n_vector,
    n_bvec,
-   n_environment,
+   n_environment,  // 10
    n_promise,
    n_closure,
    n_continuation,
    n_port,
-   n_string_port,
+   n_string_port,  // 15
    n_func,
    n_eval,
    n_apply,
    n_callcc,
-   n_map,
+   n_map,          // 20
    n_foreach,
    n_force,
-   n_code,
+   n_code,         // 23
    NUMKINDS        // keep me last
 };
 
@@ -88,6 +88,9 @@ using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
 
 using DWORD = void*;
+
+#define NBYTES(n)  ((n)*sizeof(DWORD))
+#define NDWORDS(n) (((n)+sizeof(DWORD)-1)/sizeof(DWORD))
 
 struct Frame
 {

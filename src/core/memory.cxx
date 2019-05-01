@@ -12,7 +12,7 @@
 #define VARPOOL_VECTOR
 //#define VARPOOL_STRING
 //#define VARPOOL_SYMNAME
-//#define VARPOOL_FRAME
+#define VARPOOL_FRAME
 
 #define markedp(n) ((n)->mark)
 #define setmark(n) ((n)->mark = 1)
@@ -109,7 +109,7 @@ static SEXPR newnode( NodeKind kind )
 // Variable Sized Object Pool
 //
 
-const unsigned TENURE = 8;
+const unsigned TENURE = 5;
 const unsigned MAXAGE = 127;
 
 bool MEMORY::ns_copy = false;
@@ -174,7 +174,8 @@ inline SEXPR* tenure_vector( SEXPR n )
 
 inline FRAME tenure_frame( SEXPR n )
 {
-   return 0;
+   // clone the old frame
+   return MEMORY::frameStore.clone( getenvframe(n) );
 }
 
 inline char* tenure_symbolname( SEXPR n )
@@ -253,6 +254,16 @@ void MEMORY::mark( SEXPR n )
       {
 	 setmark(n);
          // frame
+#ifdef VARPOOL_FRAME
+         if ( ns_copy )
+         {
+            increment_age( n );
+            if ( n->nage < TENURE )
+               setenvframe( n, ns_copy_frame(n) );
+            else if ( n->nage == TENURE )
+               setenvframe( n, tenure_frame(n) );
+         }
+#endif
          FRAME frame = getenvframe(n);
          mark( getframevars(frame) );
          const int nslots = getframenslots(frame);
@@ -399,7 +410,12 @@ static void sweep()
                   break;
 
                case n_environment:
+#ifdef VARPOOL_FRAME
+                  if ( p->nage >= TENURE )
+                     MEMORY::frameStore.free( getenvframe(p) );
+#else
                   MEMORY::frameStore.free( getenvframe(p) );
+#endif
 		  break;                  
                   
 	       default:
@@ -643,9 +659,19 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
 
 SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> . <env>)
 {
+   // newspace or heap
+#ifdef VARPOOL_FRAME
+   const unsigned ndwords = FRAMESIZE_NDW( nvars );
+   FRAME frame = (FRAME)newspace.alloc( ndwords );
+   setframesize( frame, ndwords );
+   setframenslots( frame, nvars );
+   for ( unsigned i = 0; i < nvars; ++i )
+      frameset( frame, i, null );
+#else
    FRAME frame = frameStore.alloc( nvars );
+#endif
    setframevars(frame, vars);
-
+   
    SEXPR n = newnode(n_environment);
    setenvbase(n, env);
    setenvframe(n, frame);

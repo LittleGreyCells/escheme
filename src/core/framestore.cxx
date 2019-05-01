@@ -1,5 +1,7 @@
 #include "framestore.hxx"
 
+#include <cstring>
+
 #include "sexpr.hxx"
 #include "error.hxx"
 
@@ -44,6 +46,30 @@ FRAME FrameStore::alloc( UINT32 nslots )
       frameset( frame, i, null );
    
    return frame;
+}
+
+FRAME FrameStore::clone( FRAME fr )
+{
+   FRAME frame;
+   const auto nslots = getframenslots(fr);
+   
+   if ( (nslots < store.size()) && store[nslots] )
+   {
+      // reuse an existing frame
+      frame = store[nslots];
+      store[nslots] = frame->next;
+      count[nslots] -= 1;
+      
+      if ( getframenslots(frame) != nslots )
+         ERROR::fatal( "recycled frame size inconsistent with request" );
+   }
+   else
+   {
+      // allocate a new frame from heap
+      frame = (FRAME) new SEXPR[getframesize(fr)];
+   }
+      
+   return (FRAME)std::memcpy( frame, fr, NBYTES(getframesize(fr)) );
 }
 
 void FrameStore::free( FRAME frame )

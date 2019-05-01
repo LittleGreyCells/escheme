@@ -8,11 +8,6 @@
 #include "error.hxx"
 #include "memory.hxx"
 
-using DWORD = void*;
-
-#define NDWORDS(n) (((n)+sizeof(DWORD)-1)/sizeof(DWORD))
-#define NBYTES(n)  ((n)*sizeof(DWORD))
-
 #ifdef DO_VARPOOL_TRACE
 #define TRACE( code ) code;
 #else
