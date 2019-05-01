@@ -89,12 +89,15 @@ struct ListBuilder
       setcdr( MEMORY::listhead, null );
    }
 
+   inline
    void add( SEXPR item )
    {
-      setcdr( MEMORY::listtail, MEMORY::cons(item, null) );
-      MEMORY::listtail = getcdr( MEMORY::listtail );
+      const SEXPR cell = MEMORY::cons(item, null) ;
+      setcdr( MEMORY::listtail, cell );
+      MEMORY::listtail = cell;
    }
 
+   inline
    SEXPR get()
    {
       return getcdr( MEMORY::listhead );
