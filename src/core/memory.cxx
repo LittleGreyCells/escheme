@@ -8,9 +8,9 @@
 #include "regstack.hxx"
 #include "framestore.hxx"
 
-//#define VARPOOL_BVEC
+#define VARPOOL_BVEC
 #define VARPOOL_VECTOR
-//#define VARPOOL_STRING
+#define VARPOOL_STRING
 //#define VARPOOL_SYMNAME
 #define VARPOOL_FRAME
 
@@ -157,7 +157,8 @@ inline char* ns_copy_symbolname( SEXPR n )
 
 inline BYTE* tenure_bvec( SEXPR n ) 
 {
-   return 0;
+   BYTE* bv = new BYTE[NBYTES(getndwords(n))];
+   return (BYTE*)std::memcpy( bv, getbvecdata(n), NBYTES(getndwords(n)) );
 }
 
 inline char* tenure_string( SEXPR n ) 
@@ -317,12 +318,38 @@ void MEMORY::mark( SEXPR n )
 	 break;
       }
 
+      case n_bvec:
+	 setmark(n);
+#ifdef VARPOOL_BVEC
+	 if ( ns_copy )
+	 {
+	    increment_age( n );
+	    if ( n->nage < TENURE )
+	       setbvecdata( n, ns_copy_bvec(n) );
+	    else if ( n->nage == TENURE )
+	       setbvecdata( n, tenure_bvec(n) );
+	 }
+#endif
+	 break;
+
+      case n_string:
+	 setmark(n);
+#ifdef VARPOOL_STRING
+	 if ( ns_copy )
+	 {
+	    increment_age( n );
+	    if ( n->nage < TENURE )
+	       setstringdata( n, ns_copy_string(n) );
+	    else if ( n->nage == TENURE )
+	       setstringdata( n, tenure_string(n) );
+	 }
+#endif
+	 break;
+         
       case n_fixnum:
       case n_flonum:
-      case n_string:
       case n_port:
       case n_char:
-      case n_bvec:
       case n_func:
 	 setmark(n);
 	 break;
@@ -388,7 +415,12 @@ static void sweep()
 		  break;
 
 	       case n_string:
+#ifdef VARPOOL_STRING
+                  if ( p->nage >= TENURE )
+                     delete[] getstringdata( p );
+#else
 		  delete[] getstringdata( p );
+#endif
 		  break;
 
 	       case n_vector:
@@ -401,7 +433,12 @@ static void sweep()
 		  break;
 
 	       case n_bvec:
+#ifdef VARPOOL_BVEC
+                  if ( p->nage >= TENURE )
+                     delete[] getbvecdata( p );
+#else
 		  delete[] getbvecdata( p );
+#endif
 		  break;
 
                case n_port:
@@ -522,11 +559,22 @@ SEXPR MEMORY::symbol( const std::string& s )      // (<name> <value>  <plist>)
 
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
+   // newspace or heap
+   const unsigned size = length+1;
+#ifdef VARPOOL_STRING
+   const unsigned ndwords = NDWORDS( size );      // allow for null byte terminator
+   char* data = (char*)newspace.alloc( ndwords );
+#else
+   char* data = new char[size]; 
+#endif
+   data[0] = '\0';
+   // node space
    SEXPR n = newnode(n_string);
-   char* str = new char[length+1];
-   str[0] = '\0';
    setstringlength(n, length);
-   setstringdata(n, str);
+   setstringdata(n, data);
+#ifdef VARPOOL_STRING
+   setndwords(n, ndwords);
+#endif
    return n;
 }
 
@@ -604,14 +652,26 @@ void MEMORY::resize( SEXPR string, UINT32 delta )
       ERROR::severe( "string length exceeds maximum size", MEMORY::fixnum(new_length) );
       
    auto& old_data = getstringdata(string);
-   auto new_data = new char[new_length];
+   
+#ifdef VARPOOL_STRING
+   const unsigned ndwords = NDWORDS( new_length );
+   auto new_data = (char*)newspace.alloc( ndwords );
+#else
+   auto new_data = new char[new_length]; 
+#endif
 
-   strcpy(new_data, old_data);
+   strcpy( new_data, old_data );
 
+#ifndef VARPOOL_STRING
    delete[] old_data;
+#endif
 
-   setstringlength(string, new_length);
-   setstringdata(string, new_data);
+   setstringlength( string, new_length );
+   setstringdata( string, new_data );
+   
+#ifdef VARPOOL_STRING
+   setndwords( string, ndwords );
+#endif
 }
 
 SEXPR MEMORY::continuation()
@@ -623,12 +683,22 @@ SEXPR MEMORY::continuation()
 
 SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
 {
+   // newspace or heap
+#ifdef VARPOOL_BVEC
+   const unsigned ndwords = NDWORDS( length );
+   BYTE* data = (BYTE*)newspace.alloc( ndwords );
+#else
+   BYTE* data = new BYTE[length];
+#endif
+   for ( unsigned i = 0; i < length; ++i )
+      data[i] = 0;
+   // node space
    SEXPR n = newnode(n_bvec);
    setbveclength(n, length);
-   BYTE* v = new BYTE[length];
-   for (int i = 0; i < length; ++i)
-      v[i] = 0;
-   setbvecdata(n, v);
+   setbvecdata(n, data);
+#ifdef VARPOOL_BVEC
+   setndwords( n, ndwords );
+#endif
    return n;
 }
 
