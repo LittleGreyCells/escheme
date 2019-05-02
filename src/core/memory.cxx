@@ -11,7 +11,8 @@
 #define VARPOOL_BVEC
 #define VARPOOL_VECTOR
 #define VARPOOL_STRING
-//#define VARPOOL_SYMNAME
+#define VARPOOL_SYMNAME
+#define VARPOOL_CLOSURE
 #define VARPOOL_FRAME
 
 #define markedp(n) ((n)->mark)
@@ -109,9 +110,6 @@ static SEXPR newnode( NodeKind kind )
 // Variable Sized Object Pool
 //
 
-const unsigned TENURE = 5;
-const unsigned MAXAGE = 127;
-
 bool MEMORY::ns_copy = false;
 
 NewSpace newspace( "ns", VARPOOL_START_SIZE );
@@ -122,43 +120,26 @@ unsigned MEMORY::NewSpaceSize      = newspace.getsize();
 unsigned MEMORY::get_ns_highwater() { return newspace.getindex(); }
 
 //
-// Copy To New Space Inactive
+// Copy To/From New Space
 //
 
+#ifdef VARPOOL_BVEC
 inline BYTE* ns_copy_bvec( SEXPR n ) 
 { 
    return (BYTE*)newspace.copy_to_inactive( getbvecdata(n), getndwords(n) );
 }
 
-inline char* ns_copy_string( SEXPR n ) 
-{ 
-   return (char*)newspace.copy_to_inactive( getstringdata(n), getndwords(n) );
-}
-
-inline SEXPR* ns_copy_vector( SEXPR n )
-{
-   return (SEXPR*)newspace.copy_to_inactive( getvectordata(n), getvectorlength(n) );
-}
-
-inline FRAME ns_copy_frame( SEXPR n )
-{
-   FRAME fr = getenvframe(n);
-   return (FRAME)newspace.copy_to_inactive( fr, getframesize(fr) );
-}
-
-inline char* ns_copy_symbolname( SEXPR n )
-{
-   return (char*)newspace.copy_to_inactive( getname(n), getndwords(n) );
-}
-
-//
-// Tenure into Heap
-//
-
 inline BYTE* tenure_bvec( SEXPR n ) 
 {
    BYTE* bv = new BYTE[NBYTES(getndwords(n))];
    return (BYTE*)std::memcpy( bv, getbvecdata(n), NBYTES(getndwords(n)) );
+}
+#endif
+
+#ifdef VARPOOL_STRING
+inline char* ns_copy_string( SEXPR n ) 
+{ 
+   return (char*)newspace.copy_to_inactive( getstringdata(n), getndwords(n) );
 }
 
 inline char* tenure_string( SEXPR n ) 
@@ -166,11 +147,26 @@ inline char* tenure_string( SEXPR n )
    char* str = new char[NBYTES(getndwords(n))];
    return (char*)std::memcpy( str, getstringdata(n), NBYTES(getndwords(n)) );
 }
+#endif
+
+#ifdef VARPOOL_VECTOR
+inline SEXPR* ns_copy_vector( SEXPR n )
+{
+   return (SEXPR*)newspace.copy_to_inactive( getvectordata(n), getvectorlength(n) );
+}
 
 inline SEXPR* tenure_vector( SEXPR n )
 {
    SEXPR* v = new SEXPR[getvectorlength(n)];
    return (SEXPR*)std::memcpy( v, getvectordata(n), NBYTES(getvectorlength(n)) );
+}
+#endif
+
+#ifdef VARPOOL_FRAME
+inline FRAME ns_copy_frame( SEXPR n )
+{
+   FRAME fr = getenvframe(n);
+   return (FRAME)newspace.copy_to_inactive( fr, getframesize(fr) );
 }
 
 inline FRAME tenure_frame( SEXPR n )
@@ -178,11 +174,33 @@ inline FRAME tenure_frame( SEXPR n )
    // clone the old frame
    return MEMORY::frameStore.clone( getenvframe(n) );
 }
+#endif
+
+#ifdef VARPOOL_SYMNAME
+inline char* ns_copy_symbolname( SEXPR n )
+{
+   return (char*)newspace.copy_to_inactive( getname(n), getndwords(n) );
+}
 
 inline char* tenure_symbolname( SEXPR n )
 {
-   return 0;
+   char* name = new char[NBYTES(getndwords(n))];
+   return (char*)std::memcpy( name, getname(n), NBYTES(getndwords(n)) );
 }
+#endif
+
+#ifdef VARPOOL_CLOSURE
+inline SEXPR* ns_copy_closure( SEXPR n )
+{
+   return (SEXPR*)newspace.copy_to_inactive( getclosuredata(n), 3 );
+}
+
+inline SEXPR* tenure_closure( SEXPR n )
+{
+   SEXPR* v = new SEXPR[3];
+   return (SEXPR*)std::memcpy( v, getclosuredata(n), NBYTES(3) );
+}
+#endif
 
 //
 // Aging
@@ -306,12 +324,32 @@ void MEMORY::mark( SEXPR n )
   
       case n_symbol:
 	 setmark(n);
+#ifdef VARPOOL_SYMNAME
+	 if ( ns_copy )
+	 {
+	    increment_age( n );
+	    if ( n->nage < TENURE )
+	       setname( n, ns_copy_symbolname(n) );
+	    else if ( n->nage == TENURE )
+	       setname( n, tenure_symbolname(n) );
+	 }
+#endif
 	 mark( getpair(n) );
 	 break;
     
       case n_closure:
       {
 	 setmark(n);
+#ifdef VARPOOL_CLOSURE
+	 if ( ns_copy )
+	 {
+	    increment_age( n );
+	    if ( n->nage < TENURE )
+	       setclosuredata( n, ns_copy_closure(n) );
+	    else if ( n->nage == TENURE )
+	       setclosuredata( n, tenure_closure(n) );
+	 }
+#endif
 	 mark( getclosurecode(n) );
 	 mark( getclosurebenv(n) );
 	 mark( getclosurevars(n) );
@@ -407,11 +445,21 @@ static void sweep()
 	    switch (nodekind(p))
 	    {
 	       case n_symbol:
+#ifdef VARPOOL_SYMNAME
+                  if ( p->nage >= TENURE )
+                     delete[] getname( p );
+#else
 		  delete[] getname( p );
+#endif
 		  break;
 
 	       case n_closure:
+#ifdef VARPOOL_CLOSURE
+                  if ( p->nage >= TENURE )
+                     delete[] getclosuredata( p );
+#else
                   delete[] getclosuredata( p );
+#endif
 		  break;
 
 	       case n_string:
@@ -537,12 +585,23 @@ namespace
    inline
    SEXPR new_symbol( const char* s, int length )
    {
+      // newspace or heap
+      const unsigned size = length+1;
+#ifdef VARPOOL_SYMNAME
+      const unsigned ndwords = NDWORDS( size );
+      char* name = (char*)newspace.alloc( ndwords );
+#else
+      char* name = new char[size];
+#endif
+      strcpy(name, s);
+      // node space
       regstack.push( MEMORY::cons(null, null) );
       SEXPR n = newnode(n_symbol);
-      char* str = new char[length+1];
-      strcpy(str, s);
-      setname(n, str);
-      setpair(n, regstack.pop());
+      setname(n, name);
+      setpair( n, regstack.pop() );
+#ifdef VARPOOL_SYMNAME
+      setndwords( n, ndwords );
+#endif
       return n;
    }
 }
@@ -719,8 +778,15 @@ SEXPR MEMORY::port( FILE* file, short mode )          // (<file>)
 
 SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> <vars>] )
 {
+   // newspace or heap
+#ifdef VARPOOL_CLOSURE
+   SEXPR* data = (SEXPR*)newspace.alloc( 3 );
+#else
+   SEXPR* data = new SEXPR[3];
+#endif
+   // node space
    SEXPR n = newnode(n_closure);
-   setclosuredata(n, new SEXPR[3]);
+   setclosuredata(n, data);
    setclosurecode(n, code);
    setclosurebenv(n, env);
    setclosurevars(n, null);
