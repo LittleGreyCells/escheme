@@ -18,8 +18,8 @@ enum ConfigurationConstants
    MAX_STRING_SIZE    = 0xFFFE,
    VARPOOL_START_SIZE = 10000,
    VARPOOL_EXPANSION  = 5000,
-   TENURE             = 3,
-   MAXAGE             = 127
+   TENURE             = 4,
+   MAXAGE             = 127,
 };
 
 enum NodeKind

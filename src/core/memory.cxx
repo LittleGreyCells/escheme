@@ -7,19 +7,16 @@
 #include "error.hxx"
 #include "regstack.hxx"
 #include "framestore.hxx"
+#include "varpool.hxx"
 
+#if 1
 #define VARPOOL_BVEC
 #define VARPOOL_VECTOR
 #define VARPOOL_STRING
 #define VARPOOL_SYMNAME
 #define VARPOOL_CLOSURE
 #define VARPOOL_FRAME
-
-#define markedp(n) ((n)->mark)
-#define setmark(n) ((n)->mark = 1)
-#define resetmark(n) ((n)->mark = 0)
-
-#include "varpool.hxx"
+#endif
 
 //
 // the global objects
@@ -60,15 +57,11 @@ struct NodeBlock
 
 static std::list<NodeBlock*> blocks;
 
-// 
-// Allocate a new node block
-//   Populate the FreeNodeList
-//
 static void NewNodeBlock()
 {
-   NodeBlock* block = new NodeBlock;
+   auto block = new NodeBlock;
 
-   blocks.push_back(block);
+   blocks.push_back( block );
 
    MEMORY::TotalNodeCount += block->nodes.size();
    MEMORY::FreeNodeCount += block->nodes.size();
@@ -87,7 +80,7 @@ static void NewNodeBlock()
 
 static SEXPR newnode( NodeKind kind )
 {
-   if (nullp(FreeNodeList))
+   if ( nullp(FreeNodeList) )
    {
       MEMORY::gc();
 
@@ -126,39 +119,42 @@ unsigned MEMORY::get_ns_highwater() { return newspace.getindex(); }
 #ifdef VARPOOL_BVEC
 inline BYTE* ns_copy_bvec( SEXPR n ) 
 { 
-   return (BYTE*)newspace.copy_to_inactive( getbvecdata(n), getndwords(n) );
+   return reinterpret_cast<BYTE*>( newspace.copy_to_inactive( getbvecdata(n), getndwords(n) ) );
 }
 
 inline BYTE* tenure_bvec( SEXPR n ) 
 {
    BYTE* bv = new BYTE[NBYTES(getndwords(n))];
-   return (BYTE*)std::memcpy( bv, getbvecdata(n), NBYTES(getndwords(n)) );
+   std::memcpy( bv, getbvecdata(n), NBYTES(getndwords(n)) );
+   return bv;
 }
 #endif
 
 #ifdef VARPOOL_STRING
 inline char* ns_copy_string( SEXPR n ) 
 { 
-   return (char*)newspace.copy_to_inactive( getstringdata(n), getndwords(n) );
+   return reinterpret_cast<char*>( newspace.copy_to_inactive( getstringdata(n), getndwords(n) ) );
 }
 
 inline char* tenure_string( SEXPR n ) 
 {
    char* str = new char[NBYTES(getndwords(n))];
-   return (char*)std::memcpy( str, getstringdata(n), NBYTES(getndwords(n)) );
+   std::memcpy( str, getstringdata(n), NBYTES(getndwords(n)) );
+   return str;
 }
 #endif
 
 #ifdef VARPOOL_VECTOR
 inline SEXPR* ns_copy_vector( SEXPR n )
 {
-   return (SEXPR*)newspace.copy_to_inactive( getvectordata(n), getvectorlength(n) );
+   return reinterpret_cast<SEXPR*>( newspace.copy_to_inactive( getvectordata(n), getvectorlength(n) ) );
 }
 
 inline SEXPR* tenure_vector( SEXPR n )
 {
    SEXPR* v = new SEXPR[getvectorlength(n)];
-   return (SEXPR*)std::memcpy( v, getvectordata(n), NBYTES(getvectorlength(n)) );
+   std::memcpy( v, getvectordata(n), NBYTES(getvectorlength(n)) );
+   return v;
 }
 #endif
 
@@ -166,7 +162,7 @@ inline SEXPR* tenure_vector( SEXPR n )
 inline FRAME ns_copy_frame( SEXPR n )
 {
    FRAME fr = getenvframe(n);
-   return (FRAME)newspace.copy_to_inactive( fr, getframesize(fr) );
+   return reinterpret_cast<FRAME>( newspace.copy_to_inactive( fr, getframesize(fr) ) );
 }
 
 inline FRAME tenure_frame( SEXPR n )
@@ -179,26 +175,28 @@ inline FRAME tenure_frame( SEXPR n )
 #ifdef VARPOOL_SYMNAME
 inline char* ns_copy_symbolname( SEXPR n )
 {
-   return (char*)newspace.copy_to_inactive( getname(n), getndwords(n) );
+   return reinterpret_cast<char*>( newspace.copy_to_inactive( getname(n), getndwords(n) ) );
 }
 
 inline char* tenure_symbolname( SEXPR n )
 {
    char* name = new char[NBYTES(getndwords(n))];
-   return (char*)std::memcpy( name, getname(n), NBYTES(getndwords(n)) );
+   std::memcpy( name, getname(n), NBYTES(getndwords(n)) );
+   return name;
 }
 #endif
 
 #ifdef VARPOOL_CLOSURE
 inline SEXPR* ns_copy_closure( SEXPR n )
 {
-   return (SEXPR*)newspace.copy_to_inactive( getclosuredata(n), 3 );
+   return reinterpret_cast<SEXPR*>( newspace.copy_to_inactive( getclosuredata(n), 3 ) );
 }
 
 inline SEXPR* tenure_closure( SEXPR n )
 {
    SEXPR* v = new SEXPR[3];
-   return (SEXPR*)std::memcpy( v, getclosuredata(n), NBYTES(3) );
+   std::memcpy( v, getclosuredata(n), NBYTES(3) );
+   return v;
 }
 #endif
 
@@ -231,6 +229,10 @@ inline void increment_age( SEXPR n )
 // But for now this is the implementation which stands. Adopting a
 // purely object-orient approach will require considerable redesign.
 //
+
+#define markedp(n) ((n)->mark)
+#define setmark(n) ((n)->mark = 1)
+#define resetmark(n) ((n)->mark = 0)
 
 int MEMORY::suspensions = 0;
 
@@ -283,7 +285,7 @@ void MEMORY::mark( SEXPR n )
                setenvframe( n, tenure_frame(n) );
          }
 #endif
-         FRAME frame = getenvframe(n);
+         auto frame = getenvframe(n);
          mark( getframevars(frame) );
          const int nslots = getframenslots(frame);
          for ( int i = 0; i < nslots; ++i )
@@ -306,7 +308,7 @@ void MEMORY::mark( SEXPR n )
       case n_vector:
       {
 	 setmark(n);
-	 const int length = getvectorlength(n);
+	 const auto length = getvectorlength(n);
 #ifdef VARPOOL_VECTOR
 	 if ( ns_copy )
 	 {
@@ -414,7 +416,7 @@ void MEMORY::mark( SEXPR n )
 
 void MEMORY::mark( TSTACK<SEXPR>& stack )
 {
-   const int depth = stack.getdepth();
+   const auto depth = stack.getdepth();
    for ( int i = 0; i < depth; ++i )
       mark( stack[i] );
 }
@@ -433,16 +435,16 @@ static void sweep()
    {
       for ( auto& node : block->nodes )
       {
-	 SEXPR p = &node;
+	 auto p = &node;
 
-	 if (markedp(p))
+	 if ( markedp(p) )
 	 {
 	    resetmark(p);
 	 }
 	 else
 	 {
 	    // reclaim the node
-	    switch (nodekind(p))
+	    switch ( nodekind(p) )
 	    {
 	       case n_symbol:
 #ifdef VARPOOL_SYMNAME
@@ -586,12 +588,12 @@ namespace
    SEXPR new_symbol( const char* s, int length )
    {
       // newspace or heap
-      const unsigned size = length+1;
+      const auto size = length+1;
 #ifdef VARPOOL_SYMNAME
-      const unsigned ndwords = NDWORDS( size );
-      char* name = (char*)newspace.alloc( ndwords );
+      const auto ndwords = NDWORDS( size );
+      auto name = reinterpret_cast<char*>( newspace.alloc( ndwords ) );
 #else
-      char* name = new char[size];
+      auto name = new char[size];
 #endif
       strcpy(name, s);
       // node space
@@ -619,12 +621,12 @@ SEXPR MEMORY::symbol( const std::string& s )      // (<name> <value>  <plist>)
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
    // newspace or heap
-   const unsigned size = length+1;
+   const auto size = length+1;
 #ifdef VARPOOL_STRING
-   const unsigned ndwords = NDWORDS( size );      // allow for null byte terminator
-   char* data = (char*)newspace.alloc( ndwords );
+   const auto ndwords = NDWORDS( size );      // allow for null byte terminator
+   auto data = reinterpret_cast<char*>( newspace.alloc( ndwords ) );
 #else
-   char* data = new char[size]; 
+   auto data = new char[size]; 
 #endif
    data[0] = '\0';
    // node space
@@ -687,9 +689,9 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
    // newspace or heap
 #ifdef VARPOOL_VECTOR
-   SEXPR* data = (SEXPR*)newspace.alloc( length );
+   auto data = reinterpret_cast<SEXPR*>( newspace.alloc( length ) );
 #else
-   SEXPR* data = new SEXPR[length];
+   auto data = new SEXPR[length];
 #endif
    for ( int i = 0; i < length; ++i )
       data[i] = null;
@@ -713,8 +715,8 @@ void MEMORY::resize( SEXPR string, UINT32 delta )
    auto& old_data = getstringdata(string);
    
 #ifdef VARPOOL_STRING
-   const unsigned ndwords = NDWORDS( new_length );
-   auto new_data = (char*)newspace.alloc( ndwords );
+   const auto ndwords = NDWORDS( new_length );
+   auto new_data = reinterpret_cast<char*>( newspace.alloc( ndwords ) );
 #else
    auto new_data = new char[new_length]; 
 #endif
@@ -744,12 +746,12 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
 {
    // newspace or heap
 #ifdef VARPOOL_BVEC
-   const unsigned ndwords = NDWORDS( length );
-   BYTE* data = (BYTE*)newspace.alloc( ndwords );
+   const auto ndwords = NDWORDS( length );
+   auto data = reinterpret_cast<BYTE*>( newspace.alloc( ndwords ) );
 #else
-   BYTE* data = new BYTE[length];
+   auto data = new BYTE[length];
 #endif
-   for ( unsigned i = 0; i < length; ++i )
+   for ( int i = 0; i < length; ++i )
       data[i] = 0;
    // node space
    SEXPR n = newnode(n_bvec);
@@ -780,9 +782,9 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
 {
    // newspace or heap
 #ifdef VARPOOL_CLOSURE
-   SEXPR* data = (SEXPR*)newspace.alloc( 3 );
+   auto data = reinterpret_cast<SEXPR*>( newspace.alloc( 3 ) );
 #else
-   SEXPR* data = new SEXPR[3];
+   auto data = new SEXPR[3];
 #endif
    // node space
    SEXPR n = newnode(n_closure);
@@ -797,14 +799,14 @@ SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> .
 {
    // newspace or heap
 #ifdef VARPOOL_FRAME
-   const unsigned ndwords = FRAMESIZE_NDW( nvars );
-   FRAME frame = (FRAME)newspace.alloc( ndwords );
+   const auto ndwords = FRAMESIZE_NDW( nvars );
+   auto frame = reinterpret_cast<FRAME>( newspace.alloc( ndwords ) );
    setframesize( frame, ndwords );
    setframenslots( frame, nvars );
-   for ( unsigned i = 0; i < nvars; ++i )
+   for ( int i = 0; i < nvars; ++i )
       frameset( frame, i, null );
 #else
-   FRAME frame = frameStore.alloc( nvars );
+   auto frame = frameStore.alloc( nvars );
 #endif
    setframevars(frame, vars);
    

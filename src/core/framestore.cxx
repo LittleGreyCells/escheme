@@ -32,10 +32,10 @@ FRAME FrameStore::alloc( UINT32 nslots )
    else
    {
       // allocate a new frame from heap
-      const size_t frameSize = FRAMESIZE_NDW( nslots );   
-      frame = (FRAME) new DWORD[frameSize];
+      const auto frameSize = FRAMESIZE_NDW( nslots );   
+      frame = reinterpret_cast<FRAME>( new DWORD[frameSize] );
       
-      setframesize( frame, (UINT32)frameSize );
+      setframesize( frame, frameSize );
       setframenslots( frame, nslots );
    }
    
@@ -66,29 +66,26 @@ FRAME FrameStore::clone( FRAME fr )
    else
    {
       // allocate a new frame from heap
-      frame = (FRAME) new SEXPR[getframesize(fr)];
+      frame = reinterpret_cast<FRAME>( new DWORD[getframesize(fr)] );
    }
       
-   return (FRAME)std::memcpy( frame, fr, NBYTES(getframesize(fr)) );
+   std::memcpy( frame, fr, NBYTES(getframesize(fr)) );
+
+   return frame;
 }
 
 void FrameStore::free( FRAME frame )
 {
-   // some frames might be nullptrs
+   const auto nslots = frame->nslots;
    
-   if ( frame )
+   if ( nslots < store.size() )
    {
-      const UINT32 nslots = frame->nslots;
-      
-      if ( nslots < store.size() )
-      {
-         frame->next = store[nslots];
-         store[nslots] = frame;
-         count[nslots] += 1;
-      }
-      else
-      {
-         delete frame;
-      }
+      frame->next = store[nslots];
+      store[nslots] = frame;
+      count[nslots] += 1;
+   }
+   else
+   {
+      delete frame;
    }
 }
