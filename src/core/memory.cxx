@@ -287,7 +287,7 @@ void MEMORY::mark( SEXPR n )
 #endif
          auto frame = getenvframe(n);
          mark( getframevars(frame) );
-         const int nslots = getframenslots(frame);
+         const auto nslots = getframenslots(frame);
          for ( int i = 0; i < nslots; ++i )
             mark( frameref(frame, i) );
          // benv
@@ -513,7 +513,7 @@ static void sweep()
 #ifdef GC_STATISTICS_DETAILED
 	    MEMORY::ReclamationCounts[nodekind(p)] += 1;
 #endif
-	    // minimal reinitialization
+	    // minimal reinitialization and link
 	    new (p) Node( n_free, FreeNodeList );
 
 	    FreeNodeList = p;
