@@ -128,7 +128,7 @@ SEXPR READER::read_list( SEXPR inport, char terminator )
 	       push(n);
 	       n = MEMORY::cons(n, null);
 	       pop();
-	       rplacd(last, n);
+	       setcdr(last, n);
 	       last = n;
 	    }
 	 }

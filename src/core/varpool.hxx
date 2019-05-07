@@ -21,13 +21,17 @@
 // Variable Sized Object Pools
 //
 
-class NewSpace
+namespace MEMORY
+{
+
+class VarPool
 {
    const char* name;
    DWORD* active;
    DWORD* inactive;
    unsigned index;
    unsigned size;
+   unsigned delta;
 
    void expand( unsigned nwords )
    {
@@ -45,7 +49,7 @@ class NewSpace
       //      [5] allocate a larger copyback store (inactive)
       //      [6] set size to new size
       //
-      const unsigned new_size = std::max( size+nwords, size+VARPOOL_EXPANSION );
+      const unsigned new_size = std::max( size+nwords, size+delta );
 
       TRACE( printf( "nwords:   %u\n", nwords ) );
       TRACE( printf( "old_size: %u\n", size ) );
@@ -70,12 +74,13 @@ class NewSpace
 
 public:
 
-   NewSpace( const char* name, unsigned size ) 
+   VarPool( const char* name, unsigned size, unsigned delta=2000 ) 
       : name( name ),
 	size( size ),
 	index( 0 ),
 	active( new DWORD[size] ),
-	inactive( new DWORD[size] )
+	inactive( new DWORD[size] ),
+        delta( delta )
    {
       // empty
    }
@@ -118,7 +123,7 @@ public:
 	 if ( index + nwords >= size )
 	 {
 	    char msg[80];
-	    SPRINTF( msg, "(%s) insufficient varpool space", name );
+	    SPRINTF( msg, "(%s) insufficient varpool pool", name );
 	    ERROR::fatal( msg );
 	 }
       }
@@ -133,7 +138,7 @@ public:
    {
       if ( index + nwords >= size )
       {
-	 printf( "(%s)copy_to_inactive exceeds space: index=%u, nwords=%u\n", name, index, nwords );
+	 printf( "(%s)copy_to_inactive exceeds pool: index=%u, nwords=%u\n", name, index, nwords );
 	 fflush(NULL);
       }
       TRACE( printf( "(%s)cp2i: src=%p, index=%u, nwords=%u\n", name, src, index, nwords ) );
@@ -146,7 +151,7 @@ public:
    {
       if ( index + nwords >= size )
       {
-	 printf( "(%s)copy_to_active exceeds space: index=%u, nwords=%u\n", name, index, nwords );
+	 TRACE( printf( "(%s)copy_to_active exceeds pool: index=%u, nwords=%u\n", name, index, nwords ) );
 	 fflush(NULL);
       }
       TRACE( printf( "(%s)cp2a: src=%p, index=%u, nwords=%u\n", name, src, index, nwords ) );
@@ -156,5 +161,7 @@ public:
    }
 
 };
+
+}  // MEMORY
 
 #endif

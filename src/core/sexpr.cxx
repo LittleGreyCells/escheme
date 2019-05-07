@@ -65,9 +65,6 @@ FLONUM flonum( const SEXPR n ) { return getflonum(guard(n, flonump)); }
 SEXPR car( const SEXPR n ) { return anyp(n) ? getcar(guard(n, consp)) : null; }
 SEXPR cdr( const SEXPR n ) { return anyp(n) ? getcdr(guard(n, consp)) : null; }
 
-void rplaca( SEXPR n, SEXPR car ) { setcar(guard(n, consp), car); }
-void rplacd( SEXPR n, SEXPR cdr ) { setcdr(guard(n, consp), cdr); }
-
 SEXPR nthcar( const SEXPR list, UINT32 n )
 {
    SEXPR s = list;

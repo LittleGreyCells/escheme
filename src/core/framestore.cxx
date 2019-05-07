@@ -9,6 +9,9 @@
 // Frame Store
 //
 
+namespace MEMORY
+{
+
 FRAME FrameStore::alloc( UINT32 nslots )
 {
    // allocate a frame with all slots defined
@@ -32,7 +35,7 @@ FRAME FrameStore::alloc( UINT32 nslots )
    else
    {
       // allocate a new frame from heap
-      const auto frameSize = FRAMESIZE_NDW( nslots );   
+      const auto frameSize = FRAMESIZE( nslots );   
       frame = reinterpret_cast<FRAME>( new DWORD[frameSize] );
       
       setframesize( frame, frameSize );
@@ -86,6 +89,8 @@ void FrameStore::free( FRAME frame )
    }
    else
    {
-      delete frame;
+      delete[] frame;
    }
 }
+
+} // MEMORY

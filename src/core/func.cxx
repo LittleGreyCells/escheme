@@ -107,9 +107,9 @@ SEXPR FUNC::set_car()
    // syntax: (set-car! <cons> <newcar>) -> <cons>
    //
    ArgstackIterator iter;
-   const SEXPR cons = iter.getarg();
+   const SEXPR cons = guard( iter.getarg(), consp );
    const SEXPR newcar = iter.getlast();
-   rplaca(cons, newcar);
+   setcar( cons, newcar );
    return cons;
 }
 
@@ -119,9 +119,9 @@ SEXPR FUNC::set_cdr()
    // syntax: (set-cdr! <cons> <newcdr>) -> <cons>
    //
    ArgstackIterator iter;
-   const SEXPR cons = iter.getarg();
+   const SEXPR cons = guard( iter.getarg(), consp );
    const SEXPR newcdr = iter.getlast();
-   rplacd(cons, newcdr);
+   setcdr( cons, newcdr );
    return cons;
 }
 
@@ -177,14 +177,11 @@ SEXPR FUNC::liststar()
 	 SEXPR next = iter.getarg();
 	 if (!iter.more())
 	 {
-	    //rplacd(cell, next);
 	    setcdr(cell, next);
 	    return pop_reg();
 	 }
 	 else
 	 {
-	    //rplacd(cell, MEMORY::cons(next, null));
-	    //cell = ::cdr(cell);
 	    setcdr(cell, MEMORY::cons(next, null));
 	    cell = getcdr(cell);
 	 }
@@ -792,7 +789,7 @@ SEXPR FUNC::put_property()
    {
       if ( eq( p, ::car(plist) ) )
       {
-	 rplaca(::cdr(plist), v);
+	 setcar( guard(::cdr(plist), consp), v );
 	 return p;
       }
       plist = ::cdr(::cdr(plist));
@@ -920,12 +917,11 @@ static SEXPR gc_stats()
 #endif
    vectorset( gc_stats, 0, pop_reg() );
 
-   // varpool stats
-   // newspace
+   // cache stats
    push_reg( MEMORY::vector(3) );
-   vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::NewSpaceSwapCount ) );
-   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::NewSpaceSize ) );
-   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::get_ns_highwater() ) );
+   vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::CacheSwapCount ) );
+   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::CacheSize ) );
+   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::get_cache_highwater() ) );
    vectorset( gc_stats, 1, pop_reg() );
 
    return pop_reg();

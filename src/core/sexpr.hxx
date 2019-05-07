@@ -16,8 +16,8 @@ enum ConfigurationConstants
    ECE_HISTORY_LENGTH = 100,
    MAX_IMAGE_LENGTH   = 256,
    MAX_STRING_SIZE    = 0xFFFE,
-   VARPOOL_START_SIZE = 10000,
-   VARPOOL_EXPANSION  = 5000,
+   CACHE_START_SIZE   = 10000,
+   CACHE_EXPANSION    = 5000,
    TENURE             = 4,
    MAXAGE             = 127,
 };
@@ -104,8 +104,7 @@ struct Frame
    SEXPR slot[1];        // varying numbers
 };
 
-#define FRAMESIZE_NB( nslots ) ((sizeof(Frame) - sizeof(SEXPR)) + (sizeof(SEXPR) * (nslots)))
-#define FRAMESIZE_NDW( nslots) (((sizeof(Frame) - sizeof(SEXPR))/sizeof(SEXPR)) + nslots)
+#define FRAMESIZE( nslots) (((sizeof(Frame) - sizeof(SEXPR))/sizeof(SEXPR)) + nslots)
 
 struct PRIMITIVE
 {
@@ -247,8 +246,6 @@ FLONUM flonum( const SEXPR n );
 // list 
 SEXPR car( const SEXPR n );
 SEXPR cdr( const SEXPR n );
-void rplaca( SEXPR n, SEXPR car );
-void rplacd( SEXPR n, SEXPR cdr );
 SEXPR nthcar( const SEXPR s, UINT32 n );
 SEXPR nthcdr( const SEXPR s, UINT32 n );
 UINT32 list_length( const SEXPR x );

@@ -16,10 +16,9 @@ namespace MEMORY
    extern int  CollectionCount;
    extern FrameStore frameStore;
 
-   extern unsigned NewSpaceSwapCount;
-   extern unsigned NewSpaceSize;
-
-   unsigned get_ns_highwater();
+   extern unsigned CacheSwapCount;
+   extern unsigned CacheSize;
+   unsigned get_cache_highwater();
 
 #ifdef GC_STATISTICS_DETAILED
    extern std::array<UINT32, NUMKINDS> ReclamationCounts;
@@ -62,7 +61,6 @@ namespace MEMORY
    void register_marker( Marker );
 
    extern int suspensions;
-   extern bool ns_copy;
    void gc( bool copy=false );
 
    void mark( SEXPR n );
@@ -95,7 +93,6 @@ struct ListBuilder
       setcdr( MEMORY::listhead, null );
    }
 
-   inline
    void add( SEXPR item )
    {
       const SEXPR cell = MEMORY::cons(item, null) ;
@@ -103,7 +100,6 @@ struct ListBuilder
       MEMORY::listtail = cell;
    }
 
-   inline
    SEXPR get()
    {
       return getcdr( MEMORY::listhead );

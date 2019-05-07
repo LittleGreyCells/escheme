@@ -5,6 +5,10 @@
 
 #include "sexpr.hxx"
 
+namespace MEMORY
+
+{
+
 class FrameStore
 {
    std::array<FRAME, 10> store = {nullptr};
@@ -18,5 +22,7 @@ public:
 
    std::array<UINT32, 10> count = {0};
 };
+
+}  // MEMORY
 
 #endif

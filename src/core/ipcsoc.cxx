@@ -610,8 +610,8 @@ SEXPR IPCSOC::read_select()
       {
 	 push(MEMORY::fixnum(i));
 	 SEXPR cell = MEMORY::cons(null, null);
-	 rplaca(cell, pop());
-	 rplacd(cell, pop());
+	 setcar( cell, pop() );
+	 setcdr( cell, pop() );
 	 push(cell);
       }
    }
