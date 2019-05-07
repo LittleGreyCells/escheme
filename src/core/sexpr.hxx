@@ -77,7 +77,7 @@ using UINT32  = unsigned int;
 
  
 //
-// Virtualizing the Node Representational Scheme
+// Node Representational Scheme
 //
 
 struct Node;

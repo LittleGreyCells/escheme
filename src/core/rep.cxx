@@ -67,7 +67,7 @@ static void define_system()
 
    const SEXPR port = PIO::open_on_string( MEMORY::string(system), pm_input );
    
-   GcSuspension( "define-system" );
+   GcSuspension gcs( "define-system" );
    
    setvalue( SYMTAB::enter(SYSTEM_REPLOOP), READER::read(port) );
    setvalue( SYMTAB::enter(SYSTEM_LOADER), READER::read(port) );

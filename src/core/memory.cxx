@@ -248,11 +248,6 @@ static void badnode( SEXPR n )
 
 void MEMORY::mark( SEXPR n )
 {
-#if 0
-   if ( n == nullptr )
-      ERROR::fatal( "marking nullptr; abandoning gc" );
-#endif
-   
    if ( nullp(n) || markedp(n) )
       return;
 

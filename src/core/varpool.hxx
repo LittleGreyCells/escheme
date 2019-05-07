@@ -57,7 +57,7 @@ class VarPool
 
       // [1] delete existing copyback store (inactive)
       // [2] allocate a larger copyback store (inactive)
-      delete inactive;
+      delete[] inactive;
       inactive = new DWORD[new_size];
 
       // [3] perform another gc( copy=true ) (swap)
@@ -65,7 +65,7 @@ class VarPool
 
       // [4] delete the new copyback store (inactive)
       // [5] allocate a larger copyback store (inactive)
-      delete inactive;
+      delete[] inactive;
       inactive = new DWORD[new_size];
 
       // [6] set size to new size
