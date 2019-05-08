@@ -72,6 +72,12 @@ class VarPool
       size = new_size;
    }
 
+private:
+
+   // copying not permitted
+   VarPool( const VarPool& vp );
+   VarPool& operator=( const VarPool& vp );
+
 public:
 
    VarPool( const char* name, unsigned size, unsigned delta=2000 ) 
@@ -85,6 +91,11 @@ public:
       // empty
    }
 
+   ~VarPool()
+   {
+      delete[] active;
+      delete[] inactive;
+   }
 
    unsigned getsize() { return size; }
    unsigned getindex() { return index; }
@@ -123,7 +134,7 @@ public:
 	 if ( index + nwords >= size )
 	 {
 	    char msg[80];
-	    SPRINTF( msg, "(%s) insufficient varpool pool", name );
+	    SPRINTF( msg, "(%s) insufficient varpool space", name );
 	    ERROR::fatal( msg );
 	 }
       }
@@ -138,8 +149,9 @@ public:
    {
       if ( index + nwords >= size )
       {
-	 printf( "(%s)copy_to_inactive exceeds pool: index=%u, nwords=%u\n", name, index, nwords );
-	 fflush(NULL);
+         char msg[80];
+	 SPRINTF( msg, "(%s)copy_to_inactive exceeds pool: index=%u, nwords=%u\n", name, index, nwords );
+         ERROR::fatal( msg );
       }
       TRACE( printf( "(%s)cp2i: src=%p, index=%u, nwords=%u\n", name, src, index, nwords ) );
       void* dst = std::memcpy( (void*)&inactive[index], src, NBYTES(nwords) );
@@ -151,8 +163,9 @@ public:
    {
       if ( index + nwords >= size )
       {
-	 TRACE( printf( "(%s)copy_to_active exceeds pool: index=%u, nwords=%u\n", name, index, nwords ) );
-	 fflush(NULL);
+         char msg[80];
+	 SPRINTF( msg, "(%s)copy_to_active exceeds pool: index=%u, nwords=%u\n", name, index, nwords );
+         ERROR::fatal( msg );
       }
       TRACE( printf( "(%s)cp2a: src=%p, index=%u, nwords=%u\n", name, src, index, nwords ) );
       void* dst = std::memcpy( (void*)&active[index], src, NBYTES(nwords) );

@@ -18,6 +18,7 @@ enum ConfigurationConstants
    MAX_STRING_SIZE    = 0xFFFE,
    CACHE_START_SIZE   = 10000,
    CACHE_EXPANSION    = 5000,
+   CACHE_MAX_OBJ_SIZE = 500,
    TENURE             = 4,
    MAXAGE             = 127,
 };
@@ -190,6 +191,9 @@ struct PROMISE
 //   mark   # used by memory management
 //   form   # used by eval for fast dispatch
 //   recu   # used by printer to guard against recursive printing
+//   nage   # used by cache manager
+//   xtra   # unused
+//   ndwords # number of words of cache storage
 //
 
 struct Node

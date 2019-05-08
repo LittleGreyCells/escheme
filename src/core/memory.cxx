@@ -108,7 +108,7 @@ namespace MEMORY
    bool cache_copy = false;
 }
 
-MEMORY::VarPool cache( "newspace", CACHE_START_SIZE, CACHE_EXPANSION );
+MEMORY::VarPool cache( "cache", CACHE_START_SIZE, CACHE_EXPANSION );
 
 unsigned MEMORY::CacheSwapCount = 0;
 unsigned MEMORY::CacheSize      = cache.getsize();
@@ -621,7 +621,9 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
    const auto size = length+1;
 #ifdef CACHE_STRING
    const auto ndwords = NDWORDS( size );      // allow for null byte terminator
-   auto data = reinterpret_cast<char*>( cache.alloc( ndwords ) );
+   auto data = ( ndwords < CACHE_MAX_OBJ_SIZE ) ?
+      reinterpret_cast<char*>( cache.alloc( ndwords ) ) :
+      new char[length];
 #else
    auto data = new char[size]; 
 #endif
@@ -686,7 +688,9 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
    // cache or heap
 #ifdef CACHE_VECTOR
-   auto data = reinterpret_cast<SEXPR*>( cache.alloc( length ) );
+   auto data = ( length < CACHE_MAX_OBJ_SIZE ) ?
+      reinterpret_cast<SEXPR*>( cache.alloc( length ) ) :
+      new SEXPR[length];
 #else
    auto data = new SEXPR[length];
 #endif
@@ -706,14 +710,16 @@ void MEMORY::resize( SEXPR string, UINT32 delta )
    const auto old_length = getstringlength(string);
    const auto new_length = old_length + delta;
 
-   if (new_length > MAX_STRING_SIZE)
+   if ( new_length > MAX_STRING_SIZE )
       ERROR::severe( "string length exceeds maximum size", MEMORY::fixnum(new_length) );
       
    auto& old_data = getstringdata(string);
    
 #ifdef CACHE_STRING
    const auto ndwords = NDWORDS( new_length );
-   auto new_data = reinterpret_cast<char*>( cache.alloc( ndwords ) );
+   auto new_data = ( ndwords < CACHE_MAX_OBJ_SIZE ) ?
+      reinterpret_cast<char*>( cache.alloc( ndwords ) ) :
+      new char[new_length];
 #else
    auto new_data = new char[new_length]; 
 #endif
@@ -744,7 +750,9 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
    // cache or heap
 #ifdef CACHE_BVEC
    const auto ndwords = NDWORDS( length );
-   auto data = reinterpret_cast<BYTE*>( cache.alloc( ndwords ) );
+   auto data = ( ndwords < CACHE_MAX_OBJ_SIZE ) ?
+      reinterpret_cast<BYTE*>( cache.alloc( ndwords ) ) :
+      new BYTE[length];
 #else
    auto data = new BYTE[length];
 #endif
