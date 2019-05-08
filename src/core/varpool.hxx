@@ -51,9 +51,7 @@ class VarPool
       //
       const unsigned new_size = std::max( size+nwords, size+delta );
 
-      TRACE( printf( "nwords:   %u\n", nwords ) );
-      TRACE( printf( "old_size: %u\n", size ) );
-      TRACE( printf( "new_size: %u\n", new_size ) );
+      TRACE( printf( "(%s)expand: nwords=%u, old=%u, new=%u\n", name, nwords, size, new_size ) );
 
       // [1] delete existing copyback store (inactive)
       // [2] allocate a larger copyback store (inactive)
@@ -134,7 +132,7 @@ public:
 	 if ( index + nwords >= size )
 	 {
 	    char msg[80];
-	    SPRINTF( msg, "(%s) insufficient varpool space", name );
+	    SPRINTF( msg, "(%s) insufficient pool space", name );
 	    ERROR::fatal( msg );
 	 }
       }

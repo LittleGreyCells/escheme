@@ -7,9 +7,9 @@
 #include "error.hxx"
 #include "regstack.hxx"
 #include "framestore.hxx"
-#include "varpool.hxx"
 
-#if 1
+#ifdef OBJECT_CACHE
+#include "varpool.hxx"
 #define CACHE_BVEC
 #define CACHE_VECTOR
 #define CACHE_STRING
@@ -17,10 +17,6 @@
 #define CACHE_CLOSURE
 #define CACHE_FRAME
 #endif
-
-//
-// the global objects
-//
 
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
@@ -98,6 +94,8 @@ static SEXPR newnode( NodeKind kind )
 
    return n;
 }
+
+#ifdef OBJECT_CACHE
 
 //
 // Variable Sized Object Pool
@@ -209,9 +207,12 @@ inline SEXPR* tenure_closure( SEXPR n )
 
 inline void increment_age( SEXPR n ) 
 { 
-   if ( n->nage < MAXAGE ) 
+   if ( n->nage < CACHE_MAXAGE ) 
       ++n->nage; 
 }
+
+#endif
+
 
 //
 // Garbage Collection
@@ -279,9 +280,9 @@ void MEMORY::mark( SEXPR n )
          if ( cache_copy )
          {
             increment_age( n );
-            if ( n->nage < TENURE )
+            if ( n->nage < CACHE_TENURE )
                setenvframe( n, copy_frame(n) );
-            else if ( n->nage == TENURE )
+            else if ( n->nage == CACHE_TENURE )
                setenvframe( n, tenure_frame(n) );
          }
 #endif
@@ -313,9 +314,9 @@ void MEMORY::mark( SEXPR n )
 	 if ( cache_copy )
 	 {
 	    increment_age( n );
-	    if ( n->nage < TENURE )
+	    if ( n->nage < CACHE_TENURE )
 	       setvectordata( n, copy_vector(n) );
-	    else if ( n->nage == TENURE )
+	    else if ( n->nage == CACHE_TENURE )
 	       setvectordata( n, tenure_vector(n) );
 	 }
 #endif
@@ -330,9 +331,9 @@ void MEMORY::mark( SEXPR n )
 	 if ( cache_copy )
 	 {
 	    increment_age( n );
-	    if ( n->nage < TENURE )
+	    if ( n->nage < CACHE_TENURE )
 	       setname( n, copy_symbolname(n) );
-	    else if ( n->nage == TENURE )
+	    else if ( n->nage == CACHE_TENURE )
 	       setname( n, tenure_symbolname(n) );
 	 }
 #endif
@@ -346,9 +347,9 @@ void MEMORY::mark( SEXPR n )
 	 if ( cache_copy )
 	 {
 	    increment_age( n );
-	    if ( n->nage < TENURE )
+	    if ( n->nage < CACHE_TENURE )
 	       setclosuredata( n, copy_closure(n) );
-	    else if ( n->nage == TENURE )
+	    else if ( n->nage == CACHE_TENURE )
 	       setclosuredata( n, tenure_closure(n) );
 	 }
 #endif
@@ -364,9 +365,9 @@ void MEMORY::mark( SEXPR n )
 	 if ( cache_copy )
 	 {
 	    increment_age( n );
-	    if ( n->nage < TENURE )
+	    if ( n->nage < CACHE_TENURE )
 	       setbvecdata( n, copy_bvec(n) );
-	    else if ( n->nage == TENURE )
+	    else if ( n->nage == CACHE_TENURE )
 	       setbvecdata( n, tenure_bvec(n) );
 	 }
 #endif
@@ -378,9 +379,9 @@ void MEMORY::mark( SEXPR n )
 	 if ( cache_copy )
 	 {
 	    increment_age( n );
-	    if ( n->nage < TENURE )
+	    if ( n->nage < CACHE_TENURE )
 	       setstringdata( n, copy_string(n) );
-	    else if ( n->nage == TENURE )
+	    else if ( n->nage == CACHE_TENURE )
 	       setstringdata( n, tenure_string(n) );
 	 }
 #endif
@@ -445,47 +446,37 @@ static void sweep()
 	    {
 	       case n_symbol:
 #ifdef CACHE_SYMNAME
-                  if ( p->nage >= TENURE )
-                     delete[] getname( p );
-#else
-		  delete[] getname( p );
+                  if ( p->nage >= CACHE_TENURE )
 #endif
+		  delete[] getname( p );
 		  break;
 
 	       case n_closure:
 #ifdef CACHE_CLOSURE
-                  if ( p->nage >= TENURE )
-                     delete[] getclosuredata( p );
-#else
-                  delete[] getclosuredata( p );
+                  if ( p->nage >= CACHE_TENURE )
 #endif
+                  delete[] getclosuredata( p );
 		  break;
 
 	       case n_string:
 #ifdef CACHE_STRING
-                  if ( p->nage >= TENURE )
-                     delete[] getstringdata( p );
-#else
-		  delete[] getstringdata( p );
+                  if ( p->nage >= CACHE_TENURE )
 #endif
+		  delete[] getstringdata( p );
 		  break;
 
 	       case n_vector:
 #ifdef CACHE_VECTOR
-                  if ( p->nage >= TENURE )
-                     delete[] getvectordata( p );
-#else
-		  delete[] getvectordata( p );
+                  if ( p->nage >= CACHE_TENURE )
 #endif
+		  delete[] getvectordata( p );
 		  break;
 
 	       case n_bvec:
 #ifdef CACHE_BVEC
-                  if ( p->nage >= TENURE )
-                     delete[] getbvecdata( p );
-#else
-		  delete[] getbvecdata( p );
+                  if ( p->nage >= CACHE_TENURE )
 #endif
+		  delete[] getbvecdata( p );
 		  break;
 
                case n_port:
@@ -495,11 +486,9 @@ static void sweep()
 
                case n_environment:
 #ifdef CACHE_FRAME
-                  if ( p->nage >= TENURE )
-                     MEMORY::frameStore.free( getenvframe(p) );
-#else
-                  MEMORY::frameStore.free( getenvframe(p) );
+                  if ( p->nage >= CACHE_TENURE )
 #endif
+                  MEMORY::frameStore.free( getenvframe(p) );
 		  break;                  
                   
 	       default:
@@ -519,20 +508,26 @@ static void sweep()
    }
 }
 
+#ifdef OBJECT_CACHE
 void MEMORY::gc( bool copy )
+#else
+void MEMORY::gc()
+#endif
 {
    if (suspensions > 0)
       return;
 
    CollectionCount += 1;
 
+#ifdef OBJECT_CACHE
    cache_copy = copy;
 
    if ( cache_copy )
    {
       cache.prep();
    }
-
+#endif
+   
    // mark memory managed roots
    mark( string_null );
    mark( vector_null );
@@ -546,12 +541,15 @@ void MEMORY::gc( bool copy )
    // collect the unused nodes
    sweep();
 
+#ifdef OBJECT_CACHE
    if ( cache_copy )
    {
       CacheSwapCount += 1;
       cache.swap();
       cache_copy = false;
    }
+#endif
+
 }
 
 //
@@ -621,7 +619,7 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
    const auto size = length+1;
 #ifdef CACHE_STRING
    const auto ndwords = NDWORDS( size );      // allow for null byte terminator
-   auto data = ( ndwords < CACHE_MAX_OBJ_SIZE ) ?
+   auto data = ( ndwords < CACHE_MAX_OBJSIZE ) ?
       reinterpret_cast<char*>( cache.alloc( ndwords ) ) :
       new char[length];
 #else
@@ -688,7 +686,7 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
    // cache or heap
 #ifdef CACHE_VECTOR
-   auto data = ( length < CACHE_MAX_OBJ_SIZE ) ?
+   auto data = ( length < CACHE_MAX_OBJSIZE ) ?
       reinterpret_cast<SEXPR*>( cache.alloc( length ) ) :
       new SEXPR[length];
 #else
@@ -717,7 +715,7 @@ void MEMORY::resize( SEXPR string, UINT32 delta )
    
 #ifdef CACHE_STRING
    const auto ndwords = NDWORDS( new_length );
-   auto new_data = ( ndwords < CACHE_MAX_OBJ_SIZE ) ?
+   auto new_data = ( ndwords < CACHE_MAX_OBJSIZE ) ?
       reinterpret_cast<char*>( cache.alloc( ndwords ) ) :
       new char[new_length];
 #else
@@ -750,7 +748,7 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
    // cache or heap
 #ifdef CACHE_BVEC
    const auto ndwords = NDWORDS( length );
-   auto data = ( ndwords < CACHE_MAX_OBJ_SIZE ) ?
+   auto data = ( ndwords < CACHE_MAX_OBJSIZE ) ?
       reinterpret_cast<BYTE*>( cache.alloc( ndwords ) ) :
       new BYTE[length];
 #else

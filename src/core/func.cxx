@@ -917,13 +917,15 @@ static SEXPR gc_stats()
 #endif
    vectorset( gc_stats, 0, pop_reg() );
 
+#ifdef OBJECT_CACHE
    // cache stats
    push_reg( MEMORY::vector(3) );
    vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::CacheSwapCount ) );
    vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::CacheSize ) );
    vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::get_cache_highwater() ) );
    vectorset( gc_stats, 1, pop_reg() );
-
+#endif
+   
    return pop_reg();
 }
 
@@ -938,6 +940,8 @@ SEXPR FUNC::gc()
    return gc_stats();
 }
 
+#ifdef OBJECT_CACHE
+
 SEXPR FUNC::gc_copy()
 {
    // *
@@ -948,6 +952,8 @@ SEXPR FUNC::gc_copy()
 
    return gc_stats();
 }
+
+#endif
 
 SEXPR FUNC::fs()
 {

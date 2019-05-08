@@ -18,9 +18,9 @@ enum ConfigurationConstants
    MAX_STRING_SIZE    = 0xFFFE,
    CACHE_START_SIZE   = 10000,
    CACHE_EXPANSION    = 5000,
-   CACHE_MAX_OBJ_SIZE = 500,
-   TENURE             = 4,
-   MAXAGE             = 127,
+   CACHE_MAX_OBJSIZE  = 500,
+   CACHE_TENURE       = 4,
+   CACHE_MAXAGE       = 127,
 };
 
 enum NodeKind
