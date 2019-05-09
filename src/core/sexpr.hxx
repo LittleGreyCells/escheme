@@ -105,7 +105,7 @@ struct Frame
    SEXPR slot[1];        // varying numbers
 };
 
-#define FRAMESIZE( nslots) (((sizeof(Frame) - sizeof(SEXPR))/sizeof(SEXPR)) + nslots)
+#define FRAMESIZE(nslots) (((sizeof(Frame)-sizeof(SEXPR))/sizeof(SEXPR))+nslots)
 
 struct PRIMITIVE
 {
