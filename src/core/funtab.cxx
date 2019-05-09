@@ -120,9 +120,6 @@ static const Function funtab[] =
    { "write-char",           FUNC::write_char   , n_func },
 
    { "gc",		     FUNC::gc		, n_func },
-#ifdef OBJECT_CACHE
-   { "gc-copy",		     FUNC::gc_copy	, n_func },
-#endif
    { "fs",		     FUNC::fs		, n_func },
 
    { "eval",		     0, n_eval     },

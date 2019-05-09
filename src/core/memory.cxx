@@ -8,13 +8,6 @@
 #include "regstack.hxx"
 #include "framestore.hxx"
 
-#ifdef OBJECT_CACHE
-#include "varpool.hxx"
-#define CACHE_FRAME
-#define CACHE_VECTOR
-#define CACHE_CLOSURE
-#endif
-
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
 SEXPR MEMORY::listtail;
@@ -92,83 +85,6 @@ static SEXPR newnode( NodeKind kind )
    return n;
 }
 
-#ifdef OBJECT_CACHE
-
-//
-// Variable Sized Object Pool
-//
-
-namespace MEMORY
-{
-   bool cache_copy = false;
-}
-
-MEMORY::VarPool cache( "cache", CACHE_START_SIZE, CACHE_EXPANSION );
-
-unsigned MEMORY::CacheSwapCount = 0;
-unsigned MEMORY::CacheSize      = cache.getsize();
-
-unsigned MEMORY::get_cache_highwater() { return cache.getindex(); }
-
-//
-// Copy To/From New Space
-//
-
-#ifdef CACHE_FRAME
-inline FRAME copy_frame( SEXPR n )
-{
-   FRAME fr = getenvframe(n);
-   return reinterpret_cast<FRAME>( cache.copy_to_inactive( fr, getframesize(fr) ) );
-}
-
-inline FRAME tenure_frame( SEXPR n )
-{
-   // clone the old frame
-   return MEMORY::frameStore.clone( getenvframe(n) );
-}
-#endif
-
-#ifdef CACHE_VECTOR
-inline SEXPR* copy_vector( SEXPR n )
-{
-   return reinterpret_cast<SEXPR*>( cache.copy_to_inactive( getvectordata(n), getvectorlength(n) ) );
-}
-
-inline SEXPR* tenure_vector( SEXPR n )
-{
-   SEXPR* v = new SEXPR[getvectorlength(n)];
-   std::memcpy( v, getvectordata(n), NBYTES(getvectorlength(n)) );
-   return v;
-}
-#endif
-
-#ifdef CACHE_CLOSURE
-inline SEXPR* copy_closure( SEXPR n )
-{
-   return reinterpret_cast<SEXPR*>( cache.copy_to_inactive( getclosuredata(n), 3 ) );
-}
-
-inline SEXPR* tenure_closure( SEXPR n )
-{
-   SEXPR* v = new SEXPR[3];
-   std::memcpy( v, getclosuredata(n), NBYTES(3) );
-   return v;
-}
-#endif
-
-//
-// Aging
-//
-
-inline void increment_age( SEXPR n ) 
-{ 
-   if ( n->nage < CACHE_MAXAGE ) 
-      ++n->nage; 
-}
-
-#endif
-
-
 //
 // Garbage Collection
 //
@@ -241,16 +157,6 @@ void MEMORY::mark( SEXPR n )
       {
 	 setmark(n);
          // frame
-#ifdef CACHE_FRAME
-         if ( cache_copy )
-         {
-            increment_age( n );
-            if ( n->nage < CACHE_TENURE )
-               setenvframe( n, copy_frame(n) );
-            else if ( n->nage == CACHE_TENURE )
-               setenvframe( n, tenure_frame(n) );
-         }
-#endif
          auto frame = getenvframe(n);
          mark( getframevars(frame) );
          mark( getframeclosure(frame) );
@@ -266,16 +172,6 @@ void MEMORY::mark( SEXPR n )
       {
 	 setmark(n);
 	 const auto length = getvectorlength(n);
-#ifdef CACHE_VECTOR
-	 if ( cache_copy )
-	 {
-	    increment_age( n );
-	    if ( n->nage < CACHE_TENURE )
-	       setvectordata( n, copy_vector(n) );
-	    else if ( n->nage == CACHE_TENURE )
-	       setvectordata( n, tenure_vector(n) );
-	 }
-#endif
 	 for ( int i = 0; i < length; ++i )
 	    mark( vectorref(n, i) );
 	 break;
@@ -284,16 +180,6 @@ void MEMORY::mark( SEXPR n )
       case n_closure:
       {
 	 setmark(n);
-#ifdef CACHE_CLOSURE
-	 if ( cache_copy )
-	 {
-	    increment_age( n );
-	    if ( n->nage < CACHE_TENURE )
-	       setclosuredata( n, copy_closure(n) );
-	    else if ( n->nage == CACHE_TENURE )
-	       setclosuredata( n, tenure_closure(n) );
-	 }
-#endif
 	 mark( getclosurecode(n) );
 	 mark( getclosurebenv(n) );
 	 mark( getclosurevars(n) );
@@ -383,23 +269,14 @@ static void sweep()
 		  break;
 
                case n_environment:
-#ifdef CACHE_FRAME
-                  if ( p->nage >= CACHE_TENURE )
-#endif
                   MEMORY::frameStore.free( getenvframe(p) );
 		  break;                  
                   
 	       case n_vector:
-#ifdef CACHE_VECTOR
-                  if ( p->nage >= CACHE_TENURE )
-#endif
 		  delete[] getvectordata( p );
 		  break;
 
 	       case n_closure:
-#ifdef CACHE_CLOSURE
-                  if ( p->nage >= CACHE_TENURE )
-#endif
                   delete[] getclosuredata( p );
 		  break;
 
@@ -425,26 +302,13 @@ static void sweep()
    }
 }
 
-#ifdef OBJECT_CACHE
-void MEMORY::gc( bool copy )
-#else
 void MEMORY::gc()
-#endif
 {
    if (suspensions > 0)
       return;
 
    CollectionCount += 1;
 
-#ifdef OBJECT_CACHE
-   cache_copy = copy;
-
-   if ( cache_copy )
-   {
-      cache.prep();
-   }
-#endif
-   
    // mark memory managed roots
    mark( string_null );
    mark( vector_null );
@@ -457,16 +321,6 @@ void MEMORY::gc()
 
    // collect the unused nodes
    sweep();
-
-#ifdef OBJECT_CACHE
-   if ( cache_copy )
-   {
-      CacheSwapCount += 1;
-      cache.swap();
-      cache_copy = false;
-   }
-#endif
-
 }
 
 //
@@ -524,11 +378,9 @@ SEXPR MEMORY::symbol( const std::string& s )      // (<name> <value>  <plist>)
 
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
-   // cache or heap
    const auto size = length+1;
    auto data = new char[size]; 
    data[0] = '\0';
-   // node space
    SEXPR n = newnode(n_string);
    setstringlength(n, length);
    setstringdata(n, data);
@@ -582,17 +434,9 @@ SEXPR MEMORY::cons( SEXPR car, SEXPR cdr )  // (<car> . <cdr> )
 
 SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
-   // cache or heap
-#ifdef CACHE_VECTOR
-   auto data = ( length < CACHE_MAX_OBJSIZE ) ?
-      reinterpret_cast<SEXPR*>( cache.alloc( length ) ) :
-      new SEXPR[length];
-#else
    auto data = new SEXPR[length];
-#endif
    for ( int i = 0; i < length; ++i )
       data[i] = null;
-   // node space
    SEXPR n = newnode(n_vector);
    setvectorlength(n, length);
    setvectordata(n, data);
@@ -657,13 +501,7 @@ SEXPR MEMORY::port( FILE* file, short mode )          // (<file>)
 
 SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> <vars>] )
 {
-   // cache or heap
-#ifdef CACHE_CLOSURE
-   auto data = reinterpret_cast<SEXPR*>( cache.alloc( 3 ) );
-#else
    auto data = new SEXPR[3];
-#endif
-   // node space
    SEXPR n = newnode(n_closure);
    setclosuredata(n, data);
    setclosurecode(n, code);
@@ -674,17 +512,7 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
 
 SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> . <env>)
 {
-   // cache or heap
-#ifdef CACHE_FRAME
-   const auto ndwords = FRAMESIZE( nvars );
-   auto frame = reinterpret_cast<FRAME>( cache.alloc( ndwords ) );
-   setframesize( frame, ndwords );
-   setframenslots( frame, nvars );
-   for ( int i = 0; i < nvars; ++i )
-      frameset( frame, i, null );
-#else
    auto frame = frameStore.alloc( nvars );
-#endif
    setframevars(frame, vars);
    setframeclosure(frame, null);
    SEXPR n = newnode(n_environment);
