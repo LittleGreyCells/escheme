@@ -143,11 +143,6 @@ void MEMORY::mark( SEXPR n )
 	 mark( code_getsexprs(n) );
 	 break;
     
-      case n_string_port:
-	 setmark(n);
-	 mark( getstringportstring(n) );
-	 break;
-    
       case n_continuation:
 	 setmark(n);
 	 mark( cont_getstate(n) );
@@ -192,13 +187,8 @@ void MEMORY::mark( SEXPR n )
 	 break;
     
       case n_bvec:
-	 setmark(n);
-	 break;
-
       case n_string:
-	 setmark(n);
-	 break;
-         
+      case n_string_port:
       case n_fixnum:
       case n_flonum:
       case n_port:
@@ -283,6 +273,10 @@ static void sweep()
                case n_port:
                   if ( getfile(p) != NULL )
                      fclose( getfile(p) );
+                  break;
+
+               case n_string_port:
+                  delete getstringportstring( p );
                   break;
 
 	       default:
@@ -415,12 +409,12 @@ SEXPR MEMORY::string( const std::string& s )
    return new_string( s.c_str(), s.length() );
 }
 
-SEXPR MEMORY::string_port()               // (<length> . <string>)
+SEXPR MEMORY::string_port( SEXPR str )
 {
    SEXPR n = newnode(n_string_port);
-   setmode(n, 0);
-   setstringportstring(n, null);
-   setstringportindex(n, 0);
+   setmode( n, 0 );
+   setstringportstring( n, new std::string( getstringdata(str) ) );
+   setstringportindex( n, 0 );
    return n;
 }
 
@@ -441,27 +435,6 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
    setvectorlength(n, length);
    setvectordata(n, data);
    return n;
-}
-
-void MEMORY::resize( SEXPR string, UINT32 delta )
-{
-   guard(string, stringp);
-
-   const auto old_length = getstringlength(string);
-   const auto new_length = old_length + delta;
-
-   if ( new_length > MAX_STRING_SIZE )
-      ERROR::severe( "string length exceeds maximum size", MEMORY::fixnum(new_length) );
-      
-   auto& old_data = getstringdata(string);
-   auto new_data = new char[new_length]; 
-
-   strcpy( new_data, old_data );
-
-   delete[] old_data;
-
-   setstringlength( string, new_length );
-   setstringdata( string, new_data );
 }
 
 SEXPR MEMORY::continuation()

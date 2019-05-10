@@ -91,13 +91,13 @@ void TIO::history_init()
 
 void TIO::history_add( SEXPR sexpr )
 {
-   const SEXPR port = PIO::open_on_string( MEMORY::string(500), pm_output );
+   const SEXPR port = PIO::open_on_string( MEMORY::string_null, pm_output );
    PRINTER::print( port, sexpr );
 
-   SEXPR str = getstringportstring(port);
+   auto str = getstringportstring(port);
 
    // linenoise makes a copy when it adds it to the history.
-   linenoiseHistoryAdd( getstringdata(str) );
+   linenoiseHistoryAdd( str->c_str() );
    linenoiseHistorySave( history );
 }
 

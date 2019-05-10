@@ -1,6 +1,7 @@
 #ifndef sexpr_hxx
 #define sexpr_hxx
 
+#include <string>
 #include <cstdio>
 
 //
@@ -145,8 +146,8 @@ struct PORT
    UINT32 index;
    union 
    {
-      FILE* file;         // file port
-      SEXPR string;       // string port
+      FILE* file;          // file port
+      std::string* string; // string port
    } p;
 };
 

@@ -44,13 +44,10 @@ namespace MEMORY
    SEXPR vector( UINT32 length );
    SEXPR continuation();
    SEXPR byte_vector( UINT32 length );
-   SEXPR string_port();
+   SEXPR string_port( SEXPR str );
    SEXPR promise( SEXPR exp );
    SEXPR code( SEXPR bcodes, SEXPR sexprs );
 
-   // modifier(s)
-   void resize( SEXPR string, UINT32 delta );
-  
    // garbage collection
 
    typedef void (*Marker)();

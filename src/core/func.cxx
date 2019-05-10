@@ -1408,9 +1408,7 @@ SEXPR FUNC::open_output_string()
    // syntax: (open-output-string)
    //
    argstack.noargs();
-   push_reg( MEMORY::string(2000) );
-   SEXPR port = PIO::open_on_string( top_reg(), pm_output );
-   pop_reg();
+   SEXPR port = PIO::open_on_string( MEMORY::string_null, pm_output );
    return port;
 }
 
@@ -1420,9 +1418,9 @@ SEXPR FUNC::get_output_string()
    // syntax: (get-output-string <stringport>)
    //
    ArgstackIterator iter;
-   const SEXPR port = guard(iter.getlast(), stringportp);
-   const SEXPR str = getstringportstring(port);
-   return MEMORY::string( getstringdata(str) );
+   auto port = guard(iter.getlast(), stringportp);
+   auto str = getstringportstring(port);
+   return MEMORY::string( str->c_str() );
 }
 
 
@@ -1681,12 +1679,12 @@ SEXPR FUNC::list_to_string()
    SEXPR list = guard(iter.getarg(), listp);
    const int len = list_length(list);
 
-   SEXPR s = MEMORY::string(len);       // string(len) allocates room for '\0'
+   SEXPR s = MEMORY::string(len);
 
    for (int i = 0; i < len; ++i, list = ::cdr(list))
       getstringdata(s)[i] = getcharacter(guard(::car(list), charp));
 
-   getstringdata(s)[len] = '\0';  // null terminate the string data
+   getstringdata(s)[len] = '\0';
 
    return s;
 }

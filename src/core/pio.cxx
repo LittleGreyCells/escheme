@@ -1,7 +1,9 @@
+#include "pio.hxx"
+
+#include <string>
 #include <cstdio>
 #include <cstring>
 
-#include "pio.hxx"
 #include "tio.hxx"
 #include "memory.hxx"
 #include "symtab.hxx"
@@ -34,10 +36,9 @@ SEXPR PIO::open( SEXPR name, short mode, const char* ftype )
 
 SEXPR PIO::open_on_string( SEXPR str, short mode )
 {
-   SEXPR port = MEMORY::string_port();
-   setmode(port, mode);
-   setstringportstring(port, str);
-   setstringportindex(port, 0);
+   SEXPR port = MEMORY::string_port( str );
+   setmode( port, mode );
+   setstringportindex( port, 0 );
    return port;
 }
 
@@ -125,18 +126,12 @@ int PIO::get( SEXPR inport )
    else if ( instringportp(inport) )
    {
       // string input
-      SEXPR s = getstringportstring(inport);
+      std::string* str = getstringportstring(inport);
       UINT32& index = getstringportindex(inport);
-      const int ch = getstringdata(s)[index];
-      if (ch == 0)
-      {
-	 return EOF;
-      }
+      if ( index < str->length() )
+         return str->at( index++ );
       else
-      {
-	 index++;
-	 return ch;
-      }
+         return EOF;
    }
    else
    {
@@ -175,19 +170,6 @@ void PIO::unget( SEXPR inport, int ch )
    }
 }
 
-static void append_char( SEXPR outport, int ch )
-{
-   SEXPR str = getstringportstring(outport);
-   UINT32& index = getstringportindex(outport);
-   
-   // append the character, expanding if needed
-   if (index >= getstringlength(str))
-      MEMORY::resize( str, 1000 );
-   
-   getstringdata(str)[index++] = ch;
-   getstringdata(str)[index] = 0;
-}
-
 void PIO::put( SEXPR outport, const char* s )
 {
    if ( outportp(outport) )
@@ -202,9 +184,7 @@ void PIO::put( SEXPR outport, const char* s )
    }
    else if ( outstringportp(outport) )
    {
-      // string output
-      while (*s)
-	 append_char(outport, *s++);
+      getstringportstring(outport)->append( s );
    }
    else
    {
@@ -226,7 +206,7 @@ void PIO::put( SEXPR outport, int ch )
    }
    else if ( outstringportp(outport) )
    {
-      append_char( outport, ch );
+      getstringportstring(outport)->push_back( ch );
    }
    else
    {
