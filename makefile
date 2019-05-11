@@ -31,6 +31,7 @@ SRCS	= \
 	$(CORE)/math.cxx \
 	$(CORE)/memory.cxx \
 	$(CORE)/framestore.cxx \
+	$(CORE)/varpool.cxx \
 	$(CORE)/pio.cxx \
 	$(CORE)/tio.cxx \
 	$(CORE)/ipcsoc.cxx \

@@ -59,9 +59,14 @@
                     )))
     (let ()
       (while (> n 0)
-            (map help-fn (reverse (append fns fns fns fns fns)))
+             (map help-fn (reverse (append fns fns fns fns fns
+                                           fns fns fns fns fns
+                                           )))
             (set! n (dec n))))
     ))
+
+(define (random-count factor)
+  (* (+ (random factor) 1) 100))
 
 (define (driver n)
   (let ()
@@ -69,10 +74,12 @@
            (display "================================> ")
            (display n)
            (newline)
-           (test1 750)
-           (test2 750)
-           (test3 2)
+           (test1 (random-count 15))
+           (test2 (random-count 15))
+           (test3 5)
+           (display "gc: ")
            (print (gc))
+           (display "fs: ")
            (print (fs))
            (set! n (dec n))
            )))
