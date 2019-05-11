@@ -17,6 +17,10 @@ enum ConfigurationConstants
    ECE_HISTORY_LENGTH = 100,
    MAX_IMAGE_LENGTH   = 256,
    MAX_STRING_SIZE    = 0xFFFE,
+   CACHE_START_SIZE   = 10000,
+   CACHE_EXPANSION    = 5000,
+   CACHE_TENURE       = 4,
+   CACHE_MAXAGE       = 127,
 };
 
 enum NodeKind
@@ -195,6 +199,7 @@ struct Node
    BYTE mark;
    BYTE form;
    BYTE recu;
+   BYTE nage;
    union
    {
       LINKAGE link;
@@ -217,10 +222,10 @@ struct Node
    Node() {}
 
    explicit Node( NodeKind k ) :
-      kind(k), mark(0), form(0) {}
+      kind(k), mark(0), form(0), nage(0) {}
 
    Node( NodeKind k, SEXPR next ) :
-      kind(k), mark(0), form(0) { u.link.next = next; }
+      kind(k), mark(0), form(0), nage(0) { u.link.next = next; }
 
    void setnext( SEXPR next ) { u.link.next = next; }
    SEXPR getnext() const { return u.link.next; }

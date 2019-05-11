@@ -116,20 +116,25 @@ public:
       active = temp;
    }
 
+   bool not_enough_room( unsigned nwords )
+   {
+      return index + nwords >= size;
+   }
+
    void* alloc( unsigned nwords )
    {
       // we allocate from [active[index] .. active[size-1]].
       //   return the address of the storage location.
       //   if there is not enought room, garbage collect with copy enabled.
-      if ( index + nwords >= size )
+      if ( not_enough_room( nwords ) )
       {
 	 // need to gc
 	 MEMORY::gc( true );
 
-	 if ( index + nwords >= size )
+	 if ( not_enough_room( nwords ) )
 	    expand( nwords );
 
-	 if ( index + nwords >= size )
+	 if ( not_enough_room( nwords ) )
 	 {
 	    char msg[80];
 	    SPRINTF( msg, "(%s) insufficient pool space", name );

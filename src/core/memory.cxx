@@ -8,6 +8,12 @@
 #include "regstack.hxx"
 #include "framestore.hxx"
 
+#ifdef OBJECT_CACHE
+#include "varpool.hxx"
+#define CACHE_FRAME
+#endif
+
+
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
 SEXPR MEMORY::listtail;
@@ -85,6 +91,57 @@ static SEXPR newnode( NodeKind kind )
    return n;
 }
 
+
+#ifdef OBJECT_CACHE
+
+//
+// Variable Sized Object Pool
+//
+
+namespace MEMORY
+{
+   bool cache_copy = false;
+}
+
+MEMORY::VarPool cache( "cache", CACHE_START_SIZE, CACHE_EXPANSION );
+
+unsigned MEMORY::CacheSwapCount = 0;
+unsigned MEMORY::CacheSize      = cache.getsize();
+
+unsigned MEMORY::get_cache_highwater() { return cache.getindex(); }
+
+//
+// Copy To/From Cache
+//
+
+#ifdef CACHE_FRAME
+inline FRAME copy_frame( SEXPR n )
+{
+   FRAME fr = getenvframe(n);
+   return reinterpret_cast<FRAME>( cache.copy_to_inactive( fr, getframesize(fr) ) );
+}
+
+inline FRAME tenure_frame( SEXPR n )
+{
+   // clone the old frame
+   return MEMORY::frameStore.clone( getenvframe(n) );
+}
+#endif
+
+
+//
+// Aging
+//
+
+inline void increment_age( SEXPR n ) 
+{ 
+   if ( n->nage < CACHE_MAXAGE ) 
+      ++n->nage; 
+}
+
+#endif
+
+
 //
 // Garbage Collection
 //
@@ -152,6 +209,16 @@ void MEMORY::mark( SEXPR n )
       {
 	 setmark(n);
          // frame
+#ifdef CACHE_FRAME
+         if ( cache_copy )
+         {
+            increment_age( n );
+            if ( n->nage < CACHE_TENURE )
+               setenvframe( n, copy_frame(n) );
+            else if ( n->nage == CACHE_TENURE )
+               setenvframe( n, tenure_frame(n) );
+         }
+#endif
          auto frame = getenvframe(n);
          mark( getframevars(frame) );
          mark( getframeclosure(frame) );
@@ -259,6 +326,9 @@ static void sweep()
 		  break;
 
                case n_environment:
+#ifdef CACHE_FRAME
+                  if ( p->nage >= CACHE_TENURE )
+#endif
                   MEMORY::frameStore.free( getenvframe(p) );
 		  break;                  
                   
@@ -296,12 +366,25 @@ static void sweep()
    }
 }
 
+#ifdef OBJECT_CACHE
+void MEMORY::gc( bool copy )
+#else
 void MEMORY::gc()
+#endif
 {
    if (suspensions > 0)
       return;
 
    CollectionCount += 1;
+
+#ifdef OBJECT_CACHE
+   cache_copy = copy;
+
+   if ( cache_copy )
+   {
+      cache.prep();
+   }
+#endif
 
    // mark memory managed roots
    mark( string_null );
@@ -315,6 +398,16 @@ void MEMORY::gc()
 
    // collect the unused nodes
    sweep();
+
+#ifdef OBJECT_CACHE
+   if ( cache_copy )
+   {
+      CacheSwapCount += 1;
+      cache.swap();
+      cache_copy = false;
+   }
+#endif
+
 }
 
 //
@@ -485,7 +578,17 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
 
 SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> . <env>)
 {
+   // cache or heap
+#ifdef CACHE_FRAME
+   const auto ndwords = FRAMESIZE( nvars );
+   auto frame = reinterpret_cast<FRAME>( cache.alloc( ndwords ) );
+   setframesize( frame, ndwords );
+   setframenslots( frame, nvars );
+   for ( int i = 0; i < nvars; ++i )
+      frameset( frame, i, null );
+#else
    auto frame = frameStore.alloc( nvars );
+#endif
    setframevars(frame, vars);
    setframeclosure(frame, null);
    SEXPR n = newnode(n_environment);

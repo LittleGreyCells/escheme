@@ -16,6 +16,12 @@ namespace MEMORY
    extern int  CollectionCount;
    extern FrameStore frameStore;
 
+#ifdef OBJECT_CACHE
+   extern unsigned CacheSwapCount;
+   extern unsigned CacheSize;
+   unsigned get_cache_highwater();
+#endif
+
 #ifdef GC_STATISTICS_DETAILED
    extern std::array<UINT32, NUMKINDS> ReclamationCounts;
 #endif
@@ -54,7 +60,11 @@ namespace MEMORY
    void register_marker( Marker );
 
    extern int suspensions;
+#ifdef OBJECT_CACHE
+   void gc( bool copy=false );
+#else
    void gc();
+#endif
    
    void mark( SEXPR n );
    void mark( TSTACK<SEXPR>& s );

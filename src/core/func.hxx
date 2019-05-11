@@ -109,6 +109,7 @@ namespace FUNC
 
    // gc
    SEXPR gc();
+   SEXPR gc_copy();
    SEXPR fs();
 
    // environment
