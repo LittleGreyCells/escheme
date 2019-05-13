@@ -17,8 +17,7 @@ enum ConfigurationConstants
    ECE_HISTORY_LENGTH = 100,
    MAX_IMAGE_LENGTH   = 256,
    MAX_STRING_SIZE    = 0xFFFE,
-   CACHE_START_SIZE   = 10000,
-   CACHE_EXPANSION    = 5000,
+   CACHE_BLOCK_SIZE   = 10000,
    CACHE_TENURE       = 4,
    CACHE_MAXAGE       = 127,
 };

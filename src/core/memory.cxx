@@ -1,6 +1,6 @@
 #include "memory.hxx"
 
-#include <string.h>
+#include <cstring>
 #include <array>
 #include <list>
 
@@ -12,7 +12,6 @@
 #include "varpool.hxx"
 #define CACHE_FRAME
 #endif
-
 
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
@@ -94,16 +93,12 @@ static SEXPR newnode( NodeKind kind )
 
 #ifdef OBJECT_CACHE
 
-//
-// Variable Sized Object Pool
-//
-
 namespace MEMORY
 {
    bool cache_copy = false;
 }
 
-MEMORY::VarPool cache( "cache", CACHE_START_SIZE, CACHE_EXPANSION );
+MEMORY::VarPool cache( "cache", CACHE_BLOCK_SIZE );
 
 unsigned MEMORY::CacheSwapCount = 0;
 unsigned MEMORY::CacheSize      = cache.getsize();
@@ -127,7 +122,6 @@ inline FRAME tenure_frame( SEXPR n )
    return MEMORY::frameStore.clone( getenvframe(n) );
 }
 #endif
-
 
 //
 // Aging
@@ -252,9 +246,15 @@ void MEMORY::mark( SEXPR n )
 	 setmark(n);
 	 mark( getpair(n) );
 	 break;
-    
+         
       case n_bvec:
+	 setmark(n);
+         break;
+         
       case n_string:
+	 setmark(n);
+	 break;
+
       case n_string_port:
       case n_fixnum:
       case n_flonum:
@@ -440,7 +440,6 @@ namespace
    inline
    SEXPR new_symbol( const char* s, int length )
    {
-      // cache or heap
       const auto size = length+1;
       auto name = new char[size];
       strcpy(name, s);
@@ -465,8 +464,8 @@ SEXPR MEMORY::symbol( const std::string& s )      // (<name> <value>  <plist>)
 
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
-   const auto size = length+1;
-   auto data = new char[size]; 
+      // cache or heap
+   auto data = new char[length+1];
    data[0] = '\0';
    SEXPR n = newnode(n_string);
    setstringlength(n, length);
@@ -539,7 +538,6 @@ SEXPR MEMORY::continuation()
 
 SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
 {
-   // cache or heap
    auto data = new BYTE[length];
    for ( int i = 0; i < length; ++i )
       data[i] = 0;

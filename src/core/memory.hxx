@@ -64,8 +64,7 @@ namespace MEMORY
    void gc( bool copy=false );
 #else
    void gc();
-#endif
-   
+#endif 
    void mark( SEXPR n );
    void mark( TSTACK<SEXPR>& s );
 }

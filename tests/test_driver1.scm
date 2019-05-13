@@ -65,8 +65,8 @@
             (set! n (dec n))))
     ))
 
-(define (random-count factor)
-  (* (+ (random factor) 1) 100))
+(define (random-count factor base)
+  (* (+ (random factor) 1) base))
 
 (define (driver n)
   (let ()
@@ -74,9 +74,9 @@
            (display "================================> ")
            (display n)
            (newline)
-           (test1 (random-count 15))
-           (test2 (random-count 15))
-           (test3 5)
+           (test1 (random-count 15 150))
+           (test2 (random-count 15 150))
+           (test3 (random-count 5 2))
            (display "gc: ")
            (print (gc))
            (display "fs: ")
@@ -84,7 +84,7 @@
            (set! n (dec n))
            )))
 
-(driver 50)
+(driver 500)
 
 ;;(exit)
 

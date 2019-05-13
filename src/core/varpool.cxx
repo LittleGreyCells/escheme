@@ -1,6 +1,6 @@
 #include "varpool.hxx"
 
-#include <array>
+#include <list>
 #include <algorithm>
 
 #include <cstdio>
@@ -12,75 +12,70 @@
 
 namespace MEMORY
 {
-
-   VarPool::VarPool( const char* name, unsigned size, unsigned delta ) 
-      : name( name ),
-	size( size ),
-	index( 0 ),
-	active( new DWORD[size] ),
-	inactive( new DWORD[size] ),
-        delta( delta )
-   {
-      // empty
-   }
-
-   VarPool::~VarPool()
+   VPBlock::VPBlock( unsigned size ) : active( new DWORD[size] ),
+                                       inactive( new DWORD[size] ) {}
+   VPBlock::~VPBlock()
    {
       delete[] active;
       delete[] inactive;
    }
+      
+   VarPool::VarPool( const char* name, unsigned size ) 
+      : name( name ),
+	size( size ),
+	index( 0 )
+   {
+      // initially we use a single block
+      blocks.push_back( new VPBlock(size) );
+      block = blocks.back();
+   }
+
+   VarPool::~VarPool()
+   {
+      // empty
+   }
 
    void VarPool::prep()
    {
-      // prep stop-and-copy.
-      //   this will init the inactive partition start for copy.
-      // after copying and swapping partition pointers,
-      //   index will be pointing to the next available 
-      //   allocation point.
+      it = blocks.begin();
+      block = *it;
       index = 0;
    }
 
    void VarPool::swap()
    {
-      // swap active and inactive partition pointers
-      DWORD* temp = inactive;
-      inactive = active;
-      active = temp;
+      // swap active and inactive partition pointers for all blocks.
+      for ( auto& block : blocks )
+      {
+         DWORD* temp = block->inactive;
+         block->inactive = block->active;
+         block->active = temp;
+      }
    }
 
-   void VarPool::expand( unsigned nwords )
+   void VarPool::expand()
    {
-      // expand var pool by max(nwords, VARPOOL_SIZE)
-      //
-      //   state 
-      //      active has addresses in use
-      //      inactive has copyback store
-      //
-      //   procedure
-      //      [1] delete existing copyback store (inactive)
-      //      [2] allocate a larger copyback store (inactive)
-      //      [3] perform another gc( copy=true ) (swap)
-      //      [4] delete the copyback store (inactive)
-      //      [5] allocate a larger copyback store (inactive)
-      //      [6] set size to new size
-      //
-      const unsigned new_size = std::max( size+nwords, size+delta );
-
-      // [1] delete existing copyback store (inactive)
-      // [2] allocate a larger copyback store (inactive)
-      delete[] inactive;
-      inactive = new DWORD[new_size];
-
-      // [3] perform another gc( copy=true ) (swap)
-      MEMORY::gc( true );
-
-      // [4] delete the new copyback store (inactive)
-      // [5] allocate a larger copyback store (inactive)
-      delete[] inactive;
-      inactive = new DWORD[new_size];
-
-      // [6] set size to new size
-      size = new_size;
+      // use the next block or add one
+#if 1
+      // multi-block expanson is not yet supported
+      char msg[80];
+      SPRINTF( msg, "(%s) multi-block expansion not supported", name );
+      ERROR::fatal( msg );
+#else
+      if ( block == blocks.back() )
+      {
+         // we are on the last block, so we add one
+         blocks.push_back( new VPBlock(size) );
+         block = blocks.back();
+      }
+      else
+      {
+         // otherwise, we are pulling from the list of allocated blocks
+         ++it;
+         block = *it;
+      }
+      index = 0;
+#endif
    }
 
    bool VarPool::not_enough_room( unsigned nwords )
@@ -92,23 +87,18 @@ namespace MEMORY
    {
       // we allocate from [active[index] .. active[size-1]].
       //   return the address of the storage location.
-      //   if there is not enought room, garbage collect with copy enabled.
+      //   if there is not enough room, garbage collect with copy enabled.
       if ( not_enough_room( nwords ) )
       {
+#ifdef OBJECT_CACHE
 	 MEMORY::gc( true );
-
+#endif
 	 if ( not_enough_room( nwords ) )
-	    expand( nwords );
-
-	 if ( not_enough_room( nwords ) )
-	 {
-	    char msg[80];
-	    SPRINTF( msg, "(%s) insufficient pool space", name );
-	    ERROR::fatal( msg );
-	 }
+         {
+	    expand();
+         }
       }
-
-      void* address = (void*)&active[index];
+      void* address = (void*)&block->active[index];
       index += nwords;
       return address;
    }
@@ -121,8 +111,7 @@ namespace MEMORY
 	 SPRINTF( msg, "(%s)copy_to_inactive exceeds pool: index=%u, nwords=%u\n", name, index, nwords );
          ERROR::fatal( msg );
       }
-      
-      void* dst = std::memcpy( &inactive[index], src, NBYTES(nwords) );
+      void* dst = std::memcpy( &block->inactive[index], src, NBYTES(nwords) );
       index += nwords;
       return dst;
    }
@@ -135,8 +124,7 @@ namespace MEMORY
 	 SPRINTF( msg, "(%s)copy_to_active exceeds pool: index=%u, nwords=%u\n", name, index, nwords );
          ERROR::fatal( msg );
       }
-      
-      void* dst = std::memcpy( &active[index], src, NBYTES(nwords) );
+      void* dst = std::memcpy( &block->active[index], src, NBYTES(nwords) );
       index += nwords;
       return dst;
    }
