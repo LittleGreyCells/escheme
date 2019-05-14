@@ -7,8 +7,8 @@ A scheme interpreter utilizing an explicit control evaluator
 
 escheme is an aspiring R3RS implementation of the algorithmic language scheme, 
 supporting approximately 90% of the standard. It has been principally an experimental
-testbed for exploring models of evalation, interpreter design and construction.
-Along the way escheme has become a respectible programming language, not a toy.
+testbed for exploring models of evaluation, interpreter design and construction.
+Along the way escheme has become a competent programming language, not a toy.
 Many additional functions are added to support environments, input/output, the host OS 
 (linux/unix) and access escheme internals. Bignums are not supported.
 
