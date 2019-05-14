@@ -1,13 +1,17 @@
+#include "symtab.hxx"
+
+#include <array>
 #include <string.h>
 
-#include "symtab.hxx"
 #include "memory.hxx"
 #include "regstack.hxx"
 
-const int NBUCKETS = 64;
 
-// the global symbol table (vector)
-SEXPR SYMTAB::table;
+namespace
+{
+   constexpr int NBUCKETS = 64;
+   std::array<SEXPR, NBUCKETS> table;
+}
 
 // canonical truth and other symbols
 SEXPR SYMTAB::symbol_unbound;
@@ -38,8 +42,7 @@ SEXPR SYMTAB::symbol_access;
 
 static unsigned hash( const char* s )
 {
-   UINT32 i = 0;
-
+   unsigned i = 0;
    while ( *s )
       i = (i << 2) ^ *s++;
    return i % NBUCKETS;
@@ -54,11 +57,11 @@ SEXPR SYMTAB::enter( const char* name, SEXPR value )
 
 SEXPR SYMTAB::enter( const char* symbol_name )
 {
-   const UINT32 h = hash(symbol_name);
+   auto& element = table[ hash(symbol_name) ];
 
-   if ( anyp(vectorref(table, h)) )
+   if ( anyp(element) )
    {
-      for ( SEXPR n = vectorref(table, h); anyp(n); n = getcdr(n) )
+      for ( SEXPR n = element; anyp(n); n = getcdr(n) )
       {
 	 SEXPR s = getcar(n);
 	 if ( strcmp(name(s), symbol_name) == 0 )
@@ -68,7 +71,7 @@ SEXPR SYMTAB::enter( const char* symbol_name )
 
    regstack.push( MEMORY::symbol(symbol_name) );
    setvalue( regstack.top(), UNBOUND );
-   vectorset( table, h, MEMORY::cons(regstack.top(), vectorref(table, h)) );
+   element = MEMORY::cons( regstack.top(), element );
    return regstack.pop();
 }
 
@@ -82,11 +85,11 @@ SEXPR SYMTAB::enter( const std::string& name, SEXPR value )
 SEXPR SYMTAB::enter( const std::string& symbol_name )
 {
    const char* sn = symbol_name.c_str();
-   const UINT32 h = hash( sn );
+   auto& element = table[ hash(sn) ];
 
-   if ( anyp(vectorref(table, h)) )
+   if ( anyp(element) )
    {
-      for ( SEXPR n = vectorref(table, h); anyp(n); n = getcdr(n) )
+      for ( SEXPR n = element; anyp(n); n = getcdr(n) )
       {
 	 SEXPR s = getcar(n);
 	 if ( strcmp(name(s), sn) == 0 )
@@ -96,31 +99,32 @@ SEXPR SYMTAB::enter( const std::string& symbol_name )
 
    regstack.push( MEMORY::symbol(symbol_name) );
    setvalue( regstack.top(), UNBOUND );
-   vectorset( table, h, MEMORY::cons(regstack.top(), vectorref(table, h)) );
+   element = MEMORY::cons( regstack.top(), element );
    return regstack.pop();
 }
 
-// intern the symbol using the symbol provided
-//   (why assume it is not already interned?)
 SEXPR SYMTAB::enter( SEXPR s )
 {
    if ( !symbolp(s) )
       return null;
 
-   const UINT32 h = hash(name(s));
-   vectorset( table, h, MEMORY::cons(s, vectorref(table, h)) );
+   auto& element = table[ hash(name(s)) ];
+   element = MEMORY::cons( s, element );
    return s;
 }
 
 static void symtab_marker()
 {
-   // mark the symbol table objects
-   MEMORY::mark( SYMTAB::table );
+   for ( auto element : table )
+      MEMORY::mark( element );
 }
 
 void SYMTAB::initialize()
 {
-   table = MEMORY::vector(NBUCKETS);
+   for ( auto& element : table )
+      element = null;
+
+   MEMORY::register_marker( symtab_marker );
 
    // initialize the unbound symbol first
    symbol_unbound  	 = enter("*unbound*");
@@ -158,7 +162,4 @@ void SYMTAB::initialize()
 
    enter("t", symbol_true);
    enter("nil", null);
-   enter("*symbol-table*", table);
-
-   MEMORY::register_marker( symtab_marker );
 }

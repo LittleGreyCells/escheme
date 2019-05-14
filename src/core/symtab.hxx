@@ -31,8 +31,6 @@ namespace SYMTAB
 {
    void initialize();
 
-   extern SEXPR table;
-
    extern SEXPR symbol_false;
    extern SEXPR symbol_true;
    extern SEXPR symbol_quote;

@@ -56,7 +56,7 @@ namespace MEMORY
    void VarPool::expand()
    {
       // use the next block or add one
-#if 1
+#if 0
       // multi-block expanson is not yet supported
       char msg[80];
       SPRINTF( msg, "(%s) multi-block expansion not supported", name );
@@ -85,9 +85,6 @@ namespace MEMORY
 
    void* VarPool::alloc( unsigned nwords )
    {
-      // we allocate from [active[index] .. active[size-1]].
-      //   return the address of the storage location.
-      //   if there is not enough room, garbage collect with copy enabled.
       if ( not_enough_room( nwords ) )
       {
 #ifdef OBJECT_CACHE
