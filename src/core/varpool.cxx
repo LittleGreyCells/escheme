@@ -104,9 +104,16 @@ namespace MEMORY
    {
       if ( not_enough_room( nwords ) )
       {
+#if 1
          char msg[80];
 	 SPRINTF( msg, "(%s)copy_to_inactive exceeds pool: index=%u, nwords=%u\n", name, index, nwords );
          ERROR::fatal( msg );
+#else
+         // start copying to the next block
+         ++it;
+         block = *it;
+         index = 0;
+#endif
       }
       void* dst = std::memcpy( &block->inactive[index], src, NBYTES(nwords) );
       index += nwords;

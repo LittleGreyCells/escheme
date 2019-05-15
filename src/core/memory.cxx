@@ -1,3 +1,26 @@
+// Memory
+//
+// escheme memory consists of two spaces: node space and an data cache.
+//
+// Node space is managed in a NodeBlock "pool". Presently all objects
+// are allocated from this uniform pool. Data for these objects (strings,
+// byte vectors, vectors, frames) are in turn allocated from either the
+// heap or a cache. Initally data is allocated from the cache where it
+// will reside until it matures to the heap or goes away due to obsolescence.
+//
+// The cache is a collection of active/inactive partitions where generational
+// data is perserved/copied. When the cache is full, this initiates a gc pass
+// which will copy all untenured data into the inactive partion(s). Dead
+// objects leave their data uncopied in the soon to fade away active partition.
+// Partitions are then swapped. New data is allocated from the newly active
+// partition.
+//
+// When object data ages a sufficient number of generations, it 'tenures' and
+// is moved to the heap. The intent of this generational data scheme is to
+// reduce expensive heap operations and potential heap fragmentation from
+// frequent allocation/deallocation of small data chunks. 
+//
+
 #include "memory.hxx"
 
 #include <cstring>
@@ -11,6 +34,9 @@
 #ifdef OBJECT_CACHE
 #include "varpool.hxx"
 #define CACHE_FRAME
+//#define CACHE_VECTOR
+//#define CACHE_STRING
+//#define CACHE_BVEC
 #endif
 
 SEXPR MEMORY::string_null;
@@ -112,7 +138,7 @@ unsigned MEMORY::get_cache_highwater() { return cache.getindex(); }
 #ifdef CACHE_FRAME
 inline FRAME copy_frame( SEXPR n )
 {
-   FRAME fr = getenvframe(n);
+   auto fr = getenvframe(n);
    return reinterpret_cast<FRAME>( cache.copy_to_inactive( fr, getframesize(fr) ) );
 }
 
@@ -120,6 +146,53 @@ inline FRAME tenure_frame( SEXPR n )
 {
    // clone the old frame
    return MEMORY::frameStore.clone( getenvframe(n) );
+}
+#endif
+
+#ifdef CACHE_VECTOR
+inline SEXPR* copy_vector( SEXPR n )
+{
+   return reinterpret_cast<SEXPR*>( cache.copy_to_inactive( getvectordata(n), getvectorlength(n) ) );
+}
+
+inline SEXPR* tenure_vector( SEXPR n )
+{
+   const auto length = getvectorlength(n);
+   auto v = new SEXPR[length];
+   std::memcpy( v, getvectordata(n), NBYTES(length) );
+   return v;
+}
+#endif
+
+#ifdef CACHE_STRING
+inline char* copy_string( SEXPR n )
+{
+   const auto size = getstringlength(n)+1;
+   return reinterpret_cast<char*>( cache.copy_to_inactive( getstringdata(n), NDWORDS(size) ) );
+}
+
+inline char* tenure_string( SEXPR n )
+{
+   const auto size = getstringlength(n)+1;
+   auto s = new char[size];
+   std::memcpy( s, getstringdata(n), size );
+   return s;
+}
+#endif
+
+#ifdef CACHE_BVEC
+inline BYTE* copy_bvec( SEXPR n )
+{
+   const auto length = getbveclength(n);
+   return reinterpret_cast<BYTE*>( cache.copy_to_inactive( getbvecdata(n), NDWORDS(length) ) );
+}
+
+inline BYTE* tenure_bvec( SEXPR n )
+{
+   const auto length = getbveclength(n);
+   auto bv = new BYTE[length];
+   std::memcpy( bv, getbvecdata(n), length );
+   return bv;
 }
 #endif
 
@@ -148,12 +221,6 @@ inline void increment_age( SEXPR n )
 // The success of this operation depends entirely upon the dutiful marking
 // of client structures by the client. Failure to mark an essential object
 // will lead to disaster.
-//
-//   Node space is managed in a NodeBlock "pool". Presently all objects
-// are allocated from this uniform pool. This approached which uses a
-// discriminated union is not ideal and definitely not object-oriented.
-// But for now this is the implementation which stands. Adopting a
-// purely object-orient approach will require considerable redesign.
 //
 
 #define markedp(n) ((n)->mark)
@@ -227,6 +294,16 @@ void MEMORY::mark( SEXPR n )
       case n_vector:
       {
 	 setmark(n);
+#ifdef CACHE_VECTOR
+         if ( cache_copy )
+         {
+            increment_age( n );
+            if ( n->nage < CACHE_TENURE )
+               setvectordata( n, copy_vector(n) );
+            else if ( n->nage == CACHE_TENURE )
+               setvectordata( n, tenure_vector(n) );
+         }
+#endif
 	 const auto length = getvectorlength(n);
 	 for ( int i = 0; i < length; ++i )
 	    mark( vectorref(n, i) );
@@ -249,10 +326,30 @@ void MEMORY::mark( SEXPR n )
          
       case n_bvec:
 	 setmark(n);
+#ifdef CACHE_BVEC
+         if ( cache_copy )
+         {
+            increment_age( n );
+            if ( n->nage < CACHE_TENURE )
+               setbvecdata( n, copy_bvec(n) );
+            else if ( n->nage == CACHE_TENURE )
+               setbvecdata( n, tenure_bvec(n) );
+         }
+#endif
          break;
          
       case n_string:
 	 setmark(n);
+#ifdef CACHE_STRING
+         if ( cache_copy )
+         {
+            increment_age( n );
+            if ( n->nage < CACHE_TENURE )
+               setstringdata( n, copy_string(n) );
+            else if ( n->nage == CACHE_TENURE )
+               setstringdata( n, tenure_string(n) );
+         }
+#endif
 	 break;
 
       case n_string_port:
@@ -318,10 +415,16 @@ static void sweep()
 		  break;
 
 	       case n_string:
+#ifdef CACHE_STRING
+                  if ( p->nage >= CACHE_TENURE )
+#endif
 		  delete[] getstringdata( p );
 		  break;
 
 	       case n_bvec:
+#ifdef CACHE_BVEC
+                  if ( p->nage >= CACHE_TENURE )
+#endif
 		  delete[] getbvecdata( p );
 		  break;
 
@@ -333,6 +436,9 @@ static void sweep()
 		  break;                  
                   
 	       case n_vector:
+#ifdef CACHE_VECTOR
+                  if ( p->nage >= CACHE_TENURE )
+#endif
 		  delete[] getvectordata( p );
 		  break;
 
@@ -464,8 +570,13 @@ SEXPR MEMORY::symbol( const std::string& s )      // (<name> <value>  <plist>)
 
 SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
 {
-      // cache or heap
-   auto data = new char[length+1];
+   const auto size = length+1;
+   // cache or heap
+#ifdef CACHE_STRING
+   auto data = reinterpret_cast<char*>( cache.alloc( NDWORDS(size) ) );
+#else
+   auto data = new char[size];
+#endif
    data[0] = '\0';
    SEXPR n = newnode(n_string);
    setstringlength(n, length);
@@ -520,7 +631,11 @@ SEXPR MEMORY::cons( SEXPR car, SEXPR cdr )  // (<car> . <cdr> )
 
 SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
+#ifdef CACHE_VECTOR
+   auto data = reinterpret_cast<SEXPR*>( cache.alloc( length ) );
+#else
    auto data = new SEXPR[length];
+#endif
    for ( int i = 0; i < length; ++i )
       data[i] = null;
    SEXPR n = newnode(n_vector);
@@ -538,7 +653,11 @@ SEXPR MEMORY::continuation()
 
 SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
 {
+#ifdef CACHE_BVEC
+   auto data = reinterpret_cast<BYTE*>( cache.alloc( NDWORDS(length) ) );
+#else
    auto data = new BYTE[length];
+#endif
    for ( int i = 0; i < length; ++i )
       data[i] = 0;
    // node space

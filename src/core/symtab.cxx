@@ -113,6 +113,16 @@ SEXPR SYMTAB::enter( SEXPR s )
    return s;
 }
 
+SEXPR SYMTAB::symbols()
+{
+   SEXPR symbols = MEMORY::vector(NBUCKETS);
+
+   for ( int i = 0; i < table.size(); ++i )
+      vectorset( symbols, i, table[i] );
+   
+   return symbols;
+}
+
 static void symtab_marker()
 {
    for ( auto element : table )
@@ -123,8 +133,6 @@ void SYMTAB::initialize()
 {
    for ( auto& element : table )
       element = null;
-
-   MEMORY::register_marker( symtab_marker );
 
    // initialize the unbound symbol first
    symbol_unbound  	 = enter("*unbound*");
@@ -162,4 +170,6 @@ void SYMTAB::initialize()
 
    enter("t", symbol_true);
    enter("nil", null);
+   
+   MEMORY::register_marker( symtab_marker );
 }

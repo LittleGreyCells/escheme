@@ -85,7 +85,7 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 //
 //   parameter lists
 //     (a ...)
-//     tradition rest
+//     traditional rest arg
 //       (a . b) == (a #!rest b)
 //
 

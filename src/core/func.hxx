@@ -91,6 +91,7 @@ namespace FUNC
    SEXPR set_symbol_plist();
    SEXPR get_property();
    SEXPR put_property();
+   SEXPR symbols();
 
    // other conversion
    SEXPR integer_to_string();

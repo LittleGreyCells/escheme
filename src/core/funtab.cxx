@@ -110,6 +110,7 @@ static const Function funtab[] =
    { "set-symbol-plist!",    FUNC::set_symbol_plist , n_func },
    { "get",                  FUNC::get_property     , n_func },
    { "put",                  FUNC::put_property     , n_func },
+   { "*symbols*",            FUNC::symbols          , n_func },
 
    { "read",		     FUNC::read		, n_func },
    { "print",		     FUNC::print	, n_func },

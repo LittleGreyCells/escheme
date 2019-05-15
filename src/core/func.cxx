@@ -803,6 +803,16 @@ SEXPR FUNC::put_property()
    return p;
 }
 
+SEXPR FUNC::symbols()
+{
+   // *
+   // syntax: (symbols) -> <vector>
+   //
+   argstack.noargs();
+
+   return SYMTAB::symbols();
+}
+
 
 //
 // input/output

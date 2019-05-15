@@ -190,6 +190,7 @@ struct PROMISE
 //   mark   # used by memory management
 //   form   # used by eval for fast dispatch
 //   recu   # used by printer to guard against recursive printing
+//   nage   # used by memory manager for aging
 //
 
 struct Node

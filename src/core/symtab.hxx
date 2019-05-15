@@ -62,6 +62,8 @@ namespace SYMTAB
    
    SEXPR enter( const std::string& name );
    SEXPR enter( const std::string& name, SEXPR value );
+
+   SEXPR symbols();
 }
 
 using SYMTAB::symbol_true;
