@@ -37,6 +37,9 @@
 //#define CACHE_VECTOR
 //#define CACHE_STRING
 //#define CACHE_BVEC
+#define CACHE_VECTOR_MAX 1000
+#define CACHE_STRING_MAX 1000
+#define CACHE_BVEC_MAX 1000
 #endif
 
 SEXPR MEMORY::string_null;
@@ -573,7 +576,10 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
    const auto size = length+1;
    // cache or heap
 #ifdef CACHE_STRING
-   auto data = reinterpret_cast<char*>( cache.alloc( NDWORDS(size) ) );
+   const auto too_big_for_cache = ( size > CACHE_STRING_MAX );
+   auto data = too_big_for_cache ?
+      new char[size] :
+      reinterpret_cast<char*>( cache.alloc( NDWORDS(size) ) );
 #else
    auto data = new char[size];
 #endif
@@ -581,6 +587,10 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
    SEXPR n = newnode(n_string);
    setstringlength(n, length);
    setstringdata(n, data);
+#ifdef CACHE_STRING
+   if ( too_big_for_cache )
+      n->nage = CACHE_TENURE;
+#endif
    return n;
 }
 
@@ -632,7 +642,10 @@ SEXPR MEMORY::cons( SEXPR car, SEXPR cdr )  // (<car> . <cdr> )
 SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
 {
 #ifdef CACHE_VECTOR
-   auto data = reinterpret_cast<SEXPR*>( cache.alloc( length ) );
+   const auto too_big_for_cache = ( length > CACHE_VECTOR_MAX );
+   auto data = too_big_for_cache ?
+      new SEXPR[length] :
+      reinterpret_cast<SEXPR*>( cache.alloc( length ) );
 #else
    auto data = new SEXPR[length];
 #endif
@@ -641,6 +654,10 @@ SEXPR MEMORY::vector( UINT32 length )         // (<length> . data[])
    SEXPR n = newnode(n_vector);
    setvectorlength(n, length);
    setvectordata(n, data);
+#ifdef CACHE_VECTOR
+   if ( too_big_for_cache )
+      n->nage = CACHE_TENURE;
+#endif
    return n;
 }
 
@@ -654,7 +671,10 @@ SEXPR MEMORY::continuation()
 SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
 {
 #ifdef CACHE_BVEC
-   auto data = reinterpret_cast<BYTE*>( cache.alloc( NDWORDS(length) ) );
+   const auto too_big_for_cache = ( length > CACHE_BVEC_MAX );
+   auto data = too_big_for_cache ?
+      new BYTE[length] :
+      reinterpret_cast<BYTE*>( cache.alloc( NDWORDS(length) ) );
 #else
    auto data = new BYTE[length];
 #endif
@@ -664,6 +684,10 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
    SEXPR n = newnode(n_bvec);
    setbveclength(n, length);
    setbvecdata(n, data);
+#ifdef CACHE_BVEC
+   if ( too_big_for_cache )
+      n->nage = CACHE_TENURE;
+#endif
    return n;
 }
 

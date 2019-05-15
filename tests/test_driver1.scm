@@ -65,6 +65,17 @@
             (set! n (dec n))))
     ))
 
+(define (test4 n)
+  (display-header "test4" n)
+  (make-vector 10000)
+  (make-vector 10000)
+  (make-byte-vector 10000)
+  (make-byte-vector 10000)
+  (while (> n 0)
+         (make-vector 1000)
+         (make-byte-vector 1000)
+         (set! n (dec n))))
+
 (define (random-count factor base)
   (* (+ (random factor) 1) base))
 
@@ -77,6 +88,7 @@
            (test1 (random-count 15 150))
            (test2 (random-count 15 150))
            (test3 (random-count 5 2))
+           (test4 1000)
            (display "gc: ")
            (print (gc))
            (display "fs: ")

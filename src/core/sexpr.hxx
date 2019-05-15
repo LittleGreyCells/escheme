@@ -30,10 +30,10 @@ enum NodeKind
    n_fixnum,
    n_flonum,
    n_char,         // 5
-   n_string,
-   n_cons,
-   n_vector,
-   n_bvec,
+   n_string,       // 6
+   n_cons,         // 7
+   n_vector,       // 8
+   n_bvec,         // 9
    n_environment,  // 10
    n_promise,
    n_closure,
