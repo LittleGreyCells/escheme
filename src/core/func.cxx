@@ -141,7 +141,6 @@ SEXPR FUNC::list()
    // syntax: (list {<sexpr>}*)
    //
    ArgstackIterator iter;
-
    ListBuilder list;
 
    while ( iter.more() )
@@ -151,92 +150,6 @@ SEXPR FUNC::list()
 
    return list.get();
 }
-
-SEXPR FUNC::liststar()
-{
-   //
-   // syntax: (list* {<sexpr>}*)
-   //
-   const int argc = argstack.getargc();
-
-   if (argc == 0)
-   {
-      return null;
-   }
-   else
-   {
-      ArgstackIterator iter;
-      if (argc == 1)
-	 return iter.getlast();
-
-      SEXPR cell = MEMORY::cons(iter.getarg(), null);
-      push_reg(cell);
-
-      while (true)
-      {
-	 SEXPR next = iter.getarg();
-	 if (!iter.more())
-	 {
-	    setcdr(cell, next);
-	    return pop_reg();
-	 }
-	 else
-	 {
-	    setcdr(cell, MEMORY::cons(next, null));
-	    cell = getcdr(cell);
-	 }
-      }
-      return pop_reg();
-   }
-}
-
-// *
-// cxr
-//
-
-static SEXPR cxr( const char* x, const int n )
-{
-   ArgstackIterator iter;
-   SEXPR exp = iter.getlast();
-
-   for (int i = n; i > 0; --i)
-      exp = (x[i] == 'a') ? car(exp) : cdr(exp);
-
-   return exp;
-}
-
-#define FNCXR(name, len) SEXPR FUNC::name() { return cxr(#name, len); }
-
-FNCXR(caar, 2)
-FNCXR(cadr, 2)
-FNCXR(cdar, 2)
-FNCXR(cddr, 2)
-
-FNCXR(caaar, 3)
-FNCXR(caadr, 3)
-FNCXR(cadar, 3)
-FNCXR(caddr, 3)
-FNCXR(cdaar, 3)
-FNCXR(cdadr, 3)
-FNCXR(cddar, 3)
-FNCXR(cdddr, 3)
-
-FNCXR(caaaar, 4)
-FNCXR(caaadr, 4)
-FNCXR(caadar, 4)
-FNCXR(caaddr, 4)
-FNCXR(cadaar, 4)
-FNCXR(cadadr, 4)
-FNCXR(caddar, 4)
-FNCXR(cadddr, 4)
-FNCXR(cdaaar, 4)
-FNCXR(cdaadr, 4)
-FNCXR(cdadar, 4)
-FNCXR(cdaddr, 4)
-FNCXR(cddaar, 4)
-FNCXR(cddadr, 4)
-FNCXR(cdddar, 4)
-FNCXR(cddddr, 4)
 
 //
 // byte vector
@@ -2001,7 +1914,6 @@ SEXPR FUNC::append()
    REGSTACK_CHECKER("append");
 
    ArgstackIterator iter;
-
    ListBuilder list;
 
    while ( iter.more() )
@@ -2043,9 +1955,9 @@ SEXPR FUNC::reverse()
    // protect the structure under construction
    push_reg(null);
 
-   while (anyp(list))
+   while ( anyp(list) )
    {
-      top_reg() = MEMORY::cons(::car(list), top_reg());
+      top_reg() = MEMORY::cons( ::car(list), top_reg() );
       list = ::cdr(list);
    }
 
@@ -2103,7 +2015,7 @@ SEXPR FUNC::list_tail()
    if (n < 0)
       ERROR::severe("index out of range", list, MEMORY::fixnum(n));
 
-   while (anyp(list) && n > 0)
+   while ( anyp(list) && n > 0 )
    {
       n -= 1;
       list = ::cdr(list);

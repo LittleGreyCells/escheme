@@ -96,7 +96,7 @@
            (set! n (dec n))
            )))
 
-(driver 500)
+(driver 1000)
 
 ;;(exit)
 
