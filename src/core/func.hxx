@@ -17,8 +17,40 @@ namespace FUNC
    SEXPR cdr();
    SEXPR length();
    SEXPR list();
+   SEXPR liststar();
    SEXPR set_car();
    SEXPR set_cdr();
+
+   SEXPR caar();
+   SEXPR cadr();
+   SEXPR cdar();
+   SEXPR cddr();
+
+   SEXPR caaar();
+   SEXPR caadr();
+   SEXPR cadar();
+   SEXPR caddr();
+   SEXPR cdaar();
+   SEXPR cdadr();
+   SEXPR cddar();
+   SEXPR cdddr();
+
+   SEXPR caaaar();
+   SEXPR caaadr();
+   SEXPR caadar();
+   SEXPR caaddr();
+   SEXPR cadaar();
+   SEXPR cadadr();
+   SEXPR caddar();
+   SEXPR cadddr();
+   SEXPR cdaaar();
+   SEXPR cdaadr();
+   SEXPR cdadar();
+   SEXPR cdaddr();
+   SEXPR cddaar();
+   SEXPR cddadr();
+   SEXPR cdddar();
+   SEXPR cddddr();
 
    // vector
    SEXPR vector();
