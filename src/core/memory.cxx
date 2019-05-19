@@ -44,8 +44,6 @@
 
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
-SEXPR MEMORY::listtail;
-SEXPR MEMORY::listhead;
 
 #ifdef GC_STATISTICS_DETAILED
 std::array<UINT32, NUMKINDS> MEMORY::ReclamationCounts;
@@ -498,8 +496,6 @@ void MEMORY::gc()
    // mark memory managed roots
    mark( string_null );
    mark( vector_null );
-   mark( listtail );
-   mark( listhead );
 
    // notify all clients to mark their active roots
    for ( auto marker : markers )
@@ -773,6 +769,4 @@ void MEMORY::initialize()
    NewNodeBlock();
    string_null = string( 0u );
    vector_null = vector( 0u );
-   listtail = null;
-   listhead = cons(null, null);
 }

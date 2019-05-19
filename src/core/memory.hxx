@@ -8,6 +8,7 @@
 #include "sexpr.hxx"
 #include "tstack.hxx"
 #include "framestore.hxx"
+#include "regstack.hxx"
 
 namespace MEMORY
 {
@@ -70,41 +71,46 @@ namespace MEMORY
 }
 
 
-struct GcSuspension
+class GcSuspension
 {
    const char* name;
-   void suspend_gc() { MEMORY::suspensions += 1; }
-   void resume_gc() { MEMORY::suspensions -= 1; }
-
+   
+public:
    explicit GcSuspension( const char* n ) : name(n) { suspend_gc(); }
    ~GcSuspension() { resume_gc(); }
+   
+   void suspend_gc() { MEMORY::suspensions += 1; }
+   void resume_gc() { MEMORY::suspensions -= 1; }
 };
 
 
-struct ListBuilder
+class ListBuilder
 {
+   SEXPR head;
+   SEXPR tail;
+   
+public:
    ListBuilder()
    {
-      MEMORY::listtail = MEMORY::listhead;
-      setcdr( MEMORY::listtail, null );
+      regstack.push( MEMORY::cons(null, null) );
+      head = tail = regstack.top();
    }
 
    ~ListBuilder()
    {
-      MEMORY::listtail = null;
-      setcdr( MEMORY::listhead, null );
+      regstack.pop();
    }
 
    void add( SEXPR item )
    {
-      const SEXPR cell = MEMORY::cons(item, null) ;
-      setcdr( MEMORY::listtail, cell );
-      MEMORY::listtail = cell;
+      auto cell = MEMORY::cons(item, null) ;
+      setcdr( tail, cell );
+      tail = cell;
    }
 
    SEXPR get()
    {
-      return getcdr( MEMORY::listhead );
+      return getcdr( head );
    }
 };
 
