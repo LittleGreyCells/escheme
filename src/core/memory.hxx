@@ -8,7 +8,6 @@
 #include "sexpr.hxx"
 #include "tstack.hxx"
 #include "framestore.hxx"
-#include "regstack.hxx"
 
 namespace MEMORY
 {
@@ -29,8 +28,6 @@ namespace MEMORY
 
    extern SEXPR string_null;
    extern SEXPR vector_null;
-   extern SEXPR listtail;
-   extern SEXPR listhead;
 
    void initialize();
 
@@ -86,32 +83,11 @@ public:
 
 class ListBuilder
 {
-   SEXPR head;
-   SEXPR tail;
-   
 public:
-   ListBuilder()
-   {
-      regstack.push( MEMORY::cons(null, null) );
-      head = tail = regstack.top();
-   }
-
-   ~ListBuilder()
-   {
-      regstack.pop();
-   }
-
-   void add( SEXPR item )
-   {
-      auto cell = MEMORY::cons(item, null) ;
-      setcdr( tail, cell );
-      tail = cell;
-   }
-
-   SEXPR get()
-   {
-      return getcdr( head );
-   }
+   ListBuilder();
+   ~ListBuilder();
+   void add( SEXPR item );
+   SEXPR get();
 };
 
 #endif
