@@ -1034,15 +1034,15 @@ SEXPR FUNC::env_bindings()
 
    // convert a frame into a list of bindings
    FRAME frame = getenvframe(env);
-   ListBuilder bindings;
    SEXPR vars = getframevars(frame);
    
+   ListBuilder bindings;
+
    for ( int i = 0; anyp(vars); ++i )
    {
       push_reg( MEMORY::cons( getcar(vars), frameref(frame, i)) );
       bindings.add( top_reg() );
       pop_reg();
-      
       vars = getcdr(vars);
    }
    
@@ -1071,33 +1071,35 @@ SEXPR FUNC::make_environment()
    SEXPR env = MEMORY::environment( len, null, benv );
    push_reg( env );
 
-   ListBuilder vars;
-
-   for ( int i = 0; anyp(pairs); ++i )
    {
-      SEXPR x = ::car(pairs);
-
-      if ( consp(x) )
+      ListBuilder vars;
+      
+      for ( int i = 0; anyp(pairs); ++i )
       {
-	 // ( <var> . <val> )
-	 vars.add( ::car(x) );
-	 frameset( getenvframe(env), i, ::cdr(x) );
+         SEXPR x = ::car(pairs);
+         
+         if ( consp(x) )
+         {
+            // ( <var> . <val> )
+            vars.add( ::car(x) );
+            frameset( getenvframe(env), i, ::cdr(x) );
+         }
+         else if ( symbolp(x) )
+         {
+            // <var>
+            vars.add( x );
+            frameset( getenvframe(env), i, null );
+         }
+         else
+         {
+            ERROR::severe( "expected a symbol or (symbol . val)", x );
+         }
+         
+         pairs = ::cdr(pairs);
       }
-      else if ( symbolp(x) )
-      {
-	 // <var>
-	 vars.add( x );
-	 frameset( getenvframe(env), i, null );
-      }
-      else
-      {
-	 ERROR::severe( "expected a symbol or (symbol . val)", x );
-      }
-
-      pairs = ::cdr(pairs);
+      
+      setframevars( getenvframe(env), vars.get() );
    }
-
-   setframevars( getenvframe(env), vars.get() );
 
    return pop_reg();
 }

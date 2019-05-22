@@ -47,7 +47,6 @@ SEXPR MEMORY::vector_null;
 
 namespace MEMORY
 {
-   SEXPR listtail;
    SEXPR listhead;
 }
 
@@ -502,7 +501,6 @@ void MEMORY::gc()
    // mark memory managed roots
    mark( string_null );
    mark( vector_null );
-   mark( listtail );
    mark( listhead );
 
    // notify all clients to mark their active roots
@@ -777,7 +775,6 @@ void MEMORY::initialize()
    NewNodeBlock();
    string_null = string( 0u );
    vector_null = vector( 0u );
-   listtail = null;
    listhead = cons(null, null);
 }
 
@@ -787,21 +784,20 @@ void MEMORY::initialize()
 
 ListBuilder::ListBuilder()
 {
-   MEMORY::listtail = MEMORY::listhead;
-   setcdr( MEMORY::listtail, null );
+   tail = MEMORY::listhead;
+   setcdr( tail, null );
 }
 
 ListBuilder::~ListBuilder()
 {
-   MEMORY::listtail = null;
    setcdr( MEMORY::listhead, null );
 }
 
 void ListBuilder::add( SEXPR item )
 {
-   const SEXPR cell = MEMORY::cons(item, null) ;
-   setcdr( MEMORY::listtail, cell );
-   MEMORY::listtail = cell;
+   auto cell = MEMORY::cons(item, null);
+   setcdr( tail, cell );
+   tail = cell;
 }
 
 SEXPR ListBuilder::get()

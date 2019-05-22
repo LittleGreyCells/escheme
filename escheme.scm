@@ -25,7 +25,7 @@
   (let ((args (split-args args nil nil))
         (macro-rep #t)
         options)
-    (set! options (car args))
+    (set! options (car args)) 
     (while options
        (let ((option (car options)))
          (cond ((or (equal? "--help" option)

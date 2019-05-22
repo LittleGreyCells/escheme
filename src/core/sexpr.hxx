@@ -26,9 +26,9 @@ enum NodeKind
 {
    n_free,         // 0
    n_null,         // 1
-   n_symbol,
-   n_fixnum,
-   n_flonum,
+   n_symbol,       // 2
+   n_fixnum,       // 3
+   n_flonum,       // 4
    n_char,         // 5
    n_string,       // 6
    n_cons,         // 7

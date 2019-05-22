@@ -83,6 +83,7 @@ public:
 
 class ListBuilder
 {
+   SEXPR tail;
 public:
    ListBuilder();
    ~ListBuilder();
