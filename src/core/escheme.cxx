@@ -7,6 +7,9 @@
 #include "rep.hxx"
 
 #include "eval/eval.hxx"
+#ifdef BYTE_CODE_EVALUATOR
+#include "eval/assem.hxx"
+#endif
 
 int unix_argc;
 char** unix_argv;
@@ -27,6 +30,9 @@ int main( int argc, char** argv )
       READER::initialize();
       PIO::initialize();
       EVAL::initialize();
+#ifdef BYTE_CODE_EVALUATOR
+      ASSEM::initialize();
+#endif
    }
    catch (...)
    {
