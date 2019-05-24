@@ -1,4 +1,4 @@
-escheme _intepreted_
+escheme _interpreted_
 =======
 
 A scheme interpreter utilizing an explicit control evaluator
