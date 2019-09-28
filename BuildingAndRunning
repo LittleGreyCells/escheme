@@ -15,7 +15,7 @@ linenoise prompt is displayed:
    $ ./escheme
    escheme v1.0 (interpreter)
 
-   ece>
+   escheme>
 
 Loadable and executable files can be added to the command line:
 
@@ -24,7 +24,7 @@ Loadable and executable files can be added to the command line:
 
 To exit escheme, type ^D, ^C or exit function at the prompt:
 
-   ece> (exit)
+   escheme> (exit)
 
 
 Installation and Removal
@@ -39,7 +39,7 @@ should be included in the path definition, if not already.
 
 Lastly the interpreter can be uninstalled.
 
-   $ sudeo make uninstall
+   $ sudo make uninstall
 
 
 [EOF]
