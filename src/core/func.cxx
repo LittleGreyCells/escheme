@@ -29,10 +29,6 @@
 //   from the garbage collector.  DO NOT USE argstack!
 //
 
-#define push_reg(s) regstack.push(s)
-#define pop_reg() regstack.pop()
-#define top_reg() regstack.top()
-
 #define PRED_IMP(name)					\
    SEXPR PRED_FUN(name)()				\
    {							\
@@ -44,9 +40,9 @@
 bool booleanp(const SEXPR s) { return s == symbol_true || s == symbol_false; }
 
 inline bool notp(const SEXPR s) { return falsep(s); }
-inline bool boundp(const SEXPR s) { return getvalue(guard(s, symbolp)) != UNBOUND; }
+inline bool boundp(const SEXPR s) { return getvalue(guard(s, symbolp)) != SYMTAB::symbol_unbound; }
 inline bool eof_objectp(const SEXPR s) { return s == PIO::eof_object; }
-inline bool default_objectp(const SEXPR s) { return s == DEFAULT; }
+inline bool default_objectp(const SEXPR s) { return s == SYMTAB::symbol_default; }
 inline bool zerop(const SEXPR s) { return getfixnum(guard(s, fixnump)) == 0; }
 inline bool positivep(const SEXPR s) { return getfixnum(guard(s, fixnump)) > 0; }
 inline bool negativep(const SEXPR s) { return getfixnum(guard(s, fixnump)) < 0; }
@@ -169,7 +165,7 @@ SEXPR FUNC::liststar()
 	 return iter.getlast();
 
       SEXPR cell = MEMORY::cons(iter.getarg(), null);
-      push_reg(cell);
+      regstack.push(cell);
 
       while (true)
       {
@@ -177,7 +173,7 @@ SEXPR FUNC::liststar()
 	 if ( !iter.more() )
 	 {
 	    setcdr(cell, next);
-	    return pop_reg();
+	    return regstack.pop();
 	 }
 	 else
 	 {
@@ -185,7 +181,7 @@ SEXPR FUNC::liststar()
 	    cell = getcdr(cell);
 	 }
       }
-      return pop_reg();
+      return regstack.pop();
    }
 }
 
@@ -527,14 +523,14 @@ SEXPR FUNC::vector_to_list()
    SEXPR v = guard(iter.getlast(), vectorp);
    const int len = getvectorlength(v);
 
-   push_reg(null);
+   regstack.push(null);
 
    for ( int i = len-1; i >= 0; --i )
    {
-      top_reg() = MEMORY::cons( vectorref(v, i), top_reg() );
+      regstack.top() = MEMORY::cons( vectorref(v, i), regstack.top() );
    }
 
-   return pop_reg();
+   return regstack.pop();
 }
 
 //
@@ -796,9 +792,9 @@ SEXPR FUNC::put_property()
    }
   
    // if we got here, then there is no such property
-   push_reg(MEMORY::cons(v, getplist(s)));  // protect
-   setplist(s, MEMORY::cons(p, top_reg()));
-   pop_reg();
+   regstack.push(MEMORY::cons(v, getplist(s)));  // protect
+   setplist(s, MEMORY::cons(p, regstack.top()));
+   regstack.pop();
 
    return p;
 }
@@ -911,33 +907,33 @@ SEXPR FUNC::write_char()
 static SEXPR gc_stats()
 {
    SEXPR gc_stats = MEMORY::vector(2);
-   push_reg( gc_stats );
+   regstack.push( gc_stats );
 
    // nodes stats
-   push_reg( MEMORY::vector(4) );
-   vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
-   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount ) );
-   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
+   regstack.push( MEMORY::vector(4) );
+   vectorset( regstack.top(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
+   vectorset( regstack.top(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount ) );
+   vectorset( regstack.top(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
 #ifdef GC_STATISTICS_DETAILED
    const int N = MEMORY::ReclamationCounts.size();
-   push_reg( MEMORY::vector(N) );
+   regstack.push( MEMORY::vector(N) );
    for (int i = 0; i < N; ++i)
-      vectorset( top_reg(), i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
-   SEXPR reclamations = pop_reg();
-   vectorset( top_reg(), 3, reclamations );
+      vectorset( regstack.top(), i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
+   SEXPR reclamations = regstack.pop();
+   vectorset( regstack.top(), 3, reclamations );
 #endif
-   vectorset( gc_stats, 0, pop_reg() );
+   vectorset( gc_stats, 0, regstack.pop() );
 
 #ifdef OBJECT_CACHE
    // cache stats
-   push_reg( MEMORY::vector(3) );
-   vectorset( top_reg(), 0, MEMORY::fixnum( MEMORY::CacheSwapCount ) );
-   vectorset( top_reg(), 1, MEMORY::fixnum( MEMORY::CacheSize ) );
-   vectorset( top_reg(), 2, MEMORY::fixnum( MEMORY::get_cache_highwater() ) );
-   vectorset( gc_stats, 1, pop_reg() );
+   regstack.push( MEMORY::vector(3) );
+   vectorset( regstack.top(), 0, MEMORY::fixnum( MEMORY::CacheSwapCount ) );
+   vectorset( regstack.top(), 1, MEMORY::fixnum( MEMORY::CacheSize ) );
+   vectorset( regstack.top(), 2, MEMORY::fixnum( MEMORY::get_cache_highwater() ) );
+   vectorset( gc_stats, 1, regstack.pop() );
 #endif
    
-   return pop_reg();
+   return regstack.pop();
 }
 
 SEXPR FUNC::gc()
@@ -974,12 +970,12 @@ SEXPR FUNC::fs()
    argstack.noargs();
 
    const int N = MEMORY::frameStore.count.size();
-   push_reg( MEMORY::vector(N) );
+   regstack.push( MEMORY::vector(N) );
 
    for ( int i = 0; i < N; ++i )
-      vectorset( top_reg(), i, MEMORY::fixnum( MEMORY::frameStore.count[i] ) );
+      vectorset( regstack.top(), i, MEMORY::fixnum( MEMORY::frameStore.count[i] ) );
    
-   return pop_reg();
+   return regstack.pop();
 }
 
 //
@@ -1040,9 +1036,9 @@ SEXPR FUNC::env_bindings()
 
    for ( int i = 0; anyp(vars); ++i )
    {
-      push_reg( MEMORY::cons( getcar(vars), frameref(frame, i)) );
-      bindings.add( top_reg() );
-      pop_reg();
+      regstack.push( MEMORY::cons( getcar(vars), frameref(frame, i)) );
+      bindings.add( regstack.top() );
+      regstack.pop();
       vars = getcdr(vars);
    }
    
@@ -1069,7 +1065,7 @@ SEXPR FUNC::make_environment()
    // if empty, extend base environment w/ empty frame
 
    SEXPR env = MEMORY::environment( len, null, benv );
-   push_reg( env );
+   regstack.push( env );
 
    {
       ListBuilder vars;
@@ -1101,7 +1097,7 @@ SEXPR FUNC::make_environment()
       setframevars( getenvframe(env), vars.get() );
    }
 
-   return pop_reg();
+   return regstack.pop();
 }
 
 //
@@ -1122,11 +1118,11 @@ SEXPR FUNC::make_closure()
       ERROR::severe( "expected an environment", env );
 
    SEXPR closure = MEMORY::closure( code, env );
-   push_reg( closure );
+   regstack.push( closure );
 
    EVAL::set_closure_attributes( closure, params );
 
-   return pop_reg();
+   return regstack.pop();
 }
 
 SEXPR FUNC::parse_formals()
@@ -1140,7 +1136,7 @@ SEXPR FUNC::parse_formals()
    SEXPR params = iter.getlast();
 
    SEXPR v = MEMORY::vector( 3 );
-   push_reg( v );
+   regstack.push( v );
 
    SEXPR vars;
    BYTE numv;
@@ -1152,7 +1148,7 @@ SEXPR FUNC::parse_formals()
    vset( v, 1, MEMORY::fixnum(numv) );
    vset( v, 2, rargs ? symbol_true : symbol_false );
 
-   return pop_reg();
+   return regstack.pop();
 }
 
 #ifdef BYTE_CODE_EVALUATOR
@@ -1219,12 +1215,12 @@ SEXPR FUNC::unix_getargs()
    argstack.noargs();
 
    SEXPR es_argv = MEMORY::vector(unix_argc);
-   push_reg(es_argv);
+   regstack.push(es_argv);
 
    for ( int i = 0; i < unix_argc; ++i )
       vset( es_argv, i, MEMORY::string(unix_argv[i]) );
 
-   return pop_reg();
+   return regstack.pop();
 }
 
 SEXPR FUNC::unix_getenv()
@@ -1276,7 +1272,7 @@ SEXPR FUNC::unix_gettime()
    argstack.noargs();
 
    SEXPR time = MEMORY::cons(null, null);
-   push_reg( time );
+   regstack.push( time );
 
    struct timespec ts;
 
@@ -1284,7 +1280,7 @@ SEXPR FUNC::unix_gettime()
    setcar( time, MEMORY::fixnum( ts.tv_sec ) );
    setcdr( time, MEMORY::fixnum( ts.tv_nsec ) );
 
-   return pop_reg();
+   return regstack.pop();
 }
 
 SEXPR FUNC::unix_change_dir()
@@ -2043,15 +2039,15 @@ SEXPR FUNC::reverse()
    SEXPR list = guard(iter.getlast(), listp);
 
    // protect the structure under construction
-   push_reg(null);
+   regstack.push(null);
 
    while ( anyp(list) )
    {
-      top_reg() = MEMORY::cons( ::car(list), top_reg() );
+      regstack.top() = MEMORY::cons( ::car(list), regstack.top() );
       list = ::cdr(list);
    }
 
-   return pop_reg();
+   return regstack.pop();
 }
 
 //

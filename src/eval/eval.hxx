@@ -11,14 +11,6 @@
 #include "core/regstack.hxx"
 #include "core/intstack.hxx"
 
-#define save_evs(x)  intstack.push( int(x) )
-#define save_int(x)  intstack.push(x)
-#define save_reg(x)  regstack.push(x)
-
-#define restore_evs(x) (x) = EVSTATE( intstack.pop() )
-#define restore_int(x) (x) = intstack.pop()
-#define restore_reg(x) (x) = regstack.pop()
-
 //
 // Evaluator States
 //
@@ -109,6 +101,13 @@ namespace EVAL
 
    void register_check( int id, PREDICATE pre, SEXPR reg );
 }
+
+inline void save_evs( EVSTATE x )  { intstack.push(int(x)); }
+inline void save_int( int x )  { intstack.push(x); }
+inline void save_reg( SEXPR x ) { regstack.push(x); }
+inline void restore_evs( EVSTATE& x ) { x = EVSTATE( intstack.pop() ); }
+inline void restore_int( int& x ) { x = intstack.pop(); }
+inline void restore_reg( SEXPR& x ) { x = regstack.pop(); }
 
 #endif
 

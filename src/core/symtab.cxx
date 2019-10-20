@@ -70,7 +70,7 @@ SEXPR SYMTAB::enter( const char* symbol_name )
    }
 
    regstack.push( MEMORY::symbol(symbol_name) );
-   setvalue( regstack.top(), UNBOUND );
+   setvalue( regstack.top(), SYMTAB::symbol_unbound );
    element = MEMORY::cons( regstack.top(), element );
    return regstack.pop();
 }
@@ -98,7 +98,7 @@ SEXPR SYMTAB::enter( const std::string& symbol_name )
    }
 
    regstack.push( MEMORY::symbol(symbol_name) );
-   setvalue( regstack.top(), UNBOUND );
+   setvalue( regstack.top(), SYMTAB::symbol_unbound );
    element = MEMORY::cons( regstack.top(), element );
    return regstack.pop();
 }

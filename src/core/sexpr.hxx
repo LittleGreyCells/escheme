@@ -4,10 +4,6 @@
 #include <string>
 #include <cstdio>
 
-//
-// escheme configration
-//
-
 enum ConfigurationConstants
 {
    NODE_BLOCK_SIZE    = 5000,
@@ -58,7 +54,6 @@ enum PortMode
    pm_output = 0x02
 };
 
-
 using FIXNUM  = signed long;
 using UFIXNUM = unsigned long;
 using FLONUM  = double;
@@ -91,8 +86,8 @@ using PREDICATE = bool (*)( const SEXPR );
 
 using DWORD = void*;
 
-#define NBYTES(n)  ((n)*sizeof(DWORD))
-#define NDWORDS(n) (((n)+sizeof(DWORD)-1)/sizeof(DWORD))
+inline auto NBYTES( int n )  { return n*sizeof(DWORD); }
+inline auto NDWORDS( int n ) { return (n+sizeof(DWORD)-1)/sizeof(DWORD); }
 
 struct Frame
 {
@@ -104,7 +99,7 @@ struct Frame
    SEXPR slot[1];        // varying numbers
 };
 
-#define FRAMESIZE(nslots) (((sizeof(Frame)-sizeof(SEXPR))/sizeof(SEXPR))+nslots)
+inline auto FRAMESIZE( int nslots ) { return ((sizeof(Frame)-sizeof(SEXPR))/sizeof(SEXPR))+nslots; }
 
 struct PRIMITIVE
 {
@@ -166,11 +161,6 @@ struct BVECTOR
    BYTE* data;
 };
 
-struct LINKAGE
-{
-   SEXPR next;
-};
-
 struct CODE
 {
    SEXPR bcodes;
@@ -202,7 +192,7 @@ struct Node
    BYTE nage;
    union
    {
-      LINKAGE link;
+      SEXPR next;
       FIXNUM fixnum;
       FLONUM flonum;
       CHAR ch;
@@ -225,18 +215,15 @@ struct Node
       kind(k), mark(0), form(0), nage(0) {}
 
    Node( NodeKind k, SEXPR next ) :
-      kind(k), mark(0), form(0), nage(0) { u.link.next = next; }
+      kind(k), mark(0), form(0), nage(0) { u.next = next; }
 
-   void setnext( SEXPR next ) { u.link.next = next; }
-   SEXPR getnext() const { return u.link.next; }
+   void setnext( SEXPR next ) { u.next = next; }
+   SEXPR getnext() const { return u.next; }
 
    void* id() { return this; }
 };
 
 extern SEXPR null;
-
-// debugging support
-void show( const SEXPR n );
 
 // accessors
 FIXNUM fixnum( const SEXPR n );
@@ -261,16 +248,7 @@ SEXPR set( SEXPR symbol, SEXPR value );
 void fset( FRAME frame, UINT32 index, SEXPR value );
 SEXPR fref( FRAME frame, UINT32 index );
 
-
-/////////////////////////////////////////////////////////////////
-//
-// Predicates
-//
-/////////////////////////////////////////////////////////////////
-
-#define nullp(n) ((n) == null)
-#define anyp(n)  ((n) != null)
-
+// predicates
 bool symbolp( const SEXPR n );
 bool fixnump( const SEXPR n );
 bool flonump( const SEXPR n );
@@ -303,149 +281,148 @@ bool codep( const SEXPR n );
 bool vcp( const SEXPR n );
 bool primp( const SEXPR n );
 
-#define _symbolp(n) ((n)->kind == n_symbol)
-#define _fixnump(n) ((n)->kind == n_fixnum)
-#define _flonump(n) ((n)->kind == n_flonum)
-#define _stringp(n) ((n)->kind == n_string)
-#define _charp(n) ((n)->kind == n_char)
-#define _consp(n) ((n)->kind == n_cons)
-#define _envp(n) ((n)->kind == n_environment)
-#define _lastp(n) nullp(cdr(n))
-
-#define _funcp(n) ((n)->kind == n_func)
-#define _closurep(n) ((n)->kind == n_closure)
-#define _codep(n) ((n)->kind == n_code)
-#define _compiledp(n) _codep(getclosurecode(n))
-#define _compiled_closurep(n) (_closurep(n) && _compiledp(n))
-
 SEXPR guard( SEXPR s, PREDICATE predicate );
 
-/////////////////////////////////////////////////////////////////
-//
-// Primitive accessors
-//
-/////////////////////////////////////////////////////////////////
+// accessors
 
 // all
-#define nodekind(n) ((n)->kind)
-#define setnodekind(n,k) nodekind(n) = (k)
-#define getform(n) ((n)->form)
-#define setform(n,x) getform(n) = (x)
+inline auto& nodekind( SEXPR n ) { return n->kind; }
+inline void setnodekind( SEXPR n, NodeKind k ) { n->kind = k; }
+inline auto& getform( SEXPR n ) { return n->form; }
+inline void setform( SEXPR n, BYTE x ) { n->form = x; }
 
 // cons
-#define getcar(n) ((n)->u.cons.car)
-#define getcdr(n) ((n)->u.cons.cdr)
-#define setcar(n,x) getcar(n) = (x)
-#define setcdr(n,x) getcdr(n) = (x)
+inline auto& getcar( SEXPR n ) { return n->u.cons.car; }
+inline auto& getcdr( SEXPR n ) { return n->u.cons.cdr; }
+inline void setcar( SEXPR n, SEXPR x ) { getcar(n) = x; }
+inline void setcdr( SEXPR n, SEXPR x ) { getcdr(n) = x; }
 
 // vector
-#define getvectorlength(n) ((n)->u.vector.length)
-#define getvectordata(n) ((n)->u.vector.data)
-#define vectorref(n,i) ((n)->u.vector.data[(i)])
-#define setvectorlength(n,x) getvectorlength(n) = (x)
-#define setvectordata(n,x) getvectordata(n) = (x)
-#define vectorset(n,i,x) vectorref(n,i) = (x)
+inline auto& getvectorlength( SEXPR n ) { return n->u.vector.length; }
+inline auto& getvectordata( SEXPR n ) { return n->u.vector.data; }
+inline auto& vectorref( SEXPR n, int i ) { return n->u.vector.data[i]; }
+inline void setvectorlength( SEXPR n, int x ) { getvectorlength(n) = x; }
+inline void setvectordata( SEXPR n, SEXPR* x ) { getvectordata(n) = x; }
+inline void vectorset( SEXPR n, int i, SEXPR x ) { vectorref(n,i) = x; }
 
 // continuation
-#define cont_getstate(n) ((n)->u.cons.car)
-#define cont_setstate(n,x) cont_getstate(n) = (x)
+inline auto& cont_getstate( SEXPR n ) { return n->u.cons.car; }
+inline void cont_setstate( SEXPR n, SEXPR x ) { cont_getstate(n) = x; }
 
 // string
-#define getstringlength(n) ((n)->u.string.length)
-#define getstringdata(n) ((n)->u.string.data)
-#define setstringlength(n,x) getstringlength(n) = (x)
-#define setstringdata(n,x) getstringdata(n) = (x)
+inline auto& getstringlength( SEXPR n ) { return n->u.string.length; } 
+inline auto& getstringdata( SEXPR n ) { return n->u.string.data; }
+inline void setstringlength( SEXPR n, int x ) { getstringlength(n) = x; }
+inline void setstringdata( SEXPR n, char* x ) { getstringdata(n) = x; }
 
 // byte vector
-#define getbveclength(n) ((n)->u.bvec.length)
-#define getbvecdata(n) ((n)->u.bvec.data)
-#define setbveclength(n,x) getbveclength(n) = (x)
-#define setbvecdata(n,x) getbvecdata(n) = (x)
-#define bvecref(n,i) ((n)->u.bvec.data[(i)])
-#define bvecset(n,i,x) bvecref(n,i) = (x)
+inline auto& getbveclength( SEXPR n ) { return n->u.bvec.length; }
+inline auto& getbvecdata( SEXPR n ) { return n->u.bvec.data; }
+inline void setbveclength( SEXPR n, int x ) { getbveclength(n) = x; }
+inline void setbvecdata( SEXPR n, BYTE* x ) { getbvecdata(n) = x; }
+inline auto& bvecref( SEXPR n, int i ) { return n->u.bvec.data[i]; }
+inline void bvecset( SEXPR n, int i, BYTE x ) { bvecref(n,i) = x; }
 
 // character
-#define getcharacter(n) ((n)->u.ch)
-#define setcharacter(n,ch) getcharacter(n) = (ch)
+inline char& getcharacter( SEXPR n ) { return n->u.ch; }
+inline void setcharacter( SEXPR n, char ch ) { getcharacter(n) = ch; }
 
 // symbol
-#define getname(n) ((n)->u.symbol.name)
-#define getpair(n) ((n)->u.symbol.pair)
-#define getvalue(n) getcar(getpair(n))
-#define getplist(n) getcdr(getpair(n))
-#define setname(n,x) getname(n) = (x)
-#define setpair(n,x) getpair(n) = (x)
-#define setvalue(n,x) getvalue(n) = (x)
-#define setplist(n,x) getplist(n) = (x)
+inline auto& getname( SEXPR n ) { return n->u.symbol.name; }
+inline auto& getpair( SEXPR n ) { return n->u.symbol.pair; }
+inline auto& getvalue( SEXPR n ) { return getcar(getpair(n)); }
+inline auto& getplist( SEXPR n ) { return getcdr(getpair(n)); }
+inline void setname( SEXPR n, char* x ) { getname(n) = x; }
+inline void setpair( SEXPR n, SEXPR x ) { getpair(n) = x; }
+inline void setvalue( SEXPR n, SEXPR x ) { getvalue(n) = x; }
+inline void setplist( SEXPR n, SEXPR x ) { getplist(n) = x; }
 
 // number
-#define getfixnum(n) ((n)->u.fixnum)
-#define getflonum(n) ((n)->u.flonum)
-#define setfixnum(n,x) getfixnum(n) = (x)
-#define setflonum(n,x) getflonum(n) = (x)
+inline auto& getfixnum( SEXPR n ) { return n->u.fixnum; }
+inline auto& getflonum( SEXPR n ) { return n->u.flonum; }
+inline void setfixnum( SEXPR n, FIXNUM x ) { getfixnum(n) = x; }
+inline void setflonum( SEXPR n, FLONUM x ) { getflonum(n) = x; }
 
 // primitive function
-#define getfunc(n) ((n)->u.prim.func)
-#define setfunc(n,x) getfunc(n) = (x)
-#define getprimname(n) ((n)->u.prim.name)
-#define setprimname(n,x) getprimname(n) = (x)
+inline auto& getfunc( SEXPR n ) { return n->u.prim.func; }
+inline void setfunc( SEXPR n, FUNCTION x ) { getfunc(n) = x; }
+inline auto& getprimname( SEXPR n ) { return n->u.prim.name; }
+inline void setprimname( SEXPR n, const char* x ) { getprimname(n) = x; }
 
 // closure
 // get
-#define getclosuredata(n) ((n)->u.closure.data)
-#define getclosurecode(n) (getclosuredata(n)[0])
-#define getclosurebenv(n) (getclosuredata(n)[1])
-#define getclosurevars(n) (getclosuredata(n)[2])
-#define getclosurenumv(n) ((n)->u.closure.numv)
-#define getclosurerargs(n) ((n)->u.closure.rargs)
+inline auto& getclosuredata( SEXPR n ) { return n->u.closure.data; }
+inline auto& getclosurecode( SEXPR n ) { return getclosuredata(n)[0]; }
+inline auto& getclosurebenv( SEXPR n ) { return getclosuredata(n)[1]; }
+inline auto& getclosurevars( SEXPR n ) { return getclosuredata(n)[2]; }
+inline auto& getclosurenumv( SEXPR n ) { return n->u.closure.numv; }
+inline auto& getclosurerargs( SEXPR n ) { return n->u.closure.rargs; }
 // set
-#define setclosuredata(n,x) getclosuredata(n) = (x)
-#define setclosurecode(n,x) getclosurecode(n) = (x)
-#define setclosurebenv(n,x) getclosurebenv(n) = (x)
-#define setclosurevars(n,x) getclosurevars(n) = (x)
-#define setclosurenumv(n,x) getclosurenumv(n) = (x)
-#define setclosurerargs(n,x) getclosurerargs(n) = (x)
+inline void setclosuredata( SEXPR n, SEXPR* x ) { getclosuredata(n) = x; }
+inline void setclosurecode( SEXPR n, SEXPR x ) { getclosurecode(n) = x; }
+inline void setclosurebenv( SEXPR n, SEXPR x ) { getclosurebenv(n) = x; }
+inline void setclosurevars( SEXPR n, SEXPR x ) { getclosurevars(n) = x; }
+inline void setclosurenumv( SEXPR n, BYTE x ) { getclosurenumv(n) = x; }
+inline void setclosurerargs( SEXPR n, BYTE x ) { getclosurerargs(n) = x; }
 
 // environment
-#define getenvframe(n) ((n)->u.environ.frame)
-#define getenvbase(n) ((n)->u.environ.baseenv)
-#define setenvframe(n,x) getenvframe(n) = (x)
-#define setenvbase(n,x) getenvbase(n) = (x)
+inline auto& getenvframe( SEXPR n ) { return n->u.environ.frame; }
+inline auto& getenvbase( SEXPR n ) { return n->u.environ.baseenv; }
+inline void setenvframe( SEXPR n, FRAME x ) { getenvframe(n) = x; }
+inline void setenvbase( SEXPR n, SEXPR x ) { getenvbase(n) = x; }
 
 // frame
-#define getframenslots(fr) ((fr)->nslots)
-#define getframevars(fr) ((fr)->vars)
-#define getframeclosure(fr) ((fr)->closure)
-#define getframesize(fr) ((fr)->size)
-#define frameref(fr,i) ((fr)->slot[(i)])
-#define setframenslots(fr,n) getframenslots(fr) = (n)
-#define setframevars(fr,x) getframevars(fr) = (x)
-#define setframeclosure(fr,x) getframeclosure(fr) = (x)
-#define setframesize(fr,x) getframesize(fr) = (x)
-#define frameset(fr,i,x) frameref(fr,i) = (x)
+inline auto& getframenslots( FRAME fr ) { return fr->nslots; }
+inline auto& getframevars( FRAME fr ) { return fr->vars; }
+inline auto& getframeclosure( FRAME fr ) { return fr->closure; }
+inline auto& frameref( FRAME fr, int i ) { return fr->slot[i]; }
+inline void setframenslots( FRAME fr, int n ) { getframenslots(fr) = n; }
+inline void setframevars( FRAME fr, SEXPR x ) { getframevars(fr) = x; }
+inline void setframeclosure( FRAME fr, SEXPR x ) { getframeclosure(fr) = x; }
+inline void frameset( FRAME fr, int i, SEXPR x ) { frameref(fr,i) = x; }
+inline auto& getframesize( FRAME fr ) { return fr->size; }
+inline void setframesize( FRAME fr, int x ) { getframesize(fr) = x; }
 
 // port
-#define getfile(n) ((n)->u.port.p.file)
-#define getmode(n) ((n)->u.port.mode)
-#define setfile(n,x) getfile(n) = (x)
-#define setmode(n,x) getmode(n) = (x)
+inline auto& getfile( SEXPR n ) { return n->u.port.p.file; }
+inline auto& getmode( SEXPR n ) { return n->u.port.mode; }
+inline void setfile( SEXPR n, FILE* x ) { getfile(n) = (x); }
+inline void setmode( SEXPR n, int x ) { getmode(n) = (x); }
 
 // string port
-#define getstringportstring(n) ((n)->u.port.p.string)
-#define getstringportindex(n) ((n)->u.port.index)
-#define setstringportstring(n,x) getstringportstring(n) = (x)
-#define setstringportindex(n,x) getstringportindex(n) = (x)
+inline auto& getstringportstring( SEXPR n ) { return n->u.port.p.string; }
+inline auto& getstringportindex( SEXPR n ) { return n->u.port.index; }
+inline void setstringportstring( SEXPR n, std::string* x ) { getstringportstring(n) = (x); }
+inline void setstringportindex( SEXPR n, int x ) { getstringportindex(n) = (x); }
 
 // code
-#define code_getbcodes(n) ((n)->u.code.bcodes)
-#define code_getsexprs(n) ((n)->u.code.sexprs)
-#define code_setbcodes(n,x) code_getbcodes(n) = (x)
-#define code_setsexprs(n,x) code_getsexprs(n) = (x)
+inline auto& code_getbcodes( SEXPR n ) { return n->u.code.bcodes; }
+inline auto& code_getsexprs( SEXPR n ) { return n->u.code.sexprs; }
+inline void code_setbcodes( SEXPR n, SEXPR x ) { code_getbcodes(n) = x; }
+inline void code_setsexprs( SEXPR n, SEXPR x) { code_getsexprs(n) = x; }
 
 // promise
-#define promise_getexp(n) ((n)->u.promise.exp)
-#define promise_getval(n) ((n)->u.promise.val)
-#define promise_setexp(n,x) promise_getexp(n) = (x)
-#define promise_setval(n,x) promise_getval(n) = (x)
+inline auto& promise_getexp( SEXPR n ) { return n->u.promise.exp; }
+inline auto& promise_getval( SEXPR n ) { return n->u.promise.val; }
+inline void promise_setexp( SEXPR n, SEXPR x) { promise_getexp(n) = x; }
+inline void promise_setval( SEXPR n, SEXPR x) { promise_getval(n) = x; }
+
+// inline predicates
+inline bool nullp( SEXPR n ) { return n == null; }
+inline bool anyp( SEXPR n ) { return n != null; }
+inline bool _symbolp( SEXPR n ) { return n->kind == n_symbol; }
+inline bool _fixnump( SEXPR n ) { return n->kind == n_fixnum; }
+inline bool _flonump( SEXPR n ) { return n->kind == n_flonum; }
+inline bool _stringp( SEXPR n ) { return n->kind == n_string; }
+inline bool _charp( SEXPR n ) { return n->kind == n_char; }
+inline bool _consp( SEXPR n ) { return n->kind == n_cons; }
+inline bool _envp( SEXPR n ) { return n->kind == n_environment; }
+inline bool _funcp( SEXPR n ) { return n->kind == n_func; }
+inline bool _closurep( SEXPR n ) { return n->kind == n_closure; }
+inline bool _codep( SEXPR n ) { return n->kind == n_code; }
+inline bool _compiledp( SEXPR n ) { return _codep(getclosurecode(n)); }
+inline bool _compiled_closurep( SEXPR n ) { return _closurep(n) && _compiledp(n); }
+
+inline bool _lastp( SEXPR n ) { return nullp(cdr(n)); }
 
 #endif

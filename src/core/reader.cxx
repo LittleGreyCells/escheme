@@ -251,7 +251,7 @@ SEXPR READER::read_vector( SEXPR inport, char terminator )
    return v;
 }
 
-#define RANGE(ch, lo, hi) (((lo) <= (ch)) && ((ch) <= (hi)))
+inline bool RANGE( int ch, int lo, int hi ) { return (lo <= ch) && (ch <= hi); }
 
 static bool isbasedigit( int ch, int base )
 {
@@ -392,11 +392,11 @@ SEXPR READER::read_comma( SEXPR inport )
    const int ch = PIO::get(inport);
 
    if (ch == '@')
-      return read_quote(inport, UNQUOTESPLICING);
+      return read_quote(inport, SYMTAB::symbol_unquotesplicing);
    else
    {
       PIO::unget(inport, ch);
-      return read_quote(inport, UNQUOTE);
+      return read_quote(inport, SYMTAB::symbol_unquote);
    }
 }
 
@@ -439,10 +439,10 @@ SEXPR READER::read_sexpr( SEXPR inport )
 	    return read_string(inport);
 
 	 case '\'':
-	    return read_quote(inport, QUOTE);
+	    return read_quote(inport, SYMTAB::symbol_quote);
 
 	 case '`':
-	    return read_quote(inport, QUASIQUOTE);
+	    return read_quote(inport, SYMTAB::symbol_quasiquote);
 
 	 case ',':
 	    return read_comma(inport);

@@ -304,22 +304,22 @@ void EVAL::initialize()
    theGlobalEnv = null;
 
    // set the special form dispatch value
-   setform( QUOTE,    EV_QUOTE );
-   setform( DELAY,    EV_DELAY );
-   setform( SET,      EV_SET );
-   setform( DEFINE,   EV_DEFINE );
-   setform( IF,       EV_IF );
-   setform( COND,     EV_COND );
-   setform( LAMBDA,   EV_LAMBDA );
-   setform( BEGIN,    EV_BEGIN );
-   setform( SEQUENCE, EV_BEGIN );
-   setform( LET,      EV_LET );
-   setform( LETREC,   EV_LETREC );
-   setform( WHILE,    EV_WHILE );
-   setform( AND,      EV_AND );
-   setform( OR,       EV_OR );
-   setform( ACCESS,   EV_ACCESS );
-   setform( null,     EV_APPLICATION );
+   setform( SYMTAB::symbol_quote,    EV_QUOTE );
+   setform( SYMTAB::symbol_delay,    EV_DELAY );
+   setform( SYMTAB::symbol_set,      EV_SET );
+   setform( SYMTAB::symbol_define,   EV_DEFINE );
+   setform( SYMTAB::symbol_if,       EV_IF );
+   setform( SYMTAB::symbol_cond,     EV_COND );
+   setform( SYMTAB::symbol_lambda,   EV_LAMBDA );
+   setform( SYMTAB::symbol_begin,    EV_BEGIN );
+   setform( SYMTAB::symbol_sequence, EV_BEGIN );
+   setform( SYMTAB::symbol_let,      EV_LET );
+   setform( SYMTAB::symbol_letrec,   EV_LETREC );
+   setform( SYMTAB::symbol_while,    EV_WHILE );
+   setform( SYMTAB::symbol_and,      EV_AND );
+   setform( SYMTAB::symbol_or,       EV_OR );
+   setform( SYMTAB::symbol_access,   EV_ACCESS );
+   setform( null,                    EV_APPLICATION );
 
    MEMORY::register_marker( eval_marker );
 }

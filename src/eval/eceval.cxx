@@ -10,23 +10,6 @@
 #define REGISTER_CHECK( id, pred, reg )
 #endif
 
-/////////////////////////////////////////////////////////////
-//
-//           Explicit Control Evaluator (ECE)
-//
-//   Developed from the model evaluator described in SICP
-//
-//   "The Structure and Interpretation of Computer Programs"
-//       by Abelson and Sussman
-//
-/////////////////////////////////////////////////////////////
-
-//
-// The Explicit Control Evaluator ENTRY
-//
-//   (see README file for discussion on efficiency)
-//
-
 #ifdef DO_ECE_CHECK
 static bool anyenvp( SEXPR n ) { return nullp(n) || envp(n); }
 #endif
@@ -45,10 +28,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
    // integer valued
    cont = EV_DONE;
    next = EVAL_DISPATCH;
-
-   regstack.flush();
-   argstack.flush();
-   intstack.flush();
 
    //
    // When analyzing forms *always* use the type-safe accessors:
@@ -548,7 +527,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       cont = EV_SET_VALUE;
 	       next = EVAL_DISPATCH;
 	    }
-	    else if (_consp(var_exp) && getcar(var_exp) == ACCESS)
+	    else if (_consp(var_exp) && getcar(var_exp) == SYMTAB::symbol_access)
 	    {
 	       // ((access <var> <env2>) <exp>)
 	       exp = car(cdr(cdr(var_exp)));     // exp = <env2>
@@ -725,7 +704,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    else
 	    {
 	       exp = car(unev);
-	       if (car(exp) == ELSE)
+	       if (car(exp) == SYMTAB::symbol_else)
 	       {
 		  unev = cdr(exp);
 		  next = EVAL_SEQUENCE;

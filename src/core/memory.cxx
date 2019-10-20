@@ -229,9 +229,9 @@ inline void increment_age( SEXPR n )
 // will lead to disaster.
 //
 
-#define markedp(n) ((n)->mark)
-#define setmark(n) ((n)->mark = 1)
-#define resetmark(n) ((n)->mark = 0)
+inline int markedp( SEXPR n ) { return n->mark; }
+inline void setmark( SEXPR n ) { n->mark = 1; }
+inline void resetmark( SEXPR n ) { n->mark = 0; }
 
 int MEMORY::suspensions = 0;
 

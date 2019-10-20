@@ -5,28 +5,6 @@
 
 #include "sexpr.hxx"
 
-#define QUOTE  		SYMTAB::symbol_quote
-#define DELAY  		SYMTAB::symbol_delay
-#define DEFINE 		SYMTAB::symbol_define
-#define SET    		SYMTAB::symbol_set
-#define LAMBDA 		SYMTAB::symbol_lambda
-#define IF     		SYMTAB::symbol_if
-#define WHILE  		SYMTAB::symbol_while
-#define COND   		SYMTAB::symbol_cond
-#define ELSE   		SYMTAB::symbol_else
-#define AND    		SYMTAB::symbol_and
-#define OR     		SYMTAB::symbol_or
-#define BEGIN  		SYMTAB::symbol_begin
-#define SEQUENCE        SYMTAB::symbol_sequence
-#define LET   		SYMTAB::symbol_let
-#define LETREC   	SYMTAB::symbol_letrec
-#define ACCESS          SYMTAB::symbol_access
-#define UNBOUND         SYMTAB::symbol_unbound
-#define DEFAULT         SYMTAB::symbol_default
-#define QUASIQUOTE      SYMTAB::symbol_quasiquote
-#define UNQUOTE         SYMTAB::symbol_unquote
-#define UNQUOTESPLICING SYMTAB::symbol_unquotesplicing
-
 namespace SYMTAB
 {
    void initialize();
@@ -71,6 +49,5 @@ using SYMTAB::symbol_false;
 
 inline bool falsep( SEXPR n ) { return n == symbol_false || n == null; }
 inline bool truep( SEXPR n )  { return !falsep(n); }
-
 
 #endif

@@ -1,9 +1,9 @@
 #ifndef RECUMARK_HXX
 #define RECUMARK_HXX
 
-#define setmark(n) ((n)->recu = 1)
-#define resetmark(n) ((n)->recu = 0)
-#define markedp(n) ((n)->recu)
+inline void setmark( SEXPR n ) { n->recu = 1; }
+inline void resetmark( SEXPR n ) { n->recu = 0; }
+inline int markedp( SEXPR n ) { return n->recu; }
 
 class RECURSIVE_MARKER
 {
