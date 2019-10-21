@@ -248,12 +248,11 @@ SEXPR set( SEXPR symbol, SEXPR value );
 void fset( FRAME frame, UINT32 index, SEXPR value );
 SEXPR fref( FRAME frame, UINT32 index );
 
-// predicates
+// predicates (see also func.hxx)
 bool symbolp( const SEXPR n );
 bool fixnump( const SEXPR n );
 bool flonump( const SEXPR n );
 bool numberp( const SEXPR n );
-bool booleanp( const SEXPR n );
 bool stringp( const SEXPR n );
 bool charp( const SEXPR n );
 bool vectorp( const SEXPR n );

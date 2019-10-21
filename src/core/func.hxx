@@ -3,8 +3,21 @@
 
 #include "sexpr.hxx"
 
-#define PRED_DCL(name) SEXPR es##name()
-#define PRED_FUN(name) FUNC::es##name
+SEXPR test_predicate( PREDICATE p );
+
+bool booleanp( const SEXPR n );
+bool notp( const SEXPR n );
+bool boundp( const SEXPR n );
+bool eof_objectp( const SEXPR n );
+bool default_objectp( const SEXPR n );
+bool zerop( const SEXPR n );
+bool positivep( const SEXPR n );
+bool negativep( const SEXPR n );
+bool oddp( const SEXPR n );
+bool evenp( const SEXPR n );
+bool exactp( const SEXPR );
+bool inexactp( const SEXPR );
+bool string_nullp( SEXPR n );
 
 namespace FUNC
 {
@@ -159,51 +172,7 @@ namespace FUNC
    SEXPR get_output_string();
 
    // predicates
-   PRED_DCL(nullp);
-   PRED_DCL(symbolp);
-   PRED_DCL(fixnump);
-   PRED_DCL(flonump);
-   PRED_DCL(numberp);
-   PRED_DCL(charp);
-   PRED_DCL(stringp);
-   PRED_DCL(vectorp);
-   PRED_DCL(bvecp);
-   PRED_DCL(consp);
-   PRED_DCL(funcp);
-   PRED_DCL(portp);
-   PRED_DCL(inportp);
-   PRED_DCL(outportp);
-   PRED_DCL(stringportp);
-   PRED_DCL(instringportp);
-   PRED_DCL(outstringportp);
-   PRED_DCL(closurep);
-   PRED_DCL(contp);
-   PRED_DCL(envp);
-   PRED_DCL(listp);
-   PRED_DCL(atomp);
-   PRED_DCL(promisep);
-
-   PRED_DCL(boundp);
-   PRED_DCL(notp);
-   PRED_DCL(eof_objectp);
-   PRED_DCL(default_objectp);
-   PRED_DCL(booleanp);
-
-   PRED_DCL(zerop);
-   PRED_DCL(positivep);
-   PRED_DCL(negativep);
-   PRED_DCL(oddp);
-   PRED_DCL(evenp);
-   PRED_DCL(exactp);
-   PRED_DCL(inexactp);
-
-#ifdef BYTE_CODE_EVALUATOR
-   PRED_DCL(codep);
-#endif
-
    SEXPR procedurep();
-
-   PRED_DCL(string_nullp);
 
    SEXPR string_length();
    SEXPR string_append();

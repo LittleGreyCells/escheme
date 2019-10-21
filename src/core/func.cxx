@@ -29,27 +29,26 @@
 //   from the garbage collector.  DO NOT USE argstack!
 //
 
-#define PRED_IMP(name)					\
-   SEXPR PRED_FUN(name)()				\
-   {							\
-      ArgstackIterator iter;				\
-      const SEXPR arg = iter.getlast();			\
-      return name(arg) ? symbol_true : symbol_false;	\
-   }
-
 bool booleanp(const SEXPR s) { return s == symbol_true || s == symbol_false; }
+bool notp(const SEXPR s) { return falsep(s); }
+bool boundp(const SEXPR s) { return getvalue(guard(s, symbolp)) != SYMTAB::symbol_unbound; }
+bool eof_objectp(const SEXPR s) { return s == PIO::eof_object; }
+bool default_objectp(const SEXPR s) { return s == SYMTAB::symbol_default; }
+bool zerop(const SEXPR s) { return getfixnum(guard(s, fixnump)) == 0; }
+bool positivep(const SEXPR s) { return getfixnum(guard(s, fixnump)) > 0; }
+bool negativep(const SEXPR s) { return getfixnum(guard(s, fixnump)) < 0; }
+bool oddp(const SEXPR s) { return (abs(getfixnum(guard(s, fixnump))) % 2) == 1; }
+bool evenp(const SEXPR s) { return (getfixnum(guard(s, fixnump)) % 2) == 0; }
+bool exactp(const SEXPR) { return false; }
+bool inexactp(const SEXPR) { return true; }
+bool string_nullp(SEXPR s) { return getstringlength(guard(s, stringp)) == 0; }
 
-inline bool notp(const SEXPR s) { return falsep(s); }
-inline bool boundp(const SEXPR s) { return getvalue(guard(s, symbolp)) != SYMTAB::symbol_unbound; }
-inline bool eof_objectp(const SEXPR s) { return s == PIO::eof_object; }
-inline bool default_objectp(const SEXPR s) { return s == SYMTAB::symbol_default; }
-inline bool zerop(const SEXPR s) { return getfixnum(guard(s, fixnump)) == 0; }
-inline bool positivep(const SEXPR s) { return getfixnum(guard(s, fixnump)) > 0; }
-inline bool negativep(const SEXPR s) { return getfixnum(guard(s, fixnump)) < 0; }
-inline bool oddp(const SEXPR s) { return (abs(getfixnum(guard(s, fixnump))) % 2) == 1; }
-inline bool evenp(const SEXPR s) { return (getfixnum(guard(s, fixnump)) % 2) == 0; }
-inline bool exactp(const SEXPR) { return false; }
-inline bool inexactp(const SEXPR) { return true; }
+SEXPR test_predicate( PREDICATE pred )
+{
+   ArgstackIterator iter;
+   const SEXPR arg = iter.getlast();
+   return pred(arg) ? symbol_true : symbol_false;
+}
 
 //
 // general
@@ -1487,45 +1486,6 @@ SEXPR FUNC::get_output_string()
 // syntax: (boolean? <exp>)
 // syntax: (promise? <exp>)
 //
-PRED_IMP(nullp)
-PRED_IMP(symbolp)
-PRED_IMP(fixnump)
-PRED_IMP(flonump)
-PRED_IMP(numberp)
-PRED_IMP(charp)
-PRED_IMP(stringp)
-PRED_IMP(vectorp)
-PRED_IMP(bvecp)
-PRED_IMP(consp)
-PRED_IMP(funcp)
-PRED_IMP(portp)
-PRED_IMP(inportp)
-PRED_IMP(outportp)
-PRED_IMP(stringportp)
-PRED_IMP(instringportp)
-PRED_IMP(outstringportp)
-PRED_IMP(closurep)
-PRED_IMP(contp)
-PRED_IMP(envp)
-PRED_IMP(listp)
-PRED_IMP(atomp)
-PRED_IMP(promisep)
-#ifdef BYTE_CODE_EVALUATOR
-PRED_IMP(codep)
-#endif
-
-PRED_IMP(boundp)
-PRED_IMP(booleanp)
-PRED_IMP(notp)
-PRED_IMP(eof_objectp)
-PRED_IMP(default_objectp)
-PRED_IMP(zerop)
-PRED_IMP(positivep)
-PRED_IMP(negativep)
-PRED_IMP(oddp)
-PRED_IMP(evenp)
-PRED_IMP(exactp)
-PRED_IMP(inexactp)
 
 SEXPR FUNC::procedurep()
 {
@@ -1534,12 +1494,6 @@ SEXPR FUNC::procedurep()
    return (primp(arg) || closurep(arg)) ? symbol_true : symbol_false;
 }
 
-inline int string_nullp(SEXPR s)
-{
-   return getstringlength(guard(s, stringp)) == 0;
-}
-
-PRED_IMP(string_nullp)
 
 SEXPR FUNC::string_length()
 {
