@@ -19,6 +19,8 @@ bool exactp( const SEXPR );
 bool inexactp( const SEXPR );
 bool string_nullp( SEXPR n );
 
+SEXPR do_cxr( const char* s, const int n );
+
 namespace FUNC
 {
    // general
