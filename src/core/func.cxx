@@ -43,14 +43,14 @@ bool exactp(const SEXPR) { return false; }
 bool inexactp(const SEXPR) { return true; }
 bool string_nullp(SEXPR s) { return getstringlength(guard(s, stringp)) == 0; }
 
-SEXPR test_predicate( PREDICATE pred )
+SEXPR FUNC::predicate( PREDICATE pred )
 {
    ArgstackIterator iter;
    const SEXPR arg = iter.getlast();
    return pred(arg) ? symbol_true : symbol_false;
 }
 
-SEXPR do_cxr( const char* x, const int n )
+SEXPR FUNC::cxr( const char* x, const int n )
 {
    ArgstackIterator iter;
    SEXPR exp = iter.getlast();

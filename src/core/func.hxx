@@ -3,8 +3,6 @@
 
 #include "sexpr.hxx"
 
-SEXPR test_predicate( PREDICATE p );
-
 bool booleanp( const SEXPR n );
 bool notp( const SEXPR n );
 bool boundp( const SEXPR n );
@@ -18,8 +16,6 @@ bool evenp( const SEXPR n );
 bool exactp( const SEXPR );
 bool inexactp( const SEXPR );
 bool string_nullp( SEXPR n );
-
-SEXPR do_cxr( const char* s, const int n );
 
 namespace FUNC
 {
@@ -35,37 +31,6 @@ namespace FUNC
    SEXPR liststar();
    SEXPR set_car();
    SEXPR set_cdr();
-
-   SEXPR caar();
-   SEXPR cadr();
-   SEXPR cdar();
-   SEXPR cddr();
-
-   SEXPR caaar();
-   SEXPR caadr();
-   SEXPR cadar();
-   SEXPR caddr();
-   SEXPR cdaar();
-   SEXPR cdadr();
-   SEXPR cddar();
-   SEXPR cdddr();
-
-   SEXPR caaaar();
-   SEXPR caaadr();
-   SEXPR caadar();
-   SEXPR caaddr();
-   SEXPR cadaar();
-   SEXPR cadadr();
-   SEXPR caddar();
-   SEXPR cadddr();
-   SEXPR cdaaar();
-   SEXPR cdaadr();
-   SEXPR cdadar();
-   SEXPR cdaddr();
-   SEXPR cddaar();
-   SEXPR cddadr();
-   SEXPR cdddar();
-   SEXPR cddddr();
 
    // vector
    SEXPR vector();
@@ -257,6 +222,11 @@ namespace FUNC
 
    // object address
    SEXPR objaddr();
+
+   // lambda helpers
+   SEXPR predicate( PREDICATE p );
+   SEXPR cxr( const char* s, const int n );
+
 }
 
 #endif
