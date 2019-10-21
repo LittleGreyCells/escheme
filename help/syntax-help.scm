@@ -13,7 +13,7 @@
     ))
 
 (define (syntax-find <func>)
-  (let ((p (open-input-file "syntax.scm"))
+  (let ((p (open-input-file "help/syntax.scm"))
         matches)
     (let (exp)
       (set! exp (read p))
@@ -41,17 +41,17 @@
   (if (symbol? pattern)
       (set! pattern (symbol->string pattern)))
   (let ((pattern (string-append "^((" pattern)))
-    (syntax-grep pattern)))
+    (grep pattern)))
 
 (define (grep pattern)
   (if (symbol? pattern)
       (set! pattern (symbol->string pattern)))
-  (let ((cmd (string-append "grep \"" pattern "\" syntax.scm")))
+  (let ((cmd (string-append "grep \"" pattern "\" help/syntax.scm")))
     (print cmd)
     (system cmd)
     ))
 
 (define (syntax-show)
-  (let ((productions (syntax-read "syntax.scm")))
+  (let ((productions (syntax-read "help/syntax.scm")))
     (for-each print productions)))
 
