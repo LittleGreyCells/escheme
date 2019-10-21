@@ -4,7 +4,7 @@ Building
 
 In the root directory type 'make' to build the executable:
 
-   $make [-f makefile]
+   $ make
 
 
 Running
@@ -17,7 +17,7 @@ linenoise prompt is displayed:
 
    escheme>
 
-Loadable and executable files can be added to the command line:
+Files to load before the REP can be added to the command line:
 
    $ ./escheme tests/run_tests1.scm tests/run_tests2.scm
    
