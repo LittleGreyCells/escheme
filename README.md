@@ -35,6 +35,7 @@ while honoring C++ block finalization.
 |  macros   |  macro and quasiquote|
 |  tests  |    files for escheme regression testing|
 |  docs |      documentation which may or may not be accurate|
+|  help |      escheme syntax related files|
 
 ## Extending escheme
 
@@ -47,8 +48,8 @@ return back to escheme.
 
 Consult the file _BuildingAndRunning_ to build the interpreter.
 
-For a complete list of escheme functions (and a help system) consult syntax.scm/syntax-help.scm in the 
-root directory.
+For a complete list of escheme functions (and a help system) consult syntax-help.scm in the 
+help directory.
 
 
 
