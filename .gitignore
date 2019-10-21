@@ -3,3 +3,5 @@ escheme1
 src/core/*.o
 src/eval/*.o
 src/linenoise/*.o
+history.txt
+

@@ -225,8 +225,7 @@ namespace FUNC
 
    // lambda helpers
    SEXPR predicate( PREDICATE p );
-   SEXPR cxr( const char* s, const int n );
-
+   SEXPR cxr( const char* s );
 }
 
 #endif
