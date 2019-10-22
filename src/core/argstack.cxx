@@ -1,7 +1,6 @@
 #include <cstdio>
 
 #include "argstack.hxx"
-#include "error.hxx"
 
 //
 // Argument Stack

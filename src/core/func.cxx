@@ -50,12 +50,12 @@ SEXPR FUNC::predicate( PREDICATE pred )
    return pred(arg) ? symbol_true : symbol_false;
 }
 
-SEXPR FUNC::cxr( const char* x )
+SEXPR FUNC::cxr( const char* x, int n )
 {
    ArgstackIterator iter;
    SEXPR exp = iter.getlast();
 
-   for ( int i = strlen(x)-1; i >= 0; --i )
+   for ( int i = n; i >= 0; --i )
       exp = (x[i] == 'a') ? car(exp) : cdr(exp);
 
    return exp;
