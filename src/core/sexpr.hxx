@@ -349,14 +349,12 @@ inline auto& getprimname( SEXPR n ) { return n->u.prim.name; }
 inline void setprimname( SEXPR n, const char* x ) { getprimname(n) = x; }
 
 // closure
-// get
 inline auto& getclosuredata( SEXPR n ) { return n->u.closure.data; }
 inline auto& getclosurecode( SEXPR n ) { return getclosuredata(n)[0]; }
 inline auto& getclosurebenv( SEXPR n ) { return getclosuredata(n)[1]; }
 inline auto& getclosurevars( SEXPR n ) { return getclosuredata(n)[2]; }
 inline auto& getclosurenumv( SEXPR n ) { return n->u.closure.numv; }
 inline auto& getclosurerargs( SEXPR n ) { return n->u.closure.rargs; }
-// set
 inline void setclosuredata( SEXPR n, SEXPR* x ) { getclosuredata(n) = x; }
 inline void setclosurecode( SEXPR n, SEXPR x ) { getclosurecode(n) = x; }
 inline void setclosurebenv( SEXPR n, SEXPR x ) { getclosurebenv(n) = x; }
