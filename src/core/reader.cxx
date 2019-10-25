@@ -402,8 +402,6 @@ SEXPR READER::read_comma( SEXPR inport )
 
 SEXPR READER::read( SEXPR inport )
 {
-   REGSTACK_CHECKER("read");
-
    return read_sexpr(inport);
 }
 

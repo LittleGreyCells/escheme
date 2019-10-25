@@ -979,8 +979,6 @@ SEXPR FUNC::env_bindings()
    //
    // syntax: (environment-bindings <env>) -> (<pair1> <pair2> ...)
    //
-   REGSTACK_CHECKER("env-bindings");
-
    ArgstackIterator iter;
    const SEXPR arg = iter.getlast();
 
@@ -1012,8 +1010,6 @@ SEXPR FUNC::make_environment()
    //
    // syntax: (%make-environment <pairs> <baseenv>)
    //
-   REGSTACK_CHECKER("make-env");
-
    ArgstackIterator iter;
    SEXPR pairs = guard(iter.getarg(), listp);
    const SEXPR benv = iter.getlast();
@@ -1092,8 +1088,6 @@ SEXPR FUNC::parse_formals()
    //
    // syntax: (%parse-formals <params>)
    //
-   REGSTACK_CHECKER("parse-formals");
-
    ArgstackIterator iter;
    SEXPR params = iter.getlast();
 
@@ -1647,8 +1641,6 @@ SEXPR FUNC::string_to_list()
    //
    // syntax: (string->list <string>) -> <list-of-chars>
    //
-   REGSTACK_CHECKER("string->list");
-
    ArgstackIterator iter;
    SEXPR s = guard(iter.getlast(), stringp);
    const int len = getstringlength(s);
@@ -1914,8 +1906,6 @@ SEXPR FUNC::append()
    //
    // syntax: (append <list1> <list2> ... <listn>) -> <list>
    //
-   REGSTACK_CHECKER("append");
-
    ArgstackIterator iter;
    ListBuilder list;
 
@@ -1950,8 +1940,6 @@ SEXPR FUNC::reverse()
    //
    // syntax: (reverse <list>) -> <list>
    //
-   REGSTACK_CHECKER("reverse");
-
    ArgstackIterator iter;
    SEXPR list = guard(iter.getlast(), listp);
 

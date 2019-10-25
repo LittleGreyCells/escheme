@@ -141,7 +141,6 @@ static void arg_error( const char* text, unsigned n1, unsigned n2 )
 
 SEXPR EVAL::extend_env_fun( SEXPR closure )
 {
-   REGSTACK_CHECKER("extend-env-fun");
    //
    // extend the environment with the closure's vars
    // populate the frame with argstack values
@@ -215,7 +214,6 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
 
 SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
 {
-   REGSTACK_CHECKER("extend-env-vars");
    //
    // extend the environment with let/letrec vars
    //   bindings = (binding ...)

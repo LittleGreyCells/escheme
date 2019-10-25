@@ -1,4 +1,3 @@
-# GNU C++/C Compilers
 C++ = g++
 CC  = gcc
 
