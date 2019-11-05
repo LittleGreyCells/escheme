@@ -18,7 +18,6 @@ SRCS	= \
 	$(CORE)/escheme.cxx \
 	$(CORE)/rep.cxx \
 	$(CORE)/error.cxx \
-	$(CORE)/tstack.cxx \
 	$(CORE)/argstack.cxx \
 	$(CORE)/regstack.cxx \
 	$(CORE)/intstack.cxx \

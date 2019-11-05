@@ -1,15 +1,15 @@
 #ifndef stack_hxx
 #define stack_hxx
 
-//
-// Stack Template
-//
-
 template <typename T>
 class TSTACK
 {
 public:
-   explicit TSTACK<T>( int stacksize );
+   explicit TSTACK<T>( int stacksize )
+   {
+      data = new T[size = stacksize];
+      flush();
+   }
   
    void push( T s )
    { 
@@ -46,8 +46,8 @@ public:
    int getdepth() { return top_index+1; }
    void newtop( int depth ) { top_index = depth-1; }
 
-   virtual void underflow();
-   virtual void overflow();
+   virtual void underflow() = 0;
+   virtual void overflow() = 0;
 
    T* data;
    int size;
