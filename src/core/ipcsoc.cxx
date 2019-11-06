@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <cerrno>
 
-
 // sockets
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -591,8 +590,6 @@ SEXPR IPCSOC::read_select()
       }
       rfds = cdr(rfds);
    }
-
-   printf( "max_fdp1 = %d\n", max_fdp1 );
 
    static struct timeval timeout;
    timeout.tv_sec = 0;

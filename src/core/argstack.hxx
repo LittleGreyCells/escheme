@@ -65,7 +65,6 @@ public:
    }
 
    void reset();
-   void show();
 
    int argc;
    int argp;

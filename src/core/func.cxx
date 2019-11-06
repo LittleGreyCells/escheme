@@ -1421,31 +1421,6 @@ SEXPR FUNC::get_output_string()
 //
 // Predicates
 //
-//
-// syntax: (null? <exp>)
-// syntax: (symbol? <exp>)
-// syntax: (integer? <exp>)
-// syntax: (real? <exp>)
-// syntax: (number? <exp>)
-// syntax: (string? <exp>)
-// syntax: (vector? <exp>)
-// syntax: (pair? <exp>)
-// syntax: (port? <exp>)
-// syntax: (input-port? <exp>)
-// syntax: (output-port? <exp>)
-// syntax: (string-port? <exp>)
-// syntax: (input-string-port? <exp>)
-// syntax: (output-string-port? <exp>)
-// syntax: (closure? <exp>)
-// syntax: (procedure? <exp>)
-// syntax: (continuation? <exp>)
-// syntax: (environment? <exp>)
-// syntax: (list? <exp>)
-// syntax: (atom? <exp>)
-// syntax: (bound? <exp>)
-// syntax: (boolean? <exp>)
-// syntax: (promise? <exp>)
-//
 
 SEXPR FUNC::procedurep()
 {
@@ -1454,6 +1429,10 @@ SEXPR FUNC::procedurep()
    return (primp(arg) || closurep(arg)) ? symbol_true : symbol_false;
 }
 
+
+//
+// string
+//
 
 SEXPR FUNC::string_length()
 {

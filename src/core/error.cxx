@@ -33,10 +33,6 @@ void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
    
    printf("\n");
 
-#if 0
-   PRINTER::print( EVAL::get_evaluator_state() );
-   printf("\n");
-#endif
    throw SevereError();
 }
 

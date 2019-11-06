@@ -21,10 +21,5 @@ void ArgstackIterator::reset()
    argp = argstack.getfirstargindex();
 }  
   
-void ArgstackIterator::show()
-{
-   printf("argstackiterator: argc=%d, argp=%d\n", argc, argp);
-}
-
 }
 
