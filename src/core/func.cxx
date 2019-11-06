@@ -22,9 +22,6 @@
 
 #include "eval/eval.hxx"
 
-extern int unix_argc;
-extern char** unix_argv;
-
 namespace escheme
 {
 
@@ -1154,6 +1151,9 @@ SEXPR FUNC::get_sexprs()
 //
 // unix
 //
+
+int unix_argc;
+char** unix_argv;
 
 SEXPR FUNC::unix_system()
 {

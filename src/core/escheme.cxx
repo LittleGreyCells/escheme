@@ -11,13 +11,16 @@
 #include "eval/assem.hxx"
 #endif
 
-int unix_argc;
-char** unix_argv;
-
+namespace escheme
+{
+   extern int unix_argc;
+   extern char** unix_argv;
+}
+   
 int main( int argc, char** argv )
 {
-   unix_argc = argc;
-   unix_argv = argv;
+   escheme::unix_argc = argc;
+   escheme::unix_argv = argv;
 
    try
    {
