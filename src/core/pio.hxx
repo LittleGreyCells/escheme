@@ -7,6 +7,9 @@
 // Standard/File and String Ports
 //
 
+namespace escheme
+{
+
 namespace PIO
 {
    extern SEXPR stdin_port;
@@ -41,6 +44,8 @@ namespace PIO
 
    void transcript_on( SEXPR fname );
    void transcript_off();
+}
+
 }
 
 #endif

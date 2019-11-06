@@ -4,6 +4,9 @@
 #include "tstack.hxx"
 #include "error.hxx"
 
+namespace escheme
+{
+
 class INTSTACK : public TSTACK<int>
 {
 public:
@@ -14,6 +17,8 @@ public:
 };
 
 extern INTSTACK intstack;
+
+}
 
 #endif
 

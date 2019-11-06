@@ -4,6 +4,9 @@
 #include "core/memory.hxx"
 #include "core/printer.hxx"
 
+namespace escheme
+{
+
 #ifdef DO_ECE_CHECK
 #define REGISTER_CHECK( id, pred, reg ) register_check( id, pred, reg )
 #else
@@ -1048,4 +1051,6 @@ void EVAL::restore_continuation( SEXPR cc )
    regstack.newtop( regs_depth );
    argstack.newtop( args_depth );
    intstack.newtop( ints_depth );
+}
+
 }

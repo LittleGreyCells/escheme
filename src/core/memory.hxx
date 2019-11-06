@@ -9,6 +9,9 @@
 #include "tstack.hxx"
 #include "framestore.hxx"
 
+namespace escheme
+{
+
 namespace MEMORY
 {
    extern long TotalNodeCount;
@@ -90,5 +93,7 @@ public:
    void add( SEXPR item );
    SEXPR get();
 };
+
+}
 
 #endif

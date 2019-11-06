@@ -7,6 +7,9 @@
 #include "core/memory.hxx"
 #include "core/printer.hxx"
 
+namespace escheme
+{
+
 using MEMORY::cons;
 using MEMORY::fixnum;
 
@@ -320,4 +323,6 @@ void EVAL::initialize()
    setform( null,                    EV_APPLICATION );
 
    MEMORY::register_marker( eval_marker );
+}
+
 }

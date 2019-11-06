@@ -5,6 +5,9 @@
 #include "sexpr.hxx"
 #include "error.hxx"
 
+namespace escheme
+{
+
 class ARGSTACK : public TSTACK<SEXPR>
 {
 public:
@@ -67,6 +70,8 @@ public:
    int argc;
    int argp;
 };
+
+}
   
 #endif
 

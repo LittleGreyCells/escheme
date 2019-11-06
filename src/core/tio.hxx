@@ -3,6 +3,9 @@
 
 #include "sexpr.hxx"
 
+namespace escheme
+{
+
 namespace TIO
 {
    // line-oriented standard input
@@ -20,6 +23,8 @@ namespace TIO
    void history_clear();
 
    void set_prompt( const char* prompt );
+}
+
 }
 
 #endif

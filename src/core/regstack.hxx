@@ -4,6 +4,9 @@
 #include "tstack.hxx"
 #include "error.hxx"
 
+namespace escheme
+{
+
 class REGSTACK : public TSTACK<SEXPR>
 {
 public:
@@ -14,6 +17,8 @@ public:
 };
 
 extern REGSTACK regstack;
+
+}
 
 #endif
 

@@ -14,6 +14,9 @@
 #include "eval/assem.hxx"
 #endif
 
+namespace escheme
+{
+
 struct Function
 {
    const char* name;
@@ -365,3 +368,4 @@ void FUNTAB::initialize()
    regstack.pop();
 }
 
+}

@@ -9,6 +9,9 @@
 #include "error.hxx"
 #include "memory.hxx"
 
+namespace escheme
+{
+
 SEXPR READER::symbol_dot;
 
 inline void push(SEXPR s) { regstack.push(s); }
@@ -240,7 +243,7 @@ SEXPR READER::read_string( SEXPR inport )
 SEXPR READER::read_vector( SEXPR inport, char terminator )
 {
    SEXPR s = read_list(inport, terminator);
-   unsigned n = ::list_length(s);
+   unsigned n = list_length(s);
 
    push(s);
    SEXPR v = MEMORY::vector(n);
@@ -455,4 +458,6 @@ SEXPR READER::read_sexpr( SEXPR inport )
 void READER::initialize()
 {
    symbol_dot = SYMTAB::enter(".");
+}
+
 }

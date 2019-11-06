@@ -2,6 +2,9 @@
 
 #include "argstack.hxx"
 
+namespace escheme
+{
+   
 //
 // Argument Stack
 //
@@ -22,3 +25,6 @@ void ArgstackIterator::show()
 {
    printf("argstackiterator: argc=%d, argp=%d\n", argc, argp);
 }
+
+}
+

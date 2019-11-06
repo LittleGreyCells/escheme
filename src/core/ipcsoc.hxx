@@ -22,6 +22,11 @@
 
 // syntax: (READ-SELECT <fd-list>) --> <ready-list>
 
+#include "sexpr.hxx"
+
+namespace escheme
+{
+
 namespace IPCSOC
 {
    SEXPR read();
@@ -44,6 +49,8 @@ namespace IPCSOC
    SEXPR close();
    
    SEXPR read_select();
+}
+
 }
 
 #endif

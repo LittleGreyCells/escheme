@@ -3,6 +3,9 @@
 
 #include "sexpr.hxx"
 
+namespace escheme
+{
+
 namespace ERROR
 {
    struct SevereError {};
@@ -16,6 +19,8 @@ namespace ERROR
    void print_frame( SEXPR env );
    void print_active_frame();
    void print_stacktrace();
+}
+
 }
 
 #endif

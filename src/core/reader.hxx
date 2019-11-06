@@ -7,6 +7,9 @@
 #include "sexpr.hxx"
 #include "pio.hxx"
 
+namespace escheme
+{
+
 namespace READER
 {
    void initialize();
@@ -39,6 +42,8 @@ namespace READER
    //SEXPR number( std::string& s );
 
    int scan( SEXPR inport );
+}
+
 }
 
 #endif

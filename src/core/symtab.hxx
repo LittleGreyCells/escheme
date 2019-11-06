@@ -5,6 +5,9 @@
 
 #include "sexpr.hxx"
 
+namespace escheme
+{
+
 namespace SYMTAB
 {
    void initialize();
@@ -49,5 +52,7 @@ using SYMTAB::symbol_false;
 
 inline bool falsep( SEXPR n ) { return n == symbol_false || n == null; }
 inline bool truep( SEXPR n )  { return !falsep(n); }
+
+}
 
 #endif

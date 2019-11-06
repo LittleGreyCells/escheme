@@ -3,6 +3,9 @@
 
 #include "sexpr.hxx"
 
+namespace escheme
+{
+
 namespace MATH
 {
    // arithmetic ops
@@ -41,6 +44,8 @@ namespace MATH
    SEXPR rsh();
    SEXPR ars();
    SEXPR lsh();
+
+}
 
 }
 

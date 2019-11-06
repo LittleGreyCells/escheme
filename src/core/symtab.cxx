@@ -6,6 +6,8 @@
 #include "memory.hxx"
 #include "regstack.hxx"
 
+namespace escheme
+{
 
 namespace
 {
@@ -172,4 +174,6 @@ void SYMTAB::initialize()
    enter("nil", null);
    
    MEMORY::register_marker( symtab_marker );
+}
+
 }

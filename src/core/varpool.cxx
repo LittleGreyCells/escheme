@@ -10,6 +10,9 @@
 #include "error.hxx"
 #include "memory.hxx"
 
+namespace escheme
+{
+
 namespace MEMORY
 {
    VPBlock::VPBlock( unsigned size ) : active( new DWORD[size] ),
@@ -135,3 +138,4 @@ namespace MEMORY
 
 }  // MEMORY
 
+}

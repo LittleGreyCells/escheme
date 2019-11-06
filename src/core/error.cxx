@@ -8,6 +8,9 @@
 
 #include "eval/eval.hxx"
 
+namespace escheme
+{
+
 void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
 {
    printf("error: %s", s);
@@ -119,4 +122,6 @@ void ERROR::print_stacktrace()
 	 printf( "\n" );
       }
    }
+}
+
 }

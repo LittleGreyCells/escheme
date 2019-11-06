@@ -9,6 +9,9 @@
 #include "symtab.hxx"
 #include "error.hxx"
 
+namespace escheme
+{
+
 SEXPR PIO::stdin_port;
 SEXPR PIO::stdout_port;
 SEXPR PIO::stderr_port;
@@ -264,4 +267,6 @@ void PIO::initialize()
    setvalue(eof_object, eof_object);
 
    MEMORY::register_marker( pio_marker );
+}
+
 }

@@ -5,8 +5,10 @@
 
 #include "sexpr.hxx"
 
-namespace MEMORY
+namespace escheme
+{
 
+namespace MEMORY
 {
 
 class FrameStore
@@ -24,5 +26,7 @@ public:
 };
 
 }  // MEMORY
+
+}
 
 #endif

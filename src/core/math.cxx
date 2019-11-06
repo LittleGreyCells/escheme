@@ -9,6 +9,9 @@
 #include "memory.hxx"
 #include "symtab.hxx"
 
+namespace escheme
+{
+
 enum BinOp { ADDop, SUBop, MULop, DIVop, 
              QUOop, REMop, 
              MINop, MAXop,
@@ -212,8 +215,6 @@ static SEXPR relation( RelOp op )
    return r ? symbol_true : symbol_false;
 }
 
-
-
 SEXPR MATH::add() 
 { 
    ArgstackIterator iter;
@@ -408,4 +409,4 @@ SEXPR MATH::ars()
    return MEMORY::fixnum(a >> b);
 }
 
-
+}

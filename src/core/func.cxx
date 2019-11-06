@@ -22,6 +22,12 @@
 
 #include "eval/eval.hxx"
 
+extern int unix_argc;
+extern char** unix_argv;
+
+namespace escheme
+{
+
 //
 // Attention! 
 //
@@ -95,7 +101,7 @@ SEXPR FUNC::car()
    // syntax: (car <cons>)
    //
    ArgstackIterator iter;
-   return ::car(iter.getlast());
+   return car(iter.getlast());
 }
 
 SEXPR FUNC::cdr()
@@ -104,7 +110,7 @@ SEXPR FUNC::cdr()
    // syntax: (cdr <cons>)
    //
    ArgstackIterator iter;
-   return ::cdr(iter.getlast());
+   return cdr(iter.getlast());
 }
 
 SEXPR FUNC::set_car()
@@ -470,8 +476,8 @@ SEXPR FUNC::list_to_vector()
    const int len = list_length(list);
    SEXPR v = MEMORY::vector(len);
 
-   for ( int i = 0; i < len; ++i, list = ::cdr(list) )
-      vectorset(v, i, ::car(list));
+   for ( int i = 0; i < len; ++i, list = cdr(list) )
+      vectorset(v, i, car(list));
 
    return v;
 }
@@ -723,9 +729,9 @@ SEXPR FUNC::get_property()
 
    while (anyp(plist))
    {
-      if ( eq( p, ::car(plist) ) )
-	 return ::car(::cdr(plist));
-      plist = ::cdr(::cdr(plist));
+      if ( eq( p, car(plist) ) )
+	 return car(cdr(plist));
+      plist = cdr(cdr(plist));
    }
   
    return null;
@@ -745,12 +751,12 @@ SEXPR FUNC::put_property()
 
    while (anyp(plist))
    {
-      if ( eq( p, ::car(plist) ) )
+      if ( eq( p, car(plist) ) )
       {
-	 setcar( guard(::cdr(plist), consp), v );
+	 setcar( guard(cdr(plist), consp), v );
 	 return p;
       }
-      plist = ::cdr(::cdr(plist));
+      plist = cdr(cdr(plist));
    }
   
    // if we got here, then there is no such property
@@ -1030,13 +1036,13 @@ SEXPR FUNC::make_environment()
       
       for ( int i = 0; anyp(pairs); ++i )
       {
-         SEXPR x = ::car(pairs);
+         SEXPR x = car(pairs);
          
          if ( consp(x) )
          {
             // ( <var> . <val> )
-            vars.add( ::car(x) );
-            frameset( getenvframe(env), i, ::cdr(x) );
+            vars.add( car(x) );
+            frameset( getenvframe(env), i, cdr(x) );
          }
          else if ( symbolp(x) )
          {
@@ -1049,7 +1055,7 @@ SEXPR FUNC::make_environment()
             ERROR::severe( "expected a symbol or (symbol . val)", x );
          }
          
-         pairs = ::cdr(pairs);
+         pairs = cdr(pairs);
       }
       
       setframevars( getenvframe(env), vars.get() );
@@ -1159,9 +1165,6 @@ SEXPR FUNC::unix_system()
    const int result = system(getstringdata(cmd));
    return MEMORY::fixnum( result );
 }
-
-extern int unix_argc;
-extern char** unix_argv;
 
 SEXPR FUNC::unix_getargs()
 {
@@ -1628,8 +1631,8 @@ SEXPR FUNC::list_to_string()
 
    SEXPR s = MEMORY::string(len);
 
-   for ( int i = 0; i < len; ++i, list = ::cdr(list) )
-      getstringdata(s)[i] = getcharacter(guard(::car(list), charp));
+   for ( int i = 0; i < len; ++i, list = cdr(list) )
+      getstringdata(s)[i] = getcharacter(guard(car(list), charp));
 
    getstringdata(s)[len] = '\0';
 
@@ -1777,8 +1780,8 @@ SEXPR FUNC::string_to_integer()
 
 static SEXPR member_search( bool(*eqtest)(SEXPR, SEXPR), SEXPR exp, SEXPR list )
 {
-   while ( anyp(list) && !eqtest( exp, ::car(list) ) )
-      list = ::cdr(list);
+   while ( anyp(list) && !eqtest( exp, car(list) ) )
+      list = cdr(list);
 
    return list;
 }
@@ -1836,10 +1839,10 @@ static SEXPR assoc_search( bool(*eqtest)(SEXPR, SEXPR), SEXPR exp, SEXPR list )
 {
    while ( anyp(list) )
    {
-      SEXPR x = ::car(list);
-      if ( consp(x) && eqtest( exp, ::car(x) ) )
+      SEXPR x = car(list);
+      if ( consp(x) && eqtest( exp, car(x) ) )
 	 return x;
-      list = ::cdr(list);
+      list = cdr(list);
    }
 
    return null;
@@ -1915,8 +1918,8 @@ SEXPR FUNC::append()
 
       while ( anyp(b) )
       {
-	 list.add( ::car(b) );
-	 b = ::cdr(b);
+	 list.add( car(b) );
+	 b = cdr(b);
       }
    }
 
@@ -1948,8 +1951,8 @@ SEXPR FUNC::reverse()
 
    while ( anyp(list) )
    {
-      regstack.top() = MEMORY::cons( ::car(list), regstack.top() );
-      list = ::cdr(list);
+      regstack.top() = MEMORY::cons( car(list), regstack.top() );
+      list = cdr(list);
    }
 
    return regstack.pop();
@@ -1972,8 +1975,8 @@ SEXPR FUNC::last_pair()
    ArgstackIterator iter;
    SEXPR list = guard(iter.getlast(), listp);
 
-   while ( consp(::cdr(list)) )
-      list = ::cdr(list);
+   while ( consp(cdr(list)) )
+      list = cdr(list);
 
    return list;
 }
@@ -2007,7 +2010,7 @@ SEXPR FUNC::list_tail()
    while ( anyp(list) && n > 0 )
    {
       n -= 1;
-      list = ::cdr(list);
+      list = cdr(list);
    }
 
    return list;
@@ -2249,3 +2252,4 @@ SEXPR FUNC::objaddr()
    return MEMORY::fixnum( reinterpret_cast<FIXNUM>(obj) );
 }
 
+}

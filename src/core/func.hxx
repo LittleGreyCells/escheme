@@ -3,6 +3,9 @@
 
 #include "sexpr.hxx"
 
+namespace escheme
+{
+
 bool booleanp( const SEXPR n );
 bool notp( const SEXPR n );
 bool boundp( const SEXPR n );
@@ -226,6 +229,8 @@ namespace FUNC
    // lambda helpers
    SEXPR predicate( PREDICATE p );
    SEXPR cxr( const char* s );
+}
+
 }
 
 #endif

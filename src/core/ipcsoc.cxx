@@ -218,6 +218,9 @@ static int soc_create_udp()
 
 #include "ipcsoc.hxx"
 
+namespace escheme
+{
+
 inline void push(SEXPR s) { regstack.push(s); }
 inline SEXPR pop() { return regstack.pop(); }
 inline SEXPR& top() { return regstack.top(); }
@@ -617,4 +620,6 @@ SEXPR IPCSOC::read_select()
    }
 
    return pop();
+}
+
 }

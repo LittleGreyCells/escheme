@@ -11,6 +11,9 @@
 #include "core/regstack.hxx"
 #include "core/intstack.hxx"
 
+namespace escheme
+{
+
 //
 // Evaluator States
 //
@@ -108,6 +111,8 @@ inline void save_reg( SEXPR x ) { regstack.push(x); }
 inline void restore_evs( EVSTATE& x ) { x = EVSTATE( intstack.pop() ); }
 inline void restore_int( int& x ) { x = intstack.pop(); }
 inline void restore_reg( SEXPR& x ) { x = regstack.pop(); }
+
+}
 
 #endif
 

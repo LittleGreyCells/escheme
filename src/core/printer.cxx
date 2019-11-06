@@ -4,6 +4,9 @@
 #include "error.hxx"
 #include "recumark.hxx"
 
+namespace escheme
+{
+
 static char buffer[MAX_IMAGE_LENGTH];
 
 static void error( const char* s )
@@ -238,4 +241,6 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 void PRINTER::print( SEXPR outport, const SEXPR n, int style )
 {
    print_sexpr( outport, n, style );
+}
+
 }

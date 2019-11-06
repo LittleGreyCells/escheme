@@ -6,50 +6,8 @@
 #include "memory.hxx"
 #include "error.hxx"
 
-static void show( const char* s, const SEXPR n )
+namespace escheme
 {
-   if (symbolp(n))
-      printf(" %s(%p) [%s]\n", s, n->id(), getname(n));
-   else
-      printf(" %s(%p)\n", s, n->id());
-}
-
-void show( const SEXPR n )
-{
-   if (nullp(n))
-      printf("nil\n");
-   else
-   {
-      switch (nodekind(n))
-      {
-	 case n_free:		show("free", n); break;
-	 case n_null:           show("null", n); break;
-	 case n_symbol:		show("symbol", n); break;
-	 case n_fixnum:		show("fixnum", n); break;
-	 case n_flonum:		show("flonum", n); break;
-	 case n_string:		show("string", n); break;
-	 case n_cons:		show("cons", n); break;
-	 case n_vector:		show("vector", n); break;
-	 case n_func:		show("func", n); break;
-	 case n_apply:		show("apply", n); break;
-	 case n_callcc:		show("call/cc", n); break;
-	 case n_map:		show("map", n); break;
-	 case n_foreach:	show("foreach", n); break;
-	 case n_eval:		show("eval", n); break;
-	 case n_closure:	show("closure", n); break;
-	 case n_continuation:	show("continuation", n); break;
-	 case n_environment:	show("environment", n); break;
-	 case n_port:		show("port", n); break;
-	 case n_string_port:    show("stringport", n); break;
-	 case n_bvec:           show("byte-vector", n); break;
-	 case n_promise:        show("promise", n); break;
-	 case n_force:          show("force", n); break;
-	 case n_code:           show("code", n); break;
-	 default: 		show("<unknown>", n); break;	
-      }
-   }
-}
-
 
 /////////////////////////////////////////////////////////////////
 //
@@ -119,7 +77,6 @@ SEXPR fref( FRAME frame, UINT32 index )
 
    return frameref( frame, index );
 }
-
 
 /////////////////////////////////////////////////////////////////
 //
@@ -226,4 +183,6 @@ SEXPR guard( SEXPR s, PREDICATE predicate )
    }
 
    return s;
+}
+
 }

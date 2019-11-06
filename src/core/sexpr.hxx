@@ -4,6 +4,9 @@
 #include <string>
 #include <cstdio>
 
+namespace escheme
+{
+
 enum ConfigurationConstants
 {
    NODE_BLOCK_SIZE    = 5000,
@@ -421,5 +424,7 @@ inline bool _compiledp( SEXPR n ) { return _codep(getclosurecode(n)); }
 inline bool _compiled_closurep( SEXPR n ) { return _closurep(n) && _compiledp(n); }
 
 inline bool _lastp( SEXPR n ) { return nullp(cdr(n)); }
+
+}
 
 #endif

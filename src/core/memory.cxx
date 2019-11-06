@@ -42,6 +42,9 @@
 #define CACHE_BVEC_MAX 1000
 #endif
 
+namespace escheme
+{
+
 SEXPR MEMORY::string_null;
 SEXPR MEMORY::vector_null;
 
@@ -805,3 +808,4 @@ SEXPR ListBuilder::get()
    return getcdr( MEMORY::listhead );
 }
 
+}

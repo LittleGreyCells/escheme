@@ -14,6 +14,9 @@
 
 #include "linenoise/linenoise.h"
 
+namespace escheme
+{
+
 static const char* history = "history.txt";
 static const int history_max_length = 100;
 static std::string prompt = "> ";
@@ -133,4 +136,6 @@ void TIO::history_show()
 void TIO::set_prompt( const char* new_prompt )
 {
    prompt = new_prompt;
+}
+
 }

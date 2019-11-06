@@ -9,6 +9,9 @@
 // Variable Sized Object Pool
 //
 
+namespace escheme
+{
+
 namespace MEMORY
 {
    struct VPBlock
@@ -52,5 +55,7 @@ namespace MEMORY
    };
    
 }  // MEMORY
+
+}
 
 #endif

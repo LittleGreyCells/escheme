@@ -5,6 +5,9 @@
 #include "sexpr.hxx"
 #include "pio.hxx"
 
+namespace escheme
+{
+
 namespace PRINTER
 {
    // quote styles
@@ -30,6 +33,8 @@ namespace PRINTER
    void print_list( SEXPR outport, const SEXPR s, int style = 1 );
    void print_vector( SEXPR outport, const SEXPR s, int style = 1 );
    void print_closure( SEXPR outport, const SEXPR s, int style = 1 );
+}
+
 }
 
 #endif

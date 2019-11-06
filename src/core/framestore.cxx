@@ -9,6 +9,9 @@
 // Frame Store
 //
 
+namespace escheme
+{
+
 namespace MEMORY
 {
 
@@ -94,3 +97,5 @@ void FrameStore::free( FRAME frame )
 }
 
 } // MEMORY
+
+}

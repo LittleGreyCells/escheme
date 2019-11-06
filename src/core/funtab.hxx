@@ -3,9 +3,14 @@
 
 #include "sexpr.hxx"
 
+namespace escheme
+{
+
 namespace FUNTAB
 {
    void initialize();
+}
+
 }
 
 #endif

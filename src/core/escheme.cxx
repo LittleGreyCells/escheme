@@ -21,17 +21,17 @@ int main( int argc, char** argv )
 
    try
    {
-      GcSuspension gcs("escheme-initialization");
+      escheme::GcSuspension gcs("escheme-initialization");
 
       // essential initialization (order is important)
-      MEMORY::initialize();
-      SYMTAB::initialize();
-      FUNTAB::initialize();
-      READER::initialize();
-      PIO::initialize();
-      EVAL::initialize();
+      escheme::MEMORY::initialize();
+      escheme::SYMTAB::initialize();
+      escheme::FUNTAB::initialize();
+      escheme::READER::initialize();
+      escheme::PIO::initialize();
+      escheme::EVAL::initialize();
 #ifdef BYTE_CODE_EVALUATOR
-      ASSEM::initialize();
+      escheme::ASSEM::initialize();
 #endif
    }
    catch (...)
@@ -41,7 +41,8 @@ int main( int argc, char** argv )
    }
 
    // enter REP and return on controlled exit
-   rep_loop();
+   escheme::rep_loop();
 
    return 0;
 }
+

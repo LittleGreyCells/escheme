@@ -1,6 +1,9 @@
 #ifndef stack_hxx
 #define stack_hxx
 
+namespace escheme
+{
+
 template <typename T>
 class TSTACK
 {
@@ -53,6 +56,8 @@ public:
    int size;
    int top_index;
 };
+
+}
 
 #endif
 
