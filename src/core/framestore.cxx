@@ -15,6 +15,8 @@ namespace escheme
 namespace MEMORY
 {
 
+FrameStore::FrameStore() : store{nullptr}, count{0} {}
+
 FRAME FrameStore::alloc( UINT32 nslots )
 {
    // allocate a frame with all slots defined
