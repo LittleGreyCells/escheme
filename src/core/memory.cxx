@@ -698,7 +698,8 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
 
 SEXPR MEMORY::prim( const char* name, FUNCTION func, NodeKind kind )     // (<prim>)
 {
-   SEXPR n = newnode(kind);
+   // allocate primitives from the heap
+   SEXPR n = new Node(kind);
    setprimname(n, name);
    setprimfunc(n, func);
    return n;
