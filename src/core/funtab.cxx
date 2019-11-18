@@ -349,23 +349,12 @@ static const Function funtab[] =
    { "%object-address",       FUNC::objaddr          , n_func },
 };
 
-
 void FUNTAB::initialize()
 {
-   regstack.push(null);
-
-   constexpr int NFUNCS = sizeof(funtab) / sizeof(funtab[0]);
-   
-   for ( int i = 0; i < NFUNCS; ++i )
+   for ( auto& fn : funtab )
    {
-      const auto& fn = funtab[i];
-      
-      regstack.top() = MEMORY::prim( fn.func, fn.kind );
-      setprimname( regstack.top(), fn.name );
-      SYMTAB::enter( fn.name, regstack.top() );
+      SYMTAB::enter( fn.name, MEMORY::prim( fn.name, fn.func, fn.kind ) );
    }
-
-   regstack.pop();
 }
 
 }

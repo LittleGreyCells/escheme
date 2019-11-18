@@ -44,7 +44,7 @@ namespace MEMORY
    SEXPR string( const std::string& string );
    SEXPR character( CHAR ch );
    SEXPR cons( SEXPR car, SEXPR cdr );
-   SEXPR prim( FUNCTION func, NodeKind kind = n_func );
+   SEXPR prim( const char* name, FUNCTION func, NodeKind kind = n_func );
    SEXPR port( FILE* file, short mode );
    SEXPR closure( SEXPR code, SEXPR env );
    SEXPR environment( UINT32 nvars, SEXPR vars, SEXPR env );

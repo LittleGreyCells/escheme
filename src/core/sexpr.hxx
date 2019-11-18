@@ -345,9 +345,9 @@ inline auto& getflonum( SEXPR n ) { return n->u.flonum; }
 inline void setfixnum( SEXPR n, FIXNUM x ) { getfixnum(n) = x; }
 inline void setflonum( SEXPR n, FLONUM x ) { getflonum(n) = x; }
 
-// primitive function
-inline auto& getfunc( SEXPR n ) { return n->u.prim.func; }
-inline void setfunc( SEXPR n, FUNCTION x ) { getfunc(n) = x; }
+// primitive
+inline auto& getprimfunc( SEXPR n ) { return n->u.prim.func; }
+inline void setprimfunc( SEXPR n, FUNCTION x ) { getprimfunc(n) = x; }
 inline auto& getprimname( SEXPR n ) { return n->u.prim.name; }
 inline void setprimname( SEXPR n, const char* x ) { getprimname(n) = x; }
 

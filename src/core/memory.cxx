@@ -696,10 +696,11 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
    return n;
 }
 
-SEXPR MEMORY::prim( FUNCTION func, NodeKind kind )     // (<prim>)
+SEXPR MEMORY::prim( const char* name, FUNCTION func, NodeKind kind )     // (<prim>)
 {
    SEXPR n = newnode(kind);
-   setfunc(n, func);
+   setprimname(n, name);
+   setprimfunc(n, func);
    return n;
 }
 

@@ -42,8 +42,8 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
    {
       FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
-      
-      for ( int i = 0; anyp(vars); ++i, vars = getcdr(vars) )
+
+      for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
       {
          if (getcar(vars) == var) 
             return frameref(frame, i);
@@ -69,7 +69,7 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
       FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
 
-      for ( int i = 0; anyp(vars); ++i, vars = getcdr(vars) )
+      for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
       {
          if (getcar(vars) == var)
          {

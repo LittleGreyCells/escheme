@@ -189,7 +189,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       {
 		  try
 		  {
-		     val = getfunc(val)();
+		     val = getprimfunc(val)();
 		  }
 		  catch ( ERROR::SevereError& )
 		  {
