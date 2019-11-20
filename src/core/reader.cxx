@@ -348,9 +348,9 @@ SEXPR READER::read_special( SEXPR inport )
 	 getsymbolname( inport, s );
 
 	 if ( strcasecmp( s.c_str(), "true" ) == 0 )
-	    return SYMTAB::symbol_true;
+	    return symbol_true;
 	 else if ( strcasecmp( s.c_str(), "false" ) == 0 )
-	    return SYMTAB::symbol_false;
+	    return symbol_false;
 	 else if ( strcasecmp( s.c_str(), "null") == 0 )
 	    return null;
 	 else if ( s.length() == 0 )
@@ -370,9 +370,9 @@ SEXPR READER::read_special( SEXPR inport )
 	 getsymbolname( inport, s );
 
 	 if ( strcasecmp( s.c_str(), "t" ) == 0 )
-	    return SYMTAB::symbol_true;
+	    return symbol_true;
 	 else if ( strcasecmp( s.c_str(), "f" ) == 0)
-	    return SYMTAB::symbol_false;
+	    return symbol_false;
 	 else
 	 {
 	    ERROR::severe("unknown special symbol");
@@ -395,11 +395,11 @@ SEXPR READER::read_comma( SEXPR inport )
    const int ch = PIO::get(inport);
 
    if (ch == '@')
-      return read_quote(inport, SYMTAB::symbol_unquotesplicing);
+      return read_quote(inport, symbol_unquotesplicing);
    else
    {
       PIO::unget(inport, ch);
-      return read_quote(inport, SYMTAB::symbol_unquote);
+      return read_quote(inport, symbol_unquote);
    }
 }
 
@@ -440,10 +440,10 @@ SEXPR READER::read_sexpr( SEXPR inport )
 	    return read_string(inport);
 
 	 case '\'':
-	    return read_quote(inport, SYMTAB::symbol_quote);
+	    return read_quote(inport, symbol_quote);
 
 	 case '`':
-	    return read_quote(inport, SYMTAB::symbol_quasiquote);
+	    return read_quote(inport, symbol_quasiquote);
 
 	 case ',':
 	    return read_comma(inport);

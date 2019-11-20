@@ -53,7 +53,7 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
    // global var
    const SEXPR val = value(var);
 
-   if (val == SYMTAB::symbol_unbound)
+   if (val == symbol_unbound)
       ERROR::severe("symbol is unbound", var);
 
    return val;
@@ -305,22 +305,22 @@ void EVAL::initialize()
    theGlobalEnv = null;
 
    // set the special form dispatch value
-   setform( SYMTAB::symbol_quote,    EV_QUOTE );
-   setform( SYMTAB::symbol_delay,    EV_DELAY );
-   setform( SYMTAB::symbol_set,      EV_SET );
-   setform( SYMTAB::symbol_define,   EV_DEFINE );
-   setform( SYMTAB::symbol_if,       EV_IF );
-   setform( SYMTAB::symbol_cond,     EV_COND );
-   setform( SYMTAB::symbol_lambda,   EV_LAMBDA );
-   setform( SYMTAB::symbol_begin,    EV_BEGIN );
-   setform( SYMTAB::symbol_sequence, EV_BEGIN );
-   setform( SYMTAB::symbol_let,      EV_LET );
-   setform( SYMTAB::symbol_letrec,   EV_LETREC );
-   setform( SYMTAB::symbol_while,    EV_WHILE );
-   setform( SYMTAB::symbol_and,      EV_AND );
-   setform( SYMTAB::symbol_or,       EV_OR );
-   setform( SYMTAB::symbol_access,   EV_ACCESS );
-   setform( null,                    EV_APPLICATION );
+   setform( symbol_quote,    EV_QUOTE );
+   setform( symbol_delay,    EV_DELAY );
+   setform( symbol_set,      EV_SET );
+   setform( symbol_define,   EV_DEFINE );
+   setform( symbol_if,       EV_IF );
+   setform( symbol_cond,     EV_COND );
+   setform( symbol_lambda,   EV_LAMBDA );
+   setform( symbol_begin,    EV_BEGIN );
+   setform( symbol_sequence, EV_BEGIN );
+   setform( symbol_let,      EV_LET );
+   setform( symbol_letrec,   EV_LETREC );
+   setform( symbol_while,    EV_WHILE );
+   setform( symbol_and,      EV_AND );
+   setform( symbol_or,       EV_OR );
+   setform( symbol_access,   EV_ACCESS );
+   setform( null,            EV_APPLICATION );
 
    MEMORY::register_marker( eval_marker );
 }

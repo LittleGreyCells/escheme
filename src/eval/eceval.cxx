@@ -530,7 +530,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       cont = EV_SET_VALUE;
 	       next = EVAL_DISPATCH;
 	    }
-	    else if (_consp(var_exp) && getcar(var_exp) == SYMTAB::symbol_access)
+	    else if (_consp(var_exp) && getcar(var_exp) == symbol_access)
 	    {
 	       // ((access <var> <env2>) <exp>)
 	       exp = car(cdr(cdr(var_exp)));     // exp = <env2>
@@ -707,7 +707,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    else
 	    {
 	       exp = car(unev);
-	       if (car(exp) == SYMTAB::symbol_else)
+	       if (car(exp) == symbol_else)
 	       {
 		  unev = cdr(exp);
 		  next = EVAL_SEQUENCE;

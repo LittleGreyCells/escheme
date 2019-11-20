@@ -7,11 +7,6 @@
 
 namespace escheme
 {
-
-namespace SYMTAB
-{
-   void initialize();
-
    extern SEXPR symbol_false;
    extern SEXPR symbol_true;
    extern SEXPR symbol_quote;
@@ -36,6 +31,10 @@ namespace SYMTAB
    extern SEXPR symbol_unquote;
    extern SEXPR symbol_unquotesplicing;
 
+namespace SYMTAB
+{
+   void initialize();
+
    SEXPR enter( const char* name );
    SEXPR enter( const char* name, SEXPR value );
    
@@ -46,9 +45,6 @@ namespace SYMTAB
 
    SEXPR symbols();
 }
-
-using SYMTAB::symbol_true;
-using SYMTAB::symbol_false;
 
 inline bool falsep( SEXPR n ) { return n == symbol_false || n == null; }
 inline bool truep( SEXPR n )  { return !falsep(n); }

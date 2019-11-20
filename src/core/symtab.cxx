@@ -16,31 +16,31 @@ namespace
 }
 
 // canonical truth and other symbols
-SEXPR SYMTAB::symbol_unbound;
-SEXPR SYMTAB::symbol_false;
-SEXPR SYMTAB::symbol_true;
-SEXPR SYMTAB::symbol_default;
-SEXPR SYMTAB::symbol_quasiquote;
-SEXPR SYMTAB::symbol_unquote;
-SEXPR SYMTAB::symbol_unquotesplicing;
+SEXPR symbol_unbound;
+SEXPR symbol_false;
+SEXPR symbol_true;
+SEXPR symbol_default;
+SEXPR symbol_quasiquote;
+SEXPR symbol_unquote;
+SEXPR symbol_unquotesplicing;
 
 // special forms
-SEXPR SYMTAB::symbol_quote;
-SEXPR SYMTAB::symbol_delay;
-SEXPR SYMTAB::symbol_define;
-SEXPR SYMTAB::symbol_set;
-SEXPR SYMTAB::symbol_lambda;
-SEXPR SYMTAB::symbol_if;
-SEXPR SYMTAB::symbol_while;
-SEXPR SYMTAB::symbol_cond;
-SEXPR SYMTAB::symbol_else;
-SEXPR SYMTAB::symbol_and;
-SEXPR SYMTAB::symbol_or;
-SEXPR SYMTAB::symbol_begin;
-SEXPR SYMTAB::symbol_sequence;
-SEXPR SYMTAB::symbol_let;
-SEXPR SYMTAB::symbol_letrec;
-SEXPR SYMTAB::symbol_access;
+SEXPR symbol_quote;
+SEXPR symbol_delay;
+SEXPR symbol_define;
+SEXPR symbol_set;
+SEXPR symbol_lambda;
+SEXPR symbol_if;
+SEXPR symbol_while;
+SEXPR symbol_cond;
+SEXPR symbol_else;
+SEXPR symbol_and;
+SEXPR symbol_or;
+SEXPR symbol_begin;
+SEXPR symbol_sequence;
+SEXPR symbol_let;
+SEXPR symbol_letrec;
+SEXPR symbol_access;
 
 static unsigned hash( const char* s )
 {
@@ -72,7 +72,7 @@ SEXPR SYMTAB::enter( const char* symbol_name )
    }
 
    regstack.push( MEMORY::symbol(symbol_name) );
-   setvalue( regstack.top(), SYMTAB::symbol_unbound );
+   setvalue( regstack.top(), symbol_unbound );
    element = MEMORY::cons( regstack.top(), element );
    return regstack.pop();
 }
@@ -100,7 +100,7 @@ SEXPR SYMTAB::enter( const std::string& symbol_name )
    }
 
    regstack.push( MEMORY::symbol(symbol_name) );
-   setvalue( regstack.top(), SYMTAB::symbol_unbound );
+   setvalue( regstack.top(), symbol_unbound );
    element = MEMORY::cons( regstack.top(), element );
    return regstack.pop();
 }
