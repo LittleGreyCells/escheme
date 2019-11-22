@@ -845,7 +845,7 @@ SEXPR FUNC::read_char()
    // syntax: (read-char [<inport>])
    //
    ArgstackIterator iter;
-   const SEXPR port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdout_port;
+   const SEXPR port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdin_port;
 
    const char ch = PIO::get(port);
    return (ch == EOF) ? PIO::eof_object : MEMORY::character(ch);
