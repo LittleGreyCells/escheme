@@ -1081,7 +1081,10 @@ SEXPR FUNC::make_closure()
    SEXPR closure = MEMORY::closure( code, env );
    regstack.push( closure );
 
-   EVAL::set_closure_attributes( closure, params );
+   EVAL::parse_formals( params, 
+                           getclosurevars(closure),
+                           getclosurenumv(closure),
+                           getclosurerargs(closure) );
 
    return regstack.pop();
 }

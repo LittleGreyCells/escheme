@@ -639,10 +639,13 @@ SEXPR EVAL::eceval( SEXPR sexpr )
                 save_reg(env);
                 save_evs(cont);
                 // perform accelerated lambda creation
-                aux = cdr(cadr_exp);              // params: ([<param>...])
+                unev = cdr(cadr_exp);             // params: ([<param>...])
                 exp = cdr(cdr_exp);               // code: ([<exp>...])
                 val = MEMORY::closure(exp, env);  // <code> <benv>
-                set_closure_attributes(val, aux);
+                parse_formals( unev, 
+                               getclosurevars(val),
+                               getclosurenumv(val),
+                               getclosurerargs(val) );
                 next = EV_DEFINE_VALUE;
             }
             else
@@ -679,7 +682,10 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    // code == cdr(cdr(exp))
             exp = cdr(exp);
 	    val = MEMORY::closure(cdr(exp), env);     // <code> <benv>
-	    set_closure_attributes(val, car(exp));
+            parse_formals( car(exp), 
+                           getclosurevars(val),
+                           getclosurenumv(val),
+                           getclosurerargs(val) );
 	    next = cont;
 	    break;
 	 }

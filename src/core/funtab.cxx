@@ -33,6 +33,11 @@ static SEXPR unimplemented()
 static const Function funtab[] =
 {
    { "exit",		     FUNC::exit 	, n_func },
+   { "gc",		     FUNC::gc		, n_func },
+#ifdef OBJECT_CACHE
+   { "gc-copy",		     FUNC::gc_copy	, n_func },
+#endif
+   { "fs",		     FUNC::fs		, n_func },
    { "eval-state",	     EVAL::get_evaluator_state , n_func },
 
    { "cons",		     FUNC::cons		, n_func },
@@ -125,12 +130,6 @@ static const Function funtab[] =
    { "newline",		     FUNC::newline	, n_func },
    { "read-char",            FUNC::read_char    , n_func },
    { "write-char",           FUNC::write_char   , n_func },
-
-   { "gc",		     FUNC::gc		, n_func },
-#ifdef OBJECT_CACHE
-   { "gc-copy",		     FUNC::gc_copy	, n_func },
-#endif
-   { "fs",		     FUNC::fs		, n_func },
 
    { "eval",		     FUNCTION(0)        , n_eval    },
    { "apply",                FUNCTION(0)        , n_apply   },

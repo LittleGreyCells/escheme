@@ -102,10 +102,13 @@ void PIO::flush( SEXPR port )
       return;
    }
 
-   if ( getfile(port) == NULL )
-      ERROR::severe( "flush on closed port", port );
-
-   fflush( getfile(port) );
+   if ( outportp(port) )
+   {
+      if ( getfile(port) == NULL )
+         ERROR::severe( "flush on closed port", port );
+      
+      fflush( getfile(port) );
+   }
 }
 
 //

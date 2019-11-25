@@ -120,21 +120,6 @@ void EVAL::parse_formals( SEXPR formals, SEXPR& vars, BYTE& numv, BYTE& rargs )
    vars = varlist.get();
 }
 
-void EVAL::set_closure_attributes( SEXPR closure, SEXPR formals )
-{
-   //
-   // set the formal variable descriptor fields of the closure object:
-   //
-   //   #(... (<v1> <v2> ... <vN>))
-   //
-   //   Note: Position is zero-based.
-   //
-   parse_formals( formals, 
-		  getclosurevars(closure),
-		  getclosurenumv(closure),
-		  getclosurerargs(closure) );
-}
-
 static void arg_error( const char* text, unsigned n1, unsigned n2 )
 {
    char msg[80];
