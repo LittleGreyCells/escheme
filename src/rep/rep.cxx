@@ -5,13 +5,13 @@
 
 #include <string>
 
-#include "error.hxx"
-#include "reader.hxx"
-#include "pio.hxx"
-#include "printer.hxx"
-#include "memory.hxx"
-#include "symtab.hxx"
-#include "regstack.hxx"
+#include "core/error.hxx"
+#include "core/reader.hxx"
+#include "core/pio.hxx"
+#include "core/printer.hxx"
+#include "core/memory.hxx"
+#include "core/symtab.hxx"
+#include "core/regstack.hxx"
 
 #include "eval/eval.hxx"
 
