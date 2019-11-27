@@ -2076,14 +2076,14 @@ SEXPR FUNC::transcript_on()
    ArgstackIterator iter;
    SEXPR fname = guard(iter.getlast(), stringp);
    PIO::transcript_on( fname );
-   return null;
+   return symbol_true;
 }
 
 SEXPR FUNC::transcript_off()
 {
    argstack.noargs();
    PIO::transcript_off();
-   return null;
+   return symbol_true;
 }
 
 // history

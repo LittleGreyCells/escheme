@@ -18,7 +18,7 @@ SEXPR PIO::stderr_port;
 SEXPR PIO::terminal_port;
 SEXPR PIO::eof_object;
 
-FILE* PIO::transcript = 0;
+FILE* PIO::transcript = NULL;
 
 
 SEXPR PIO::open( SEXPR name, short mode, const char* ftype )
@@ -47,6 +47,7 @@ SEXPR PIO::open_on_string( SEXPR str, short mode )
 
 void PIO::set_position( SEXPR port, SEXPR pos )
 {
+   // portp
    if ( port == terminal_port )
    {
       ERROR::warning( "set_position on terminal port", port );
@@ -62,6 +63,7 @@ void PIO::set_position( SEXPR port, SEXPR pos )
 
 SEXPR PIO::get_position( SEXPR port )
 {
+   // portp
    if ( port == terminal_port )
    {
       ERROR::warning( "get_position on terminal port", port );
@@ -76,6 +78,7 @@ SEXPR PIO::get_position( SEXPR port )
 
 void PIO::close( SEXPR port )
 {
+   // portp
    if ( port == terminal_port )
    {
       ERROR::warning( "close on terminal port", port );
@@ -96,6 +99,7 @@ void PIO::remove( const char* name )
 
 void PIO::flush( SEXPR port )
 {
+   // outportp
    if ( port == terminal_port )
    {
       ERROR::warning( "flush on terminal port", port );
@@ -117,8 +121,10 @@ void PIO::flush( SEXPR port )
 
 int PIO::get( SEXPR inport )
 {
+   // anyportp
    if ( inportp(inport) )
    {
+      // file
       if ( getfile(inport) == NULL )
 	 ERROR::severe( "get on closed port", inport );
 
@@ -148,8 +154,10 @@ int PIO::get( SEXPR inport )
 
 void PIO::unget( SEXPR inport, int ch )
 {
+   // anyportp
    if ( inportp(inport) )
    {
+      // file
       if ( getfile(inport) == NULL )
 	 ERROR::severe( "unget on closed port", inport );
 
@@ -162,6 +170,7 @@ void PIO::unget( SEXPR inport, int ch )
    }
    else if ( instringportp(inport) )
    {
+      // string input
       if (ch != EOF)
       {
          UINT32& index = getstringportindex(inport);
@@ -178,8 +187,10 @@ void PIO::unget( SEXPR inport, int ch )
 
 void PIO::put( SEXPR outport, const char* s )
 {
+   // anyportp
    if ( outportp(outport) )
    {
+      // file
       if ( getfile(outport) == NULL )
 	 ERROR::severe( "put on closed port", outport );
 
@@ -190,6 +201,7 @@ void PIO::put( SEXPR outport, const char* s )
    }
    else if ( outstringportp(outport) )
    {
+      // string
       getstringportstring(outport)->append( s );
    }
    else
@@ -200,8 +212,10 @@ void PIO::put( SEXPR outport, const char* s )
 
 void PIO::put( SEXPR outport, int ch )
 {
+   // anyportp
    if ( outportp(outport) )
    {
+      // file
       if ( getfile(outport) == NULL )
 	 ERROR::severe( "put on closed port", outport );
 
@@ -212,6 +226,7 @@ void PIO::put( SEXPR outport, int ch )
    }
    else if ( outstringportp(outport) )
    {
+      // string
       getstringportstring(outport)->push_back( ch );
    }
    else
@@ -236,7 +251,7 @@ void PIO::transcript_off()
    if ( transcript )
    {
       fclose( transcript );
-      transcript = 0;
+      transcript = NULL;
    }
 }
 
