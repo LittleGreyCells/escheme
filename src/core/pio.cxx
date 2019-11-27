@@ -234,7 +234,10 @@ void PIO::transcript_on( SEXPR name )
 void PIO::transcript_off()
 {
    if ( transcript )
+   {
       fclose( transcript );
+      transcript = 0;
+   }
 }
 
 static void pio_marker()
