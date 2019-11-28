@@ -180,6 +180,7 @@ struct PROMISE
 // Forematter
 //
 //   kind   # type tag
+//   nuse   # used by memory management to denote an 'inuse' object
 //   mark   # used by memory management
 //   form   # used by eval for fast dispatch
 //   recu   # used by printer to guard against recursive printing
@@ -189,6 +190,7 @@ struct PROMISE
 struct Node
 {
    BYTE kind;
+   bool nuse;
    BYTE mark;
    BYTE form;
    BYTE recu;
@@ -215,10 +217,10 @@ struct Node
    Node() {}
 
    explicit Node( NodeKind k ) :
-      kind(k), mark(0), form(0), nage(0) {}
+      kind(k), nuse(false), mark(0), form(0), nage(0) {}
 
    Node( NodeKind k, SEXPR next ) :
-      kind(k), mark(0), form(0), nage(0) { u.next = next; }
+      kind(k), nuse(false), mark(0), form(0), nage(0) { u.next = next; }
 
    void setnext( SEXPR next ) { u.next = next; }
    SEXPR getnext() const { return u.next; }
