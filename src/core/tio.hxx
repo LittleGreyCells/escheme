@@ -8,10 +8,6 @@ namespace escheme
 
 namespace TIO
 {
-   // line-oriented standard input
-   int getch();
-   void unget( int ch );
-
    // readline with history
    int terminal_getch();
    void terminal_unget( int ch );

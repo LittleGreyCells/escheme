@@ -28,32 +28,6 @@ static unsigned stdin_index = 0;
 static std::string term_line;
 static unsigned term_index;
 
-int TIO::getch()
-{
-   if ( stdin_index >= stdin_line.size() )
-   {
-      char buffer[200];
-      const char* s = fgets( buffer, sizeof(buffer), stdin );
-
-      if ( s == 0 )
-	 return EOF;
-
-      stdin_index = 0;
-      stdin_line = s;
-
-      if ( TRANSCRIPT::transcript )
-	 fputs( stdin_line.c_str(), TRANSCRIPT::transcript );
-   }
-
-   return stdin_line[stdin_index++];
-}
-
-void TIO::unget( int )
-{
-   if ( stdin_index > 0 )
-      stdin_index--;
-}
-
 int TIO::terminal_getch()
 {
    if ( term_index >= term_line.size() )

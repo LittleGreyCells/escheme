@@ -129,8 +129,6 @@ int PIO::get( SEXPR inport )
 
       if ( inport == terminal_port )
 	 return TIO::terminal_getch();
-      else if ( inport == stdin_port )
-	 return TIO::getch();
       else
 	 return fgetc( getfile(inport) );
    }
@@ -162,8 +160,6 @@ void PIO::unget( SEXPR inport, int ch )
 
       if ( inport == terminal_port )
 	 return TIO::terminal_unget( ch );
-      else if ( inport == stdin_port )
-	 TIO::unget( ch );
       else
 	 ungetc( ch, getfile(inport) );
    }
