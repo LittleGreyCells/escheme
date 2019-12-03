@@ -11,6 +11,7 @@
 #include "memory.hxx"
 #include "printer.hxx"
 #include "regstack.hxx"
+#include "transcript.hxx"
 
 #include "linenoise/linenoise.h"
 
@@ -40,8 +41,8 @@ int TIO::getch()
       stdin_index = 0;
       stdin_line = s;
 
-      if ( PIO::transcript )
-	 fputs( stdin_line.c_str(), PIO::transcript );
+      if ( TRANSCRIPT::transcript )
+	 fputs( stdin_line.c_str(), TRANSCRIPT::transcript );
    }
 
    return stdin_line[stdin_index++];
@@ -68,10 +69,10 @@ int TIO::terminal_getch()
       // append whitespace to satisfy scheme tokenizer
       term_line.push_back('\n');
 
-      if ( PIO::transcript )
+      if ( TRANSCRIPT::transcript )
       {
-	  fputs( prompt.c_str(), PIO::transcript );
-	  fputs( term_line.c_str(), PIO::transcript );
+	  fputs( prompt.c_str(), TRANSCRIPT::transcript );
+	  fputs( term_line.c_str(), TRANSCRIPT::transcript );
       }
 
       linenoiseFree( line );

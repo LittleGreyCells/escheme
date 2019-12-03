@@ -33,6 +33,7 @@ SRCS	= \
 	$(CORE)/varpool.cxx \
 	$(CORE)/pio.cxx \
 	$(CORE)/tio.cxx \
+	$(CORE)/transcript.cxx \
 	$(CORE)/ipcsoc.cxx \
 
 OBJS	= $(SRCS:.cxx=.o)

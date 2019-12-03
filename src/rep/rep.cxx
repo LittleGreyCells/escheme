@@ -11,6 +11,7 @@
 #include "core/printer.hxx"
 #include "core/memory.hxx"
 #include "core/symtab.hxx"
+#include "core/transcript.hxx"
 #include "core/regstack.hxx"
 
 #include "eval/eval.hxx"
@@ -141,7 +142,7 @@ void rep_loop()
       catch ( ERROR::Exit& )
       {
 	 // place holder for Exit actions
-	 PIO::transcript_off();
+	 TRANSCRIPT::off();
 	 return;
       }
       catch ( ... )

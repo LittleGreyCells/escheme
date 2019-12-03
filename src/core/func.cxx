@@ -19,6 +19,7 @@
 #include "memory.hxx"
 #include "pio.hxx"
 #include "tio.hxx"
+#include "transcript.hxx"
 
 #include "eval/eval.hxx"
 
@@ -1865,10 +1866,6 @@ SEXPR FUNC::assq()
 
 
 //
-// Other list functions
-//
-
-//
 //  Append
 //
 //  (define (append . z)
@@ -2075,14 +2072,14 @@ SEXPR FUNC::transcript_on()
 {
    ArgstackIterator iter;
    SEXPR fname = guard(iter.getlast(), stringp);
-   PIO::transcript_on( fname );
+   TRANSCRIPT::on( fname );
    return symbol_true;
 }
 
 SEXPR FUNC::transcript_off()
 {
    argstack.noargs();
-   PIO::transcript_off();
+   TRANSCRIPT::off();
    return symbol_true;
 }
 

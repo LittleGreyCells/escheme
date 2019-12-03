@@ -18,8 +18,6 @@ namespace PIO
    extern SEXPR terminal_port;
    extern SEXPR eof_object;
    
-   extern FILE* transcript;
-   
    void initialize();
    
    SEXPR open( SEXPR fname, short mode, const char* ftype );
@@ -41,9 +39,6 @@ namespace PIO
    
    inline void put( const char* s ) { put(stdout_port, s); }
    inline void put( int ch ) { put(stdout_port, ch); }
-
-   void transcript_on( SEXPR fname );
-   void transcript_off();
 }
 
 }

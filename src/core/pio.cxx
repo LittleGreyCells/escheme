@@ -8,6 +8,7 @@
 #include "memory.hxx"
 #include "symtab.hxx"
 #include "error.hxx"
+#include "transcript.hxx"
 
 namespace escheme
 {
@@ -17,8 +18,6 @@ SEXPR PIO::stdout_port;
 SEXPR PIO::stderr_port;
 SEXPR PIO::terminal_port;
 SEXPR PIO::eof_object;
-
-FILE* PIO::transcript = NULL;
 
 
 SEXPR PIO::open( SEXPR name, short mode, const char* ftype )
@@ -194,10 +193,11 @@ void PIO::put( SEXPR outport, const char* s )
       if ( getfile(outport) == NULL )
 	 ERROR::severe( "put on closed port", outport );
 
+      fputs( s, getfile(outport) );
+
+      using TRANSCRIPT::transcript;
       if ( transcript && (outport == stdout_port) )
 	 fputs( s, transcript );
-
-      fputs( s, getfile(outport) );
    }
    else if ( outstringportp(outport) )
    {
@@ -219,10 +219,11 @@ void PIO::put( SEXPR outport, int ch )
       if ( getfile(outport) == NULL )
 	 ERROR::severe( "put on closed port", outport );
 
+      fputc( ch, getfile(outport) );
+
+      using TRANSCRIPT::transcript;
       if ( transcript && (outport == stdout_port) )
 	 fputc( ch, transcript );
-
-      fputc( ch, getfile(outport) );
    }
    else if ( outstringportp(outport) )
    {
@@ -232,26 +233,6 @@ void PIO::put( SEXPR outport, int ch )
    else
    {
       ERROR::severe( "not an output port", outport );
-   }
-}
-
-void PIO::transcript_on( SEXPR name )
-{
-   if ( transcript )
-      fclose( transcript );
-
-   transcript = fopen( getstringdata(name), "w" );
-
-   if ( transcript == NULL )
-      ERROR::severe( "unable to open transcript file", name );
-}
-
-void PIO::transcript_off()
-{
-   if ( transcript )
-   {
-      fclose( transcript );
-      transcript = NULL;
    }
 }
 
