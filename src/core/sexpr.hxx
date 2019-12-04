@@ -54,7 +54,14 @@ enum PortMode
 { 
    pm_none   = 0x00,
    pm_input  = 0x01,
-   pm_output = 0x02
+   pm_output = 0x02,
+};
+
+enum PortKind
+{
+   pk_file,
+   pk_string,
+   pk_terminal
 };
 
 using FIXNUM  = signed long;
@@ -66,7 +73,7 @@ using INT16   = signed short;
 using UINT16  = unsigned short;
 using INT32   = signed int;
 using UINT32  = unsigned int;
-
+   
 //
 // Formmatted string output
 //
@@ -144,10 +151,11 @@ struct SYMBOL
 struct PORT
 {
    BYTE mode;
+   BYTE kind;
    UINT32 index;
    union 
    {
-      FILE* file;          // file port
+      FILE* file;          // file  port
       std::string* string; // string port
    } p;
 };

@@ -3,6 +3,7 @@
 
 #include "error.hxx"
 #include "printer.hxx"
+#include "pio.hxx"
 #include "symtab.hxx"
 #include "regstack.hxx"
 
@@ -13,50 +14,54 @@ namespace escheme
 
 void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
 {
-   printf("error: %s", s);
+   PIO::put("error: ");
+   PIO::put( s );
    
    if ( exp1 != nullptr )
    {
-      printf(" [");
+      PIO::put(" [");
       PRINTER::print(exp1);
-      printf("]");
+      PIO::put("]");
 
       SYMTAB::enter( "%%error-object", exp1 );
    }
    
    if ( exp2 != nullptr )
    {
-      printf(" [");
+      PIO::put(" [");
       PRINTER::print(exp2);
-      printf("]");
+      PIO::put("]");
    }
    
-   printf("\n");
+   PIO::put("\n");
 
    throw SevereError();
 }
 
 void ERROR::fatal( const char* s )
 {
-   printf("fatal error: %s\n", s);
+   PIO::put("fatal error: ");
+   PIO::put( s );
+   PIO::put("\n");
    
    throw FatalError();
 }
 
 void ERROR::warning( const char* s, SEXPR exp )
 {
-   printf("warning: %s", s);
+   PIO::put("warning: ");
+   PIO::put( s );
    
    if ( exp != nullptr )
    {
-      printf(" [");
+      PIO::put(" [");
       PRINTER::print(exp);
-      printf("]");
+      PIO::put("]");
 
       SYMTAB::enter( "%%warning-object", exp );
    }
    
-   printf("\n");
+   PIO::put("\n");
 }
 
 void ERROR::print_frame( SEXPR env )
@@ -69,7 +74,7 @@ void ERROR::print_frame( SEXPR env )
       if ( closurep(closure) )
       {
 	 PRINTER::print( getclosurevars(closure) );
-	 printf( ", " );
+         PIO::put( ", " );
 	 PRINTER::print( getclosurecode(closure) );
       }
    }
@@ -77,21 +82,23 @@ void ERROR::print_frame( SEXPR env )
 
 void ERROR::print_active_frame()
 {
-   printf( "active frame\n" );
+   PIO::put( "active frame\n" );
 
    SEXPR env = EVAL::env;
 
    if ( nullp(env) )
    {
-      printf( "  ()\n" );
+      PIO::put( "  ()\n" );
       return;
    }
 
    for ( int i = 0; anyp(env); ++i )
    {
-      printf( "  level %d ", i );
+      char buffer[80];
+      sprintf( buffer, "  level %d ", i );
+      PIO::put( buffer );
       print_frame( env );
-      printf( "\n" );
+      PIO::put( "\n" );
       env = getenvbase(env);
    }
 }
@@ -101,21 +108,25 @@ void ERROR::print_stacktrace()
    const int top = regstack.gettop();
    int n = 0;
 
-   printf( "stacktrace (depth=%d)\n", top+1 );
+   char buffer[80];
+   sprintf( buffer, "stacktrace (depth=%d)\n", top+1 );
+   PIO::put( buffer );
 
    for ( int i = top; i >= 0; --i )
    {
       SEXPR item = regstack[i];
 
-      printf( "  depth %d ", top-i );
+      sprintf( buffer, "  depth %d ", top-i );
+      PIO::put( buffer );
       PRINTER::print( item );
-      printf( "\n" );
+      PIO::put( "\n" );
 
       if ( envp(item) )
       {
-	 printf( "  frame %d ", n++ );
+	 sprintf( buffer, "  frame %d ", n++ );
+         PIO::put( buffer );
 	 print_frame( item );
-	 printf( "\n" );
+         PIO::put( "\n" );
       }
    }
 }

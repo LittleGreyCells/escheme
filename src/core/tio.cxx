@@ -43,10 +43,11 @@ int TIO::terminal_getch()
       // append whitespace to satisfy scheme tokenizer
       term_line.push_back('\n');
 
-      if ( TRANSCRIPT::transcript )
+      using TRANSCRIPT::transcript;
+      if ( transcript )
       {
-	  fputs( prompt.c_str(), TRANSCRIPT::transcript );
-	  fputs( term_line.c_str(), TRANSCRIPT::transcript );
+	  fputs( prompt.c_str(), transcript );
+	  fputs( term_line.c_str(), transcript );
       }
 
       linenoiseFree( line );

@@ -554,21 +554,17 @@ SEXPR MEMORY::character( CHAR ch )   // (<char>)
    return n;
 }
 
-namespace
+static SEXPR new_symbol( const char* s, int length )
 {
-   inline
-   SEXPR new_symbol( const char* s, int length )
-   {
-      const auto size = length+1;
-      auto name = new char[size];
-      strcpy(name, s);
-      // node space
-      regstack.push( MEMORY::cons(null, null) );
-      SEXPR n = newnode(n_symbol);
-      setname(n, name);
-      setpair( n, regstack.pop() );
-      return n;
-   }
+   const auto size = length+1;
+   auto name = new char[size];
+   strcpy(name, s);
+   // node space
+   regstack.push( MEMORY::cons(null, null) );
+   SEXPR n = newnode(n_symbol);
+   setname(n, name);
+   setpair( n, regstack.pop() );
+   return n;
 }
 
 SEXPR MEMORY::symbol( const char* s )      // (<name> <value>  <plist>)
@@ -604,21 +600,17 @@ SEXPR MEMORY::string( UINT32 length )        // (<length> . "")
    return n;
 }
 
-namespace
+static SEXPR new_string( const char* s, int length )
 {
-   inline
-   SEXPR new_string( const char* s, int length )
+   if ( length == 0 )
    {
-      if ( length == 0 )
-      {
-         return MEMORY::string_null;
-      }
-      else
-      {
-         SEXPR n = MEMORY::string( length );
-         strcpy( getstringdata(n), s );
-         return n;
-      }
+      return MEMORY::string_null;
+   }
+   else
+   {
+      SEXPR n = MEMORY::string( length );
+      strcpy( getstringdata(n), s );
+      return n;
    }
 }
 
@@ -632,10 +624,10 @@ SEXPR MEMORY::string( const std::string& s )
    return new_string( s.c_str(), s.length() );
 }
 
-SEXPR MEMORY::string_port( SEXPR str )
+SEXPR MEMORY::string_port( SEXPR str, short mode )
 {
    SEXPR n = newnode(n_string_port);
-   setmode( n, 0 );
+   setmode( n, mode );
    setstringportstring( n, new std::string( getstringdata(str) ) );
    setstringportindex( n, 0 );
    return n;
