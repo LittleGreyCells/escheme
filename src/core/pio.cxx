@@ -77,12 +77,7 @@ void PIO::close( SEXPR port )
    fclose( getfile(port) );
    setfile( port, 0 );
 }
-
-void PIO::remove( const char* name )
-{
-   ::remove(name);
-}
-
+   
 void PIO::flush( SEXPR port )
 {
    // outportp

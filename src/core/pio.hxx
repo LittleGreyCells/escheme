@@ -24,7 +24,6 @@ namespace PIO
    SEXPR open_on_string( SEXPR str, short mode );
    
    void close( SEXPR port );
-   void remove( const char* name );
    
    void set_position( SEXPR port, SEXPR pos );
    SEXPR get_position( SEXPR port );
