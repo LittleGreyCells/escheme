@@ -34,40 +34,30 @@ SEXPR PIO::open_on_string( SEXPR str, short mode )
 void PIO::set_position( SEXPR port, SEXPR pos )
 {
    // portp
-   if ( port == terminal_port )
-   {
-      ERROR::warning( "set_position on terminal port", port );
-      return;
-   }
-
    if ( getfile(port) == 0 )
-      ERROR::severe( "set_position on closed port", port );
+      ERROR::severe( "set position on closed port", port );
 
-   if (-1 == fseek(getfile(port), getfixnum(pos), SEEK_SET))
-      ERROR::severe("seek error on file");
+   fseek( getfile(port), getfixnum(pos), SEEK_SET );
 }
 
 SEXPR PIO::get_position( SEXPR port )
 {
    // portp
-   if ( port == terminal_port )
-   {
-      ERROR::warning( "get_position on terminal port", port );
-      return MEMORY::fixnum(0);
-   }
-
    if ( getfile(port) == 0 )
-      ERROR::severe( "get_position on closed port", port );
+      ERROR::severe( "get position on closed port", port );
 
-   return MEMORY::fixnum( static_cast<FIXNUM>(ftell(getfile(port))) );
+   return MEMORY::fixnum( ftell( getfile(port) ) );
 }
 
 void PIO::close( SEXPR port )
 {
    // portp
-   if ( port == terminal_port )
+   if ( port == terminal_port ||
+        port == stdin_port ||
+        port == stdout_port ||
+        port == stderr_port )
    {
-      ERROR::warning( "close on terminal port", port );
+      ERROR::warning( "close on a system port ignored", port );
       return;
    }
 
@@ -80,33 +70,24 @@ void PIO::close( SEXPR port )
    
 void PIO::flush( SEXPR port )
 {
-   // outportp
-   if ( port == terminal_port )
-   {
-      ERROR::warning( "flush on terminal port", port );
-      return;
-   }
-
-   if ( outportp(port) )
-   {
-      if ( getfile(port) == 0 )
-         ERROR::severe( "flush on closed port", port );
-      
-      fflush( getfile(port) );
-   }
+   // portp
+   if ( getfile(port) == 0 )
+      ERROR::severe( "flush on closed port", port );
+   
+   fflush( getfile(port) );
 }
 
 //
-// Dual Use (standard ports and string ports)
+// Dual Use (portp and stringportp)
 //
 
 int PIO::get( SEXPR port )
 {
-   // anyportp
-   if ( inportp(port) )
+   // portp or stringportp
+   if ( portp(port) )
    {
       // file
-      if ( getfile(port) == NULL )
+      if ( getfile(port) == 0 )
 	 ERROR::severe( "get on closed port", port );
 
       if ( port == terminal_port )
@@ -114,7 +95,7 @@ int PIO::get( SEXPR port )
       else
 	 return fgetc( getfile(port) );
    }
-   else if ( instringportp(port) )
+   else
    {
       // string input
       auto str = getstringportstring(port);
@@ -124,20 +105,14 @@ int PIO::get( SEXPR port )
       else
          return EOF;
    }
-   else
-   {
-      ERROR::severe( "not an input port", port );
-      return 0;
-   }
 }
 
 void PIO::unget( SEXPR port, int ch )
 {
-   // anyportp
-   if ( inportp(port) )
+   if ( portp(port) )
    {
       // file
-      if ( getfile(port) == NULL )
+      if ( getfile(port) == 0 )
 	 ERROR::severe( "unget on closed port", port );
 
       if ( port == terminal_port )
@@ -145,7 +120,7 @@ void PIO::unget( SEXPR port, int ch )
       else
 	 ungetc( ch, getfile(port) );
    }
-   else if ( instringportp(port) )
+   else
    {
       // string input
       if ( ch != EOF )
@@ -156,19 +131,14 @@ void PIO::unget( SEXPR port, int ch )
 	    index--;
       }
    }
-   else
-   {
-      ERROR::severe( "not an input port", port );
-   }
 }
 
 void PIO::put( SEXPR port, const char* s )
 {
-   // anyportp
-   if ( outportp(port) )
+   if ( portp(port) )
    {
       // file
-      if ( getfile(port) == NULL )
+      if ( getfile(port) == 0 )
 	 ERROR::severe( "put on closed port", port );
 
       fputs( s, getfile(port) );
@@ -177,24 +147,19 @@ void PIO::put( SEXPR port, const char* s )
       if ( transcript && (port == stdout_port) )
 	 fputs( s, transcript );
    }
-   else if ( outstringportp(port) )
+   else
    {
       // string
       getstringportstring(port)->append( s );
-   }
-   else
-   {
-      ERROR::severe( "not an output port", port );
    }
 }
 
 void PIO::put( SEXPR port, int ch )
 {
-   // anyportp
-   if ( outportp(port) )
+   if ( portp(port) )
    {
       // file
-      if ( getfile(port) == NULL )
+      if ( getfile(port) == 0 )
 	 ERROR::severe( "put on closed port", port );
 
       fputc( ch, getfile(port) );
@@ -203,14 +168,10 @@ void PIO::put( SEXPR port, int ch )
       if ( transcript && (port == stdout_port) )
 	 fputc( ch, transcript );
    }
-   else if ( outstringportp(port) )
+   else
    {
       // string
       getstringportstring(port)->push_back( ch );
-   }
-   else
-   {
-      ERROR::severe( "not an output port", port );
    }
 }
 
@@ -227,15 +188,18 @@ static void pio_marker()
 void PIO::initialize()
 {
    stdin_port = MEMORY::port( stdin, pm_input );
-   SYMTAB::enter( "*standard-input*", stdin_port );
-
    stdout_port = MEMORY::port( stdout, pm_output );
-   SYMTAB::enter( "*standard-output*", stdout_port );
-
    stderr_port = MEMORY::port( stderr, pm_output );
-   SYMTAB::enter( "*standard-error*", stderr_port );
-
    terminal_port = MEMORY::port( stdin, pm_input );
+
+   SYMTAB::enter( "*standard-input*", stdin_port );
+   SYMTAB::enter( "*standard-output*", stdout_port );
+   SYMTAB::enter( "*standard-error*", stderr_port );
+   
+   SYMTAB::enter( "*stdin*", stdin_port );
+   SYMTAB::enter( "*stdout*", stdout_port );
+   SYMTAB::enter( "*stderr*", stderr_port );
+   
    SYMTAB::enter( "*terminal*", terminal_port );
 
    TIO::history_init();
