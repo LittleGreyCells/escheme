@@ -16,38 +16,13 @@ enum ConfigurationConstants
    ECE_HISTORY_LENGTH = 100,
    MAX_IMAGE_LENGTH   = 256,
    MAX_STRING_SIZE    = 0xFFFE,
-   CACHE_BLOCK_SIZE   = 10000,
-   CACHE_TENURE       = 4,
-   CACHE_MAXAGE       = 127,
 };
 
 enum NodeKind
 {
-   n_free,         // 0
-   n_null,         // 1
-   n_symbol,       // 2
-   n_fixnum,       // 3
-   n_flonum,       // 4
-   n_char,         // 5
-   n_string,       // 6
-   n_cons,         // 7
-   n_vector,       // 8
-   n_bvec,         // 9
-   n_environment,  // 10
-   n_promise,
-   n_closure,
-   n_continuation,
-   n_port,
-   n_string_port,  // 15
-   n_func,
-   n_eval,
-   n_apply,
-   n_callcc,
-   n_map,          // 20
-   n_foreach,
-   n_force,
-   n_code,         // 23
-   NUMKINDS        // keep me last
+   n_free, n_null, n_symbol, n_fixnum, n_flonum, n_char, n_string, n_cons, n_vector,
+   n_bvec, n_environment, n_promise, n_closure, n_continuation, n_port, n_string_port,
+   n_func, n_eval, n_apply, n_callcc, n_map, n_foreach, n_force, n_code, NUMKINDS
 };
 
 enum PortMode
@@ -94,22 +69,14 @@ using FRAME = Frame*;
 using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
 
-using DWORD = void*;
-
-inline auto NBYTES( int n )  { return n*sizeof(DWORD); }
-inline auto NDWORDS( int n ) { return (n+sizeof(DWORD)-1)/sizeof(DWORD); }
-
 struct Frame
 {
    FRAME next;
    SEXPR vars;
    SEXPR closure;
-   UINT32 size;
    UINT32 nslots;
-   SEXPR slot[1];        // varying numbers
+   SEXPR* slot;        // varying numbers
 };
-
-inline auto FRAMESIZE( int nslots ) { return ((sizeof(Frame)-sizeof(SEXPR))/sizeof(SEXPR))+nslots; }
 
 struct PRIMITIVE
 {
@@ -192,7 +159,6 @@ struct PROMISE
 //   mark   # used by memory management
 //   form   # used by eval for fast dispatch
 //   recu   # used by printer to guard against recursive printing
-//   nage   # used by memory manager for aging
 //
 
 struct Node
@@ -202,7 +168,6 @@ struct Node
    BYTE mark;
    BYTE form;
    BYTE recu;
-   BYTE nage;
    union
    {
       SEXPR next;
@@ -225,10 +190,10 @@ struct Node
    Node() {}
 
    explicit Node( NodeKind k ) :
-      kind(k), nuse(false), mark(0), form(0), nage(0) {}
+      kind(k), nuse(false), mark(0), form(0) {}
 
    Node( NodeKind k, SEXPR next ) :
-      kind(k), nuse(false), mark(0), form(0), nage(0) { u.next = next; }
+      kind(k), nuse(false), mark(0), form(0) { u.next = next; }
 
    void setnext( SEXPR next ) { u.next = next; }
    SEXPR getnext() const { return u.next; }
@@ -390,8 +355,6 @@ inline void setframenslots( FRAME fr, int n ) { getframenslots(fr) = n; }
 inline void setframevars( FRAME fr, SEXPR x ) { getframevars(fr) = x; }
 inline void setframeclosure( FRAME fr, SEXPR x ) { getframeclosure(fr) = x; }
 inline void frameset( FRAME fr, int i, SEXPR x ) { frameref(fr,i) = x; }
-inline auto& getframesize( FRAME fr ) { return fr->size; }
-inline void setframesize( FRAME fr, int x ) { getframesize(fr) = x; }
 
 // port
 inline auto& getfile( SEXPR n ) { return n->u.port.p.file; }
@@ -417,7 +380,7 @@ inline auto& promise_getval( SEXPR n ) { return n->u.promise.val; }
 inline void promise_setexp( SEXPR n, SEXPR x) { promise_getexp(n) = x; }
 inline void promise_setval( SEXPR n, SEXPR x) { promise_getval(n) = x; }
 
-// inline predicates
+// inlinable predicates
 inline bool nullp( SEXPR n ) { return n == null; }
 inline bool anyp( SEXPR n ) { return n != null; }
 inline bool _symbolp( SEXPR n ) { return n->kind == n_symbol; }

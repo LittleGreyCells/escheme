@@ -133,27 +133,6 @@ void PIO::unget( SEXPR port, int ch )
    }
 }
 
-void PIO::put( SEXPR port, const char* s )
-{
-   if ( portp(port) )
-   {
-      // file
-      if ( getfile(port) == 0 )
-	 ERROR::severe( "put on closed port", port );
-
-      fputs( s, getfile(port) );
-
-      using TRANSCRIPT::transcript;
-      if ( transcript && (port == stdout_port) )
-	 fputs( s, transcript );
-   }
-   else
-   {
-      // string
-      getstringportstring(port)->append( s );
-   }
-}
-
 void PIO::put( SEXPR port, int ch )
 {
    if ( portp(port) )
@@ -172,6 +151,27 @@ void PIO::put( SEXPR port, int ch )
    {
       // string
       getstringportstring(port)->push_back( ch );
+   }
+}
+
+void PIO::put( SEXPR port, const char* s )
+{
+   if ( portp(port) )
+   {
+      // file
+      if ( getfile(port) == 0 )
+	 ERROR::severe( "put on closed port", port );
+
+      fputs( s, getfile(port) );
+
+      using TRANSCRIPT::transcript;
+      if ( transcript && (port == stdout_port) )
+	 fputs( s, transcript );
+   }
+   else
+   {
+      // string
+      getstringportstring(port)->append( s );
    }
 }
 

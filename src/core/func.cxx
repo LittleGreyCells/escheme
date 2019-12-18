@@ -872,31 +872,19 @@ SEXPR FUNC::write_char()
 
 static SEXPR gc_stats()
 {
-   SEXPR gc_stats = MEMORY::vector(2);
-   regstack.push( gc_stats );
-
    // nodes stats
    regstack.push( MEMORY::vector(4) );
+   
    vectorset( regstack.top(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
    vectorset( regstack.top(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount ) );
    vectorset( regstack.top(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
 #ifdef GC_STATISTICS_DETAILED
    const int N = MEMORY::ReclamationCounts.size();
    regstack.push( MEMORY::vector(N) );
-   for (int i = 0; i < N; ++i)
+   for ( int i = 0; i < N; ++i )
       vectorset( regstack.top(), i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
    SEXPR reclamations = regstack.pop();
    vectorset( regstack.top(), 3, reclamations );
-#endif
-   vectorset( gc_stats, 0, regstack.pop() );
-
-#ifdef OBJECT_CACHE
-   // cache stats
-   regstack.push( MEMORY::vector(3) );
-   vectorset( regstack.top(), 0, MEMORY::fixnum( MEMORY::CacheSwapCount ) );
-   vectorset( regstack.top(), 1, MEMORY::fixnum( MEMORY::CacheSize ) );
-   vectorset( regstack.top(), 2, MEMORY::fixnum( MEMORY::get_cache_highwater() ) );
-   vectorset( gc_stats, 1, regstack.pop() );
 #endif
    
    return regstack.pop();
@@ -912,21 +900,6 @@ SEXPR FUNC::gc()
 
    return gc_stats();
 }
-
-#ifdef OBJECT_CACHE
-
-SEXPR FUNC::gc_copy()
-{
-   //
-   // syntax: (gc-copy) -> <statistics>
-   //
-   argstack.noargs();
-   MEMORY::gc( true );
-
-   return gc_stats();
-}
-
-#endif
 
 SEXPR FUNC::fs()
 {

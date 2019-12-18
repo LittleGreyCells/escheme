@@ -40,10 +40,8 @@ FRAME FrameStore::alloc( UINT32 nslots )
    else
    {
       // allocate a new frame from heap
-      const auto frameSize = FRAMESIZE( nslots );   
-      frame = reinterpret_cast<FRAME>( new DWORD[frameSize] );
-      
-      setframesize( frame, frameSize );
+      frame = new Frame();
+      frame->slot = ( nslots > 0 ) ? new SEXPR[nslots] : nullptr;
       setframenslots( frame, nslots );
    }
    
@@ -53,32 +51,6 @@ FRAME FrameStore::alloc( UINT32 nslots )
    for ( int i = 0; i < nslots; ++i )
       frameset( frame, i, null );
    
-   return frame;
-}
-
-FRAME FrameStore::clone( FRAME fr )
-{
-   FRAME frame;
-   const auto nslots = getframenslots(fr);
-   
-   if ( (nslots < store.size()) && store[nslots] )
-   {
-      // reuse an existing frame
-      frame = store[nslots];
-      store[nslots] = frame->next;
-      count[nslots] -= 1;
-      
-      if ( getframenslots(frame) != nslots )
-         ERROR::fatal( "recycled frame size inconsistent with request" );
-   }
-   else
-   {
-      // allocate a new frame from heap
-      frame = reinterpret_cast<FRAME>( new DWORD[getframesize(fr)] );
-   }
-      
-   std::memcpy( frame, fr, NBYTES(getframesize(fr)) );
-
    return frame;
 }
 
@@ -94,6 +66,8 @@ void FrameStore::free( FRAME frame )
    }
    else
    {
+      if ( frame->slot )
+         delete[] frame->slot;
       delete[] frame;
    }
 }

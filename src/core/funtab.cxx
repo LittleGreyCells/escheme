@@ -34,9 +34,6 @@ static const Function funtab[] =
 {
    { "exit",		     FUNC::exit 	, n_func },
    { "gc",		     FUNC::gc		, n_func },
-#ifdef OBJECT_CACHE
-   { "gc-copy",		     FUNC::gc_copy	, n_func },
-#endif
    { "fs",		     FUNC::fs		, n_func },
    { "eval-state",	     EVAL::get_evaluator_state , n_func },
 
