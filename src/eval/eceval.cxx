@@ -645,7 +645,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    else
 	    {
 	       // extend the current environment with var/val pair
-               append( getenvframe(env), unev, val );
+               // append( getenvframe(env), unev, val );
+                ERROR::severe( "local defines not supported" );
 	    }
 	    val = unev;
 	    next = cont;
