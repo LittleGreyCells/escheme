@@ -122,7 +122,7 @@ struct PORT
    UINT32 index;
    union 
    {
-      FILE* file;          // file  port
+      FILE* file;          // file/terminal port
       std::string* string; // string port
    } p;
 };
@@ -239,7 +239,6 @@ bool funcp( const SEXPR n );
 bool specialp( const SEXPR n );
 bool portp( const SEXPR n );
 bool stringportp( const SEXPR n );
-bool anyportp( const SEXPR n );
 bool closurep( const SEXPR n );
 bool contp( const SEXPR n );
 bool envp( const SEXPR n );

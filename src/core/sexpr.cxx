@@ -97,7 +97,6 @@ bool consp( const SEXPR n ) { return n->kind == n_cons; }
 bool funcp( const SEXPR n ) { return n->kind == n_func; }
 bool portp( const SEXPR n ) { return n->kind == n_port; }
 bool stringportp( const SEXPR n ) { return n->kind == n_string_port; }
-bool anyportp(SEXPR n) { return portp(n) || stringportp(n); }
 
 bool closurep( const SEXPR n ) { return n->kind == n_closure; }
 
@@ -157,7 +156,6 @@ std::vector<PredMap> predicate_map =
    { anyoutportp, "any output port" },
    { lastp, "last argument" },
    { promisep, "promise" },
-   { anyportp, "port or stringport" },
    { primp, "func or special" },
 };
 
