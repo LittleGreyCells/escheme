@@ -1,3 +1,8 @@
+(if #f
+    (begin
+      (load "./tests/test_driver1.scm")
+      ))
+
 (define displayln
   (lambda (s)
     (display s)
