@@ -227,8 +227,10 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
    return MEMORY::environment( nvars, vars.get(), benv );
 }
 
-void EVAL::append( FRAME frame, SEXPR var, SEXPR val )
+void EVAL::append( SEXPR env, SEXPR var, SEXPR val )
 {
+   FRAME frame = getenvframe(env);
+   
    // I. prepend var to vars
    frame->vars = MEMORY::cons( var, frame->vars );
 

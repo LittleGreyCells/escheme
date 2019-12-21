@@ -645,7 +645,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    else
 	    {
 	       // extend the current environment with var/val pair
-               append( getenvframe(env), unev, val );
+               append( env, unev, val );
 	    }
 	    val = unev;
 	    next = cont;
