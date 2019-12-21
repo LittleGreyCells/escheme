@@ -10,7 +10,6 @@ bool booleanp( const SEXPR n );
 bool notp( const SEXPR n );
 bool boundp( const SEXPR n );
 bool eof_objectp( const SEXPR n );
-bool default_objectp( const SEXPR n );
 bool zerop( const SEXPR n );
 bool positivep( const SEXPR n );
 bool negativep( const SEXPR n );

@@ -37,7 +37,6 @@ bool booleanp(const SEXPR s) { return s == symbol_true || s == symbol_false; }
 bool notp(const SEXPR s) { return falsep(s); }
 bool boundp(const SEXPR s) { return getvalue(guard(s, symbolp)) != symbol_unbound; }
 bool eof_objectp(const SEXPR s) { return s == PIO::eof_object; }
-bool default_objectp(const SEXPR s) { return s == symbol_default; }
 bool zerop(const SEXPR s) { return getfixnum(guard(s, fixnump)) == 0; }
 bool positivep(const SEXPR s) { return getfixnum(guard(s, fixnump)) > 0; }
 bool negativep(const SEXPR s) { return getfixnum(guard(s, fixnump)) < 0; }

@@ -19,7 +19,6 @@ namespace
 SEXPR symbol_unbound;
 SEXPR symbol_false;
 SEXPR symbol_true;
-SEXPR symbol_default;
 SEXPR symbol_quasiquote;
 SEXPR symbol_unquote;
 SEXPR symbol_unquotesplicing;
@@ -146,8 +145,6 @@ void SYMTAB::initialize()
    setvalue(symbol_false, symbol_false);
 
    // create other special symbols/objects
-   symbol_default         = enter("**default**");
-   setvalue(symbol_default, symbol_default);
    symbol_quasiquote      = enter("quasiquote");
    symbol_unquote         = enter("unquote");
    symbol_unquotesplicing = enter("unquote-splicing");

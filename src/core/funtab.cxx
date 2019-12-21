@@ -238,7 +238,6 @@ static const Function funtab[] =
    { "output-string-port?",   []{ return FUNC::predicate(outstringportp); } , n_func },
    { "object?",               unimplemented , n_func },
    { "eof-object?",           []{ return FUNC::predicate(eof_objectp); } , n_func },
-   { "default-object?",       []{ return FUNC::predicate(default_objectp); } , n_func },
    { "zero?",                 []{ return FUNC::predicate(zerop); } , n_func },
    { "positive?",             []{ return FUNC::predicate(positivep); } , n_func },
    { "negative?",             []{ return FUNC::predicate(negativep); } , n_func },
