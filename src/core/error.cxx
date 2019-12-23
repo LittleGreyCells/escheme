@@ -12,6 +12,9 @@
 namespace escheme
 {
 
+static void print_active_frame();
+static void print_stacktrace();
+
 void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
 {
    PIO::put("error: ");
@@ -34,6 +37,9 @@ void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
    }
    
    PIO::put("\n");
+
+   print_active_frame();
+   print_stacktrace();
 
    throw SevereError();
 }
@@ -64,7 +70,7 @@ void ERROR::warning( const char* s, SEXPR exp )
    PIO::put("\n");
 }
 
-void ERROR::print_frame( SEXPR env )
+static void print_frame( SEXPR env )
 {
    if ( anyp(env) && envp(env) )
    {
@@ -80,7 +86,7 @@ void ERROR::print_frame( SEXPR env )
    }
 }
 
-void ERROR::print_active_frame()
+static void print_active_frame()
 {
    PIO::put( "active frame\n" );
 
@@ -92,38 +98,36 @@ void ERROR::print_active_frame()
       return;
    }
 
-   for ( int i = 0; anyp(env); ++i )
+   for ( int i = 0; anyp(env); ++i, env = getenvbase(env) )
    {
       char buffer[80];
-      sprintf( buffer, "  level %d ", i );
+      SPRINTF( buffer, "  level %d ", i );
       PIO::put( buffer );
       print_frame( env );
       PIO::put( "\n" );
-      env = getenvbase(env);
    }
 }
 
-void ERROR::print_stacktrace()
+static void print_stacktrace()
 {
    const int top = regstack.gettop();
-   int n = 0;
 
    char buffer[80];
-   sprintf( buffer, "stacktrace (depth=%d)\n", top+1 );
+   SPRINTF( buffer, "stacktrace (depth=%d)\n", top+1 );
    PIO::put( buffer );
 
    for ( int i = top; i >= 0; --i )
    {
       SEXPR item = regstack[i];
 
-      sprintf( buffer, "  depth %d ", top-i );
+      SPRINTF( buffer, "  depth %d ", top-i );
       PIO::put( buffer );
       PRINTER::print( item );
       PIO::put( "\n" );
 
       if ( envp(item) )
       {
-	 sprintf( buffer, "  frame %d ", n++ );
+	 SPRINTF( buffer, "    frame " );
          PIO::put( buffer );
 	 print_frame( item );
          PIO::put( "\n" );
