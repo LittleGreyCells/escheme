@@ -8,6 +8,9 @@
 #include "regstack.hxx"
 
 #include "eval/eval.hxx"
+#ifdef BYTE_CODE_EVALUATOR
+#include "eval/assem.hxx"
+#endif
 
 namespace escheme
 {
@@ -39,8 +42,10 @@ void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
    PIO::put("\n");
 
    print_active_frame();
+#if 0
    print_stacktrace();
-
+#endif
+   
    throw SevereError();
 }
 
@@ -72,16 +77,25 @@ void ERROR::warning( const char* s, SEXPR exp )
 
 static void print_frame( SEXPR env )
 {
-   if ( anyp(env) && envp(env) )
+   if ( nullp(env) )
+   {
+      PIO::put( "<global>" );
+   }
+   else
    {
       FRAME frame = getenvframe(env);
       SEXPR closure = getframeclosure(frame);
       
       if ( closurep(closure) )
       {
+         PIO::put( "closure formals=" );
 	 PRINTER::print( getclosurevars(closure) );
-         PIO::put( ", " );
+         PIO::put( ", body=" );
 	 PRINTER::print( getclosurecode(closure) );
+      }
+      else
+      {
+         PRINTER::print( closure );
       }
    }
 }
@@ -124,14 +138,6 @@ static void print_stacktrace()
       PIO::put( buffer );
       PRINTER::print( item );
       PIO::put( "\n" );
-
-      if ( envp(item) )
-      {
-	 SPRINTF( buffer, "    frame " );
-         PIO::put( buffer );
-	 print_frame( item );
-         PIO::put( "\n" );
-      }
    }
 }
 
