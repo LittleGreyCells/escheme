@@ -8,9 +8,6 @@
 #include "regstack.hxx"
 
 #include "eval/eval.hxx"
-#ifdef BYTE_CODE_EVALUATOR
-#include "eval/assem.hxx"
-#endif
 
 namespace escheme
 {
@@ -88,7 +85,8 @@ static void print_frame( SEXPR env )
       
       if ( closurep(closure) )
       {
-         PIO::put( "closure formals=" );
+	 PRINTER::print( closure );
+         PIO::put( ", formals=" );
 	 PRINTER::print( getclosurevars(closure) );
          PIO::put( ", body=" );
 	 PRINTER::print( getclosurecode(closure) );
