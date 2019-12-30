@@ -403,11 +403,6 @@ SEXPR READER::read_comma( SEXPR inport )
    }
 }
 
-SEXPR READER::read( SEXPR inport )
-{
-   return read_sexpr(inport);
-}
-
 SEXPR READER::read_sexpr( SEXPR inport )
 {
    while (true)
@@ -453,6 +448,11 @@ SEXPR READER::read_sexpr( SEXPR inport )
 	    return read_symbol(inport);
       }
    }
+}
+
+SEXPR READER::read( SEXPR inport )
+{
+   return read_sexpr(inport);
 }
 
 void READER::initialize()

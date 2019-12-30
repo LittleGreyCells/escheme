@@ -14,13 +14,7 @@ namespace READER
 {
    void initialize();
 
-   SEXPR read( SEXPR inport );
-   inline 
-   SEXPR read() { return read(PIO::stdin_port); }
-
-   SEXPR read_char( SEXPR inport );
-   inline 
-   SEXPR read_char() { return read_char(PIO::stdin_port); }
+   SEXPR read( SEXPR inport = PIO::stdin_port );
 
    int eof_objectp( const SEXPR n );
 
