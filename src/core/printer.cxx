@@ -243,4 +243,9 @@ void PRINTER::print( SEXPR outport, const SEXPR n, int style )
    print_sexpr( outport, n, style );
 }
 
+void PRINTER::print( const SEXPR s, int style ) 
+{ 
+   print_sexpr( PIO::stdout_port, s, style ); 
+}
+
 }

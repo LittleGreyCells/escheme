@@ -15,18 +15,11 @@ namespace PRINTER
    //   1: do quote (print)
 
    void print( SEXPR outport, const SEXPR s, int style = 1 );
-   void newline( SEXPR outport );
+   
+   void newline( SEXPR outport = PIO::stdout_port );
 
    // standard output
-
-   inline 
-   void print( const SEXPR s, int style = 1 ) 
-   { 
-      print(PIO::stdout_port, s, style); 
-   }
-
-   inline 
-   void newline() { newline(PIO::stdout_port); }
+   void print( const SEXPR s, int style = 1 );
 
    // private
    void print_sexpr( SEXPR outport, const SEXPR s, int style = 1 );
