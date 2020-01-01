@@ -18,6 +18,7 @@ bool evenp( const SEXPR n );
 bool exactp( const SEXPR );
 bool inexactp( const SEXPR );
 bool string_nullp( SEXPR n );
+bool procedurep( const SEXPR );
 
 namespace FUNC
 {

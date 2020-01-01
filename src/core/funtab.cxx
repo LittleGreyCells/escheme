@@ -227,7 +227,7 @@ static const Function funtab[] =
    { "vector?",               []{ return FUNC::predicate(vectorp); } , n_func },
    { "byte-vector?",          []{ return FUNC::predicate(bvecp); } , n_func },
    { "closure?"  ,            []{ return FUNC::predicate(closurep); } , n_func },
-   { "procedure?",            FUNC::procedurep , n_func },
+   { "procedure?",            []{ return FUNC::predicate(procedurep); } , n_func },
    { "environment?",	      []{ return FUNC::predicate(envp); } , n_func },
    { "continuation?",	      []{ return FUNC::predicate(contp); } , n_func },
    { "port?",                 []{ return FUNC::predicate(portp); } , n_func },

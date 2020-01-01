@@ -182,7 +182,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  catch ( ERROR::SevereError& )
 		  {
 		     PRINTER::print( val );
-		     printf( "\n" );
+                     PRINTER::newline();
 		     throw;
 		  }
 		  argstack.removeargc();

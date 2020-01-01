@@ -44,7 +44,8 @@ bool oddp(const SEXPR s) { return (abs(getfixnum(guard(s, fixnump))) % 2) == 1; 
 bool evenp(const SEXPR s) { return (getfixnum(guard(s, fixnump)) % 2) == 0; }
 bool exactp(const SEXPR) { return false; }
 bool inexactp(const SEXPR) { return true; }
-bool string_nullp(SEXPR s) { return getstringlength(guard(s, stringp)) == 0; }
+bool string_nullp(const SEXPR s) { return getstringlength(guard(s, stringp)) == 0; }
+bool procedurep(const SEXPR s) { return primp(s) || closurep(s); }
 
 SEXPR FUNC::predicate( PREDICATE pred )
 {
@@ -1393,21 +1394,8 @@ SEXPR FUNC::get_output_string()
    return MEMORY::string( str->c_str() );
 }
 
-
 //
-// Predicates
-//
-
-SEXPR FUNC::procedurep()
-{
-   ArgstackIterator iter;
-   const SEXPR arg = iter.getlast();
-   return (primp(arg) || closurep(arg)) ? symbol_true : symbol_false;
-}
-
-
-//
-// string
+// strings
 //
 
 SEXPR FUNC::string_length()
@@ -1651,6 +1639,10 @@ SEXPR FUNC::string_LTci() { return string_compare(LTop, ::strcasecmp); }
 SEXPR FUNC::string_LEci() { return string_compare(LEop, ::strcasecmp); }
 SEXPR FUNC::string_GTci() { return string_compare(GTop, ::strcasecmp); }
 SEXPR FUNC::string_GEci() { return string_compare(GEop, ::strcasecmp); }
+
+//
+// chars
+//
 
 static SEXPR char_compare( RelOp op, int ci )
 {
