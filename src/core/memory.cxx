@@ -12,6 +12,7 @@ namespace escheme
 {
 
 SEXPR MEMORY::string_null;
+SEXPR MEMORY::vector_null;
 
 namespace MEMORY
 {
@@ -314,7 +315,7 @@ void MEMORY::gc()
 
    // mark memory managed roots
    mark( string_null );
-   //mark( vector_null );
+   mark( vector_null );
    mark( listhead );
 
    // notify all clients to mark their active roots
@@ -517,6 +518,7 @@ void MEMORY::initialize()
    FreeNodeList = null;
    NewNodeBlock();
    string_null = make_string_null();
+   vector_null = vector( 0 );
    listhead = cons(null, null);
 }
 

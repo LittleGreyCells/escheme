@@ -24,6 +24,7 @@ namespace MEMORY
 #endif
 
    extern SEXPR string_null;
+   extern SEXPR vector_null;
 
    void initialize();
 

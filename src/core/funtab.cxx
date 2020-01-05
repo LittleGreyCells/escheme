@@ -333,7 +333,7 @@ static const Function funtab[] =
    { "disassemble",           ASSEM::decode },
 #endif
 
-   { "%object-address",       FUNC::objaddr          },
+   { "%object-address",       FUNC::objaddr },
 };
 
 void FUNTAB::initialize()
