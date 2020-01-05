@@ -24,7 +24,6 @@ namespace MEMORY
 #endif
 
    extern SEXPR string_null;
-   extern SEXPR vector_null;
 
    void initialize();
 
@@ -33,7 +32,6 @@ namespace MEMORY
    SEXPR symbol( const std::string& name );
    SEXPR fixnum( FIXNUM fixnum );
    SEXPR flonum( FLONUM flonum );
-   SEXPR string( UINT32 length );
    SEXPR string( const char* string );
    SEXPR string( const std::string& string );
    SEXPR character( CHAR ch );

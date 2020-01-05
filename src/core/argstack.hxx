@@ -64,8 +64,6 @@ public:
       return --argc, argstack[argp];
    }
 
-   void reset();
-
    int argc;
    int argp;
 };

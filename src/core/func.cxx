@@ -1415,24 +1415,15 @@ SEXPR FUNC::string_append()
    if ( !iter.more() )
       return MEMORY::string_null;
 
-   auto slen = 0;
+   std::string ss;
 
    while ( iter.more() )
    {
-      SEXPR s = guard(iter.getarg(), stringp);
-      slen += getstringlength(s);
+      auto s = guard(iter.getarg(), stringp);
+      ss.append( getstringdata(s) );
    }
 
-   iter.reset();
-
-   SEXPR n = MEMORY::string(slen);
-   while ( iter.more() )
-   {
-      SEXPR s = iter.getarg();
-      strcat(getstringdata(n), getstringdata(s));
-   }
-
-   return n;
+   return MEMORY::string( ss );
 }
 
 SEXPR FUNC::string_ref()
@@ -1488,10 +1479,8 @@ SEXPR FUNC::substring()
       else
       {
 	 const int slen = end - start;
-	 SEXPR ss = MEMORY::string(slen);
-	 strncpy( getstringdata(ss), &getstringdata(s)[start], slen );
-	 getstringdata(ss)[slen] = '\0';
-	 return ss;
+         std::string ss( &getstringdata(s)[start], slen );
+         return MEMORY::string( ss );
       }
    }
    else
@@ -1572,14 +1561,12 @@ SEXPR FUNC::list_to_string()
    SEXPR list = guard(iter.getarg(), listp);
    const int len = list_length(list);
 
-   SEXPR s = MEMORY::string(len);
-
+   std::string s;
+   
    for ( int i = 0; i < len; ++i, list = cdr(list) )
-      getstringdata(s)[i] = getcharacter(guard(car(list), charp));
+      s.push_back( getcharacter(guard(car(list), charp)) );
 
-   getstringdata(s)[len] = '\0';
-
-   return s;
+   return MEMORY::string( s );
 }
 
 SEXPR FUNC::string_to_list()
