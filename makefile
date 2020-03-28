@@ -49,7 +49,6 @@ LFLAGS = $(DEBUG_FLAGS) -v -lm
 
 DEFINES =
 DEFINES += -DGC_STATISTICS_DETAILED
-DEFINES += -DOBJECT_CACHE
 
 $(APP) : $(OBJS) $(NOISE)/linenoise.o
 	$(C++) -o $@ $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
