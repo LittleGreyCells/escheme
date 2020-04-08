@@ -1,3 +1,7 @@
+;;
+;; escheme configurer
+;;
+
 (define *version* "v1.0 (interpeter)")
 (set-prompt "escheme> ")
 
