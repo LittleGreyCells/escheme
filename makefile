@@ -3,7 +3,7 @@ CC  = gcc
 
 CWD = $(shell pwd)
 
-APP    = escheme1
+APP    = escheme
 
 SRCLOC = $(CWD)/src
 REP    = $(SRCLOC)/rep
@@ -52,7 +52,6 @@ DEFINES += -DGC_STATISTICS_DETAILED
 
 $(APP) : $(OBJS) $(NOISE)/linenoise.o
 	$(C++) -o $@ $(OBJS) $(NOISE)/linenoise.o $(LFLAGS)
-	ln -sf $(APP) escheme
 
 %.o	: %.cxx
 	$(C++) $(DEFINES) $(INCLUDES) -c $(CFLAGS) $< -o $@
@@ -63,7 +62,6 @@ $(NOISE)/linenoise.o : $(NOISE)/linenoise.c
 clean 	:
 	find . -name "*.o" -delete
 	find . -name "*~" -delete
-	rm -f escheme
 	rm -f $(APP)
 
 install : $(APP)
@@ -76,7 +74,6 @@ install : $(APP)
 	cp $(APP) /usr/local/bin/$(APP)_i
 	echo 'ESCHEME=/usr/share/$(APP) $(APP)_i $$@' > /usr/local/bin/$(APP)
 	chmod +x /usr/local/bin/$(APP)
-	ln -s /usr/local/bin/$(APP) /usr/local/bin/escheme
 
 uninstall :
 	if [ -d /usr/share/$(APP) ]; \
@@ -84,6 +81,5 @@ uninstall :
 	   rm -rf /usr/share/$(APP); \
 	   rm -f /usr/local/bin/$(APP); \
 	   rm -f /usr/local/bin/$(APP)_i; \
-	   rm -f /usr/local/bin/escheme; \
 	fi
 
