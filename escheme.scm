@@ -2,9 +2,6 @@
 ;; escheme configurer
 ;;
 
-(define *version* "v1.0 (interpeter)")
-(set-prompt "escheme> ")
-
 (define (split-args args options files)
   (if (null? args)
       (cons options files)
@@ -36,6 +33,13 @@
                 (newline)
                 (exit))))
        (set! options (cdr options)))
+    ;; boot the intepreter
+    (set! *version* "v1.0 (interpeter)")
+    (set-prompt "escheme> ")
+    (load (system-path "boot/standard-functions.scm"))
+    (load (system-path "macros/macros.scm"))
+    (load (system-path "macros/qquote.scm"))
+    (load (system-path "boot/macro-definitions.scm"))
     (let ((try-load
            (lambda (file)
              (let ((result (load file)))
