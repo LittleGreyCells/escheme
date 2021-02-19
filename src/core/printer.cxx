@@ -11,7 +11,7 @@ static char buffer[MAX_IMAGE_LENGTH];
 
 static void error( const char* s )
 {
-   char message[80];
+   char message[300];
    SPRINTF(message, "PRINTER error: %s\n", s);
    ERROR::severe(message);
 }
