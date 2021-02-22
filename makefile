@@ -17,7 +17,7 @@ SRCS	= \
 	$(EVAL)/eval.cxx \
 	$(EVAL)/eceval.cxx \
 	$(CORE)/sexpr.cxx \
-	$(CORE)/escheme.cxx \
+	$(CORE)/main.cxx \
 	$(CORE)/error.cxx \
 	$(CORE)/argstack.cxx \
 	$(CORE)/regstack.cxx \
