@@ -87,7 +87,6 @@ static SEXPR newnode( NodeKind kind )
    SEXPR n = FreeNodeList;
    FreeNodeList = FreeNodeList->getnext();
    n->kind = kind;
-   n->nuse = true;
 
    return n;
 }
@@ -250,48 +249,44 @@ static void sweep()
 	 }
 	 else
 	 {
-            // if it had been inuse, then reclaim the data
-            if ( p->nuse )
-            {
-               switch ( nodekind(p) )
-               {
-                  case n_symbol:
-                     delete[] getname( p );
-                     break;
-                     
-                  case n_string:
-                     delete[] getstringdata( p );
-                     break;
-                     
-                  case n_bvec:
-                     delete[] getbvecdata( p );
-                     break;
-                     
-                  case n_environment:
-                     MEMORY::frameStore.free( getenvframe(p) );
-                     break;                  
-                     
-                  case n_vector:
-                     delete[] getvectordata( p );
-                     break;
-                     
-                  case n_closure:
-                     delete[] getclosuredata( p );
-                     break;
-                     
-                  case n_port:
-                     if ( getfile(p) != NULL )
-                        fclose( getfile(p) );
-                     break;
-                     
-                  case n_string_port:
-                     delete getstringportstring( p );
-                     break;
-                     
-                  default:
-                     break;
-               }
-            }
+	    switch ( nodekind(p) )
+	    {
+	       case n_symbol:
+		  delete[] getname( p );
+		  break;
+                  
+	       case n_string:
+		  delete[] getstringdata( p );
+		  break;
+                  
+	       case n_bvec:
+		  delete[] getbvecdata( p );
+		  break;
+                  
+	       case n_environment:
+		  MEMORY::frameStore.free( getenvframe(p) );
+		  break;                  
+                  
+	       case n_vector:
+		  delete[] getvectordata( p );
+		  break;
+                  
+	       case n_closure:
+		  delete[] getclosuredata( p );
+		  break;
+                  
+	       case n_port:
+		  if ( getfile(p) != NULL )
+		     fclose( getfile(p) );
+		  break;
+                  
+	       case n_string_port:
+		  delete getstringportstring( p );
+		  break;
+                  
+	       default:
+		  break;
+	    }
 
 	    MEMORY::FreeNodeCount += 1;
 #ifdef GC_STATISTICS_DETAILED
