@@ -17,7 +17,7 @@ namespace MEMORY
 
 FrameStore::FrameStore() : store{nullptr}, count{0} {}
 
-FRAME FrameStore::alloc( UINT32 nslots )
+FRAME FrameStore::alloc( UINT32 nslots, SEXPR vars )
 {
    // allocate a frame with all slots defined
    //    framenslots = nslots
@@ -25,33 +25,27 @@ FRAME FrameStore::alloc( UINT32 nslots )
    //    frameclosure = null
    //    frameslots = {null}
    //    framesize = sizeof(header) + sizeof(slots)
-   FRAME frame;
    
    if ( (nslots < store.size()) && store[nslots] )
    {
       // reuse an existing frame
-      frame = store[nslots];
+      auto frame = store[nslots];
       store[nslots] = frame->next;
       count[nslots] -= 1;
-      
-      if ( getframenslots(frame) != nslots )
-         ERROR::fatal( "recycled frame size inconsistent with request" );
+
+      // reinit
+      setframevars( frame, vars );
+      setframeclosure( frame, null );
+      for ( int i = 0; i < nslots; ++i )
+	 frameset( frame, i, null );
+
+      return frame;
    }
    else
    {
       // allocate a new frame from heap
-      frame = new Frame();
-      frame->slot = ( nslots > 0 ) ? new SEXPR[nslots] : nullptr;
-      setframenslots( frame, nslots );
+      return new Frame( nslots, vars );
    }
-   
-   setframevars( frame, null );
-   setframeclosure( frame, null );
-   
-   for ( int i = 0; i < nslots; ++i )
-      frameset( frame, i, null );
-   
-   return frame;
 }
 
 void FrameStore::free( FRAME frame )
@@ -66,8 +60,7 @@ void FrameStore::free( FRAME frame )
    }
    else
    {
-      if ( frame->slot )
-         delete[] frame->slot;
+      delete[] frame->slot;
       delete[] frame;
    }
 }

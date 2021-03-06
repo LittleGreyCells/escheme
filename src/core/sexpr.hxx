@@ -69,8 +69,21 @@ using FRAME = Frame*;
 using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
 
+extern SEXPR null;
+
 struct Frame
 {
+   Frame( int nvars, SEXPR vars ) :
+      next(nullptr),
+      vars(vars),
+      closure(null),
+      nslots(nvars),
+      slot(new SEXPR[nvars])
+   {
+      for ( int i = 0; i < nslots; ++i )
+	 slot[i] = null;
+   }
+   
    FRAME next;
    SEXPR vars;
    SEXPR closure;
@@ -198,8 +211,6 @@ struct Node
 
    void* id() { return this; }
 };
-
-extern SEXPR null;
 
 // accessors
 FIXNUM fixnum( const SEXPR n );

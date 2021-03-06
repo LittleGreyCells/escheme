@@ -1,7 +1,7 @@
 escheme
-escheme1
 src/core/*.o
 src/eval/*.o
 src/rep/*.o
 src/linenoise/*.o
+history.txt
 

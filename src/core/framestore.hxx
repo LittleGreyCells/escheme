@@ -18,7 +18,7 @@ class FrameStore
 public: 
    FrameStore();
   
-   FRAME alloc( UINT32 nslots );
+   FRAME alloc( UINT32 nslots, SEXPR vars );
    void free( FRAME frame );
    
    std::array<UINT32, 10> count;

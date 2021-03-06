@@ -470,9 +470,7 @@ SEXPR MEMORY::closure( SEXPR code, SEXPR env )       // ( <numv> [<code> <benv> 
 
 SEXPR MEMORY::environment( UINT32 nvars, SEXPR vars, SEXPR env )   // (<frame> . <env>)
 {
-   auto frame = frameStore.alloc( nvars );
-   setframevars(frame, vars);
-   setframeclosure(frame, null);
+   auto frame = frameStore.alloc( nvars, vars );
    auto n = newnode(n_environment);
    setenvbase( n, env );
    setenvframe( n, frame );
