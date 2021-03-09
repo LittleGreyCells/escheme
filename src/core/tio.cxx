@@ -22,9 +22,6 @@ static const char* history = "history.txt";
 static const int history_max_length = 100;
 static std::string prompt = "> ";
 
-static std::string stdin_line;
-static unsigned stdin_index = 0;
-
 static std::string term_line;
 static unsigned term_index;
 
