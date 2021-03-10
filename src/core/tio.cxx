@@ -37,17 +37,16 @@ int TIO::terminal_getch()
       term_index = 0;
       term_line = line;
 
+      linenoiseFree( line );
+
       // append whitespace to satisfy scheme tokenizer
       term_line.push_back('\n');
 
-      using TRANSCRIPT::transcript;
-      if ( transcript )
+      if ( TRANSCRIPT::transcript )
       {
-	  fputs( prompt.c_str(), transcript );
-	  fputs( term_line.c_str(), transcript );
+	 fputs( prompt.c_str(), TRANSCRIPT::transcript );
+	 fputs( term_line.c_str(), TRANSCRIPT::transcript );
       }
-
-      linenoiseFree( line );
    }
 
    return term_line[term_index++];
@@ -70,10 +69,8 @@ void TIO::history_add( SEXPR sexpr )
    const SEXPR port = PIO::open_on_string( MEMORY::string_null, pm_output );
    PRINTER::print( port, sexpr );
 
-   auto str = getstringportstring(port);
-
-   // linenoise makes a copy when it adds it to the history.
-   linenoiseHistoryAdd( str->c_str() );
+   // linenoise makes a copy when it adds it to the history
+   linenoiseHistoryAdd( getstringportstring(port)->c_str() );
    linenoiseHistorySave( history );
 }
 
