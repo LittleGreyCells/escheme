@@ -12,9 +12,11 @@ Along the way escheme has become a capable programming language, not a toy.
 Many additional functions are added to support environments, input/output, the host OS 
 (linux/unix) and access escheme internals. Bignums are not supported.
 
-Abelson and Sussman's _Structure and Interpretation of Computer Programs_ chapter 5 describes an explicit 
-control evalutor for scheme. That material has provided the impetus for escheme.  escheme is not related
-to emacs or eLisp in any way.
+Abelson and Sussman's _Structure and Interpretation of Computer Programs_
+chapter 5 describes an explicit control evalutor for scheme. That material has provided the impetus
+for escheme's design and implementation approach as well as for its name. "ece-scheme" was a bit much
+to type, so the name was shortened to "escheme" for project naming.
+escheme is not related to emacs or eLisp in any way.
 
 ## Implementation 
 
