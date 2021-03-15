@@ -103,12 +103,13 @@ namespace EVAL
    void restore_continuation( SEXPR continuation );
 }
 
-inline void save_evs( EVSTATE x )  { intstack.push(int(x)); }
-inline void save_int( int x )  { intstack.push(x); }
-inline void save_reg( SEXPR x ) { regstack.push(x); }
-inline void restore_evs( EVSTATE& x ) { x = EVSTATE( intstack.pop() ); }
-inline void restore_int( int& x ) { x = intstack.pop(); }
-inline void restore_reg( SEXPR& x ) { x = regstack.pop(); }
+inline void save( EVSTATE x )  { intstack.push(int(x)); }
+inline void save( int x )  { intstack.push(x); }
+inline void save( SEXPR x ) { regstack.push(x); }
+   
+inline void restore( EVSTATE& x ) { x = EVSTATE( intstack.pop() ); }
+inline void restore( int& x ) { x = intstack.pop(); }
+inline void restore( SEXPR& x ) { x = regstack.pop(); }
 
 }
 
