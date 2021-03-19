@@ -38,7 +38,10 @@ SEXPR EVAL::theGlobalEnv;
 
 SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 {
-   for (; anyp(env); env = getenvbase(env))
+   if ( anyp(env) )
+      guard(env, envp);
+
+   for ( ; anyp(env); env = getenvbase(env) )
    {
       FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
@@ -53,7 +56,7 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
    // global var
    const SEXPR val = value(var);
 
-   if (val == symbol_unbound)
+   if ( val == symbol_unbound )
       ERROR::severe("symbol is unbound", var);
 
    return val;
@@ -61,10 +64,10 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 
 void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 {
-   if (anyp(env))
+   if ( anyp(env) )
       guard(env, envp);
 
-   for (; anyp(env); env = getenvbase(env))
+   for ( ; anyp(env); env = getenvbase(env) )
    {
       FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
