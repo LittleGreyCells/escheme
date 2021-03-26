@@ -230,26 +230,6 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
    return MEMORY::environment( nvars, vars.get(), benv );
 }
 
-void EVAL::append( SEXPR env, SEXPR var, SEXPR val )
-{
-   FRAME frame = getenvframe(env);
-   
-   // I. prepend var to vars
-   frame->vars = MEMORY::cons( var, frame->vars );
-
-   // II. add a slot and assign val
-   auto slot = new SEXPR[frame->nslots+1];
-   slot[0] = val;
-   if ( frame->slot )
-   {
-      for ( int i = 0; i < frame->nslots; ++i )
-         slot[i+1] = frame->slot[i];
-      delete[] frame->slot;
-   }
-   frame->slot = slot;
-   frame->nslots += 1;
-}
-
 SEXPR EVAL::get_evaluator_state()
 {
    const int rs_depth = regstack.getdepth();
