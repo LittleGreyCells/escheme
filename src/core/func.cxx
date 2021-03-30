@@ -2133,4 +2133,29 @@ SEXPR FUNC::objaddr()
    return MEMORY::fixnum( reinterpret_cast<FIXNUM>(obj) );
 }
 
+//
+// string
+//
+
+SEXPR FUNC::find()
+{
+   ArgstackIterator iter;
+
+   SEXPR s1 = guard(iter.getarg(), stringp);
+   SEXPR ss = guard(iter.getlast(), stringp);
+
+   auto pos = ::strstr( getstringdata(s1), getstringdata(ss) );
+
+   if ( pos == NULL )
+   {
+      return null;
+   }
+   else
+   {
+      const auto offset = pos - getstringdata(s1);
+      return MEMORY::fixnum( reinterpret_cast<FIXNUM>(offset) );
+   }
+}
+
+   
 }

@@ -299,6 +299,8 @@ static const Function funtab[] =
    { "clear-history",	      FUNC::history_clear },
    { "set-prompt",	      FUNC::set_prompt    },
 
+   { "find",                  FUNC::find         },
+
    { "%closure-code",         FUNC::closure_code },
    { "%closure-benv",         FUNC::closure_benv },
    { "%closure-vars",         FUNC::closure_vars },

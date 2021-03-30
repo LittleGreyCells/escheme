@@ -497,6 +497,10 @@
   (assert (string-ci>=? "X" "abc"))
   (assert (string-ci>=? "A" "a"))
   (assert (not (string-ci>=? "" "a")))
+
+  (let ((pos (find "12abc45" "abc")))
+    (assert (and (number? pos) (= pos 2))))
+  (assert (null? (find "12abc45" "xyz")))
 )
 
 

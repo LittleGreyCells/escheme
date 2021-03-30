@@ -75,6 +75,7 @@
 ((even? <exp>) -> <boolean>)
 ((exact? <exp>) -> <boolean>)
 ((exit) -> <never-returns>)
+((find <string> <substring>) -> <fixnum-pos>)
 ((floor <number>) -> <fixnum>)
 ((flush-output (<outport>)) -> #t)
 ((force <promise>) -> <promise-evaluated>)
