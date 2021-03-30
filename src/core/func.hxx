@@ -44,10 +44,6 @@ namespace FUNC
    SEXPR vector_fill();
    SEXPR vector_copy();
 
-   // search
-   SEXPR find_index();
-   SEXPR rank();
-
    // list/vector conversion
    SEXPR vector_to_list();
    SEXPR list_to_vector();

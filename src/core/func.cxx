@@ -415,55 +415,6 @@ SEXPR FUNC::vector_copy()
    return dst;
 }
 
-SEXPR FUNC::find_index()
-{
-   //
-   // syntax: (find-index <item> <vector> [<limit>])
-   //
-   ArgstackIterator iter;
-   const SEXPR x = iter.getarg();
-   const SEXPR v = guard(iter.getarg(), vectorp);
-   int limit = getvectorlength(v);
-   
-   if ( iter.more() )
-      limit = std::min( limit, static_cast<int>(getfixnum(guard(iter.getlast(), fixnump))) );
-
-   for ( int index = 0; index < limit; ++index )
-   {
-      if ( eqv( x, vectorref(v, index) ) )
-	 return MEMORY::fixnum(index);
-   }
-   return symbol_false;
-}
-
-SEXPR FUNC::rank()
-{
-   //
-   // syntax: (rank <item> <list>) -> fixnum | nil
-   //
-   ArgstackIterator iter;
-   const SEXPR x = guard(iter.getarg(), symbolp);
-   SEXPR y = guard(iter.getlast(), listp);
-   int n = 0;
-
-   while ( true )
-   {
-      if ( nullp(y) )
-      {
-	 return null;
-      }
-      else if ( eq( x, car(y) ) )
-      {
-	 return MEMORY::fixnum(n);
-      }
-      else
-      {
-	 n += 1;
-	 y = cdr(y);
-      }
-   }
-}
-
 SEXPR FUNC::list_to_vector()
 {
    //

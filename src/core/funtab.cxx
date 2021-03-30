@@ -96,9 +96,6 @@ static const Function funtab[] =
    { "byte-vector-set!",     FUNC::bvector_set    },
    { "byte-vector-length",   FUNC::bvector_length },
 
-   { "find-index",           FUNC::find_index     },
-   { "rank",                 FUNC::rank           },
-
    { "list->vector",         FUNC::list_to_vector },
    { "vector->list",         FUNC::vector_to_list },
    { "list->string",         FUNC::list_to_string },

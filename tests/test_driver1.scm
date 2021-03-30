@@ -56,7 +56,7 @@
                     last-pair let letrec list? member min negative? not null?
                     max memq number? odd? <= = * + open-append-file or output-port?
                     pair? port? print procedure? promise? put quotient random
-                    rank read-char read remainder reverse round sequence set-car!
+                    read-char read remainder reverse round sequence set-car!
                     setenv shift-left shift-right string-append string-fill!
                     string->symbol substring symbol? symbol->string system
                     the-environment truncate unsetenv vector-copy! vector?
