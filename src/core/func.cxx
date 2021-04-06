@@ -775,7 +775,7 @@ SEXPR FUNC::display()
    const SEXPR s = iter.getarg();
    const SEXPR port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
 
-   PRINTER::print(port, s, 0);
+   PRINTER::print(port, s, PRINTER::NO_QUOTE);
    return symbol_true;
 }
 

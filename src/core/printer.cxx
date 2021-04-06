@@ -21,7 +21,7 @@ void PRINTER::newline( SEXPR outport )
    PIO::put(outport, '\n');
 }
 
-void PRINTER::print_list( SEXPR outport, const SEXPR n, int style )
+void PRINTER::print_list( SEXPR outport, const SEXPR n, QuoteStyle style )
 {
    if (markedp(n))
    {
@@ -62,7 +62,7 @@ void PRINTER::print_list( SEXPR outport, const SEXPR n, int style )
    PIO::put(outport, ')');
 }
 
-void PRINTER::print_vector( SEXPR outport, const SEXPR n, int style )
+void PRINTER::print_vector( SEXPR outport, const SEXPR n, QuoteStyle style )
 {
    if (markedp(n))
    {
@@ -82,19 +82,19 @@ void PRINTER::print_vector( SEXPR outport, const SEXPR n, int style )
    PIO::put(outport, ')');
 }
 
-static void print_string( SEXPR outport, const char* p, int style )
+void PRINTER::print_string( SEXPR outport, const char* p, QuoteStyle style )
 {
-   if ( style )
+   if ( style == QUOTE )
       PIO::put( outport, '"' );
    
    while ( *p )
       PIO::put( outport, *p++ );
    
-   if ( style )
+   if ( style == QUOTE )
       PIO::put( outport, '"' );
 }
 
-void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
+void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 {
    if (nullp(n))
    {
@@ -113,7 +113,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_symbol:
-            print_string( outport, getname(n), 0 );
+            print_string( outport, getname(n), NO_QUOTE );
 	    break;
 
 	 case n_fixnum:
@@ -131,7 +131,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
 	    break;
 
 	 case n_char:
-	    if (style)
+	    if ( style == QUOTE )
 	    {
 	       const int ch = getcharacter(n);
 	       if (ch == '\n')
@@ -238,12 +238,12 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, int style )
    }
 }
 
-void PRINTER::print( SEXPR outport, const SEXPR n, int style )
+void PRINTER::print( SEXPR outport, const SEXPR n, QuoteStyle style )
 {
    print_sexpr( outport, n, style );
 }
 
-void PRINTER::print( const SEXPR s, int style ) 
+void PRINTER::print( const SEXPR s, QuoteStyle style ) 
 { 
    print_sexpr( PIO::stdout_port, s, style ); 
 }
