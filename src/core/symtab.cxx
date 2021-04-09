@@ -78,40 +78,12 @@ SEXPR SYMTAB::enter( const char* symbol_name )
 
 SEXPR SYMTAB::enter( const std::string& name, SEXPR value )
 {
-   SEXPR s = SYMTAB::enter(name);
-   setvalue(s, value);
-   return s;
+   return enter( name.c_str(), value );
 }
 
 SEXPR SYMTAB::enter( const std::string& symbol_name )
 {
-   const char* sn = symbol_name.c_str();
-   auto& element = table[ hash(sn) ];
-
-   if ( anyp(element) )
-   {
-      for ( SEXPR n = element; anyp(n); n = getcdr(n) )
-      {
-	 SEXPR s = getcar(n);
-	 if ( strcmp(name(s), sn) == 0 )
-	    return s;
-      }
-   }
-
-   regstack.push( MEMORY::symbol(symbol_name) );
-   setvalue( regstack.top(), symbol_unbound );
-   element = MEMORY::cons( regstack.top(), element );
-   return regstack.pop();
-}
-
-SEXPR SYMTAB::enter( SEXPR s )
-{
-   if ( !symbolp(s) )
-      return null;
-
-   auto& element = table[ hash(name(s)) ];
-   element = MEMORY::cons( s, element );
-   return s;
+   return enter( symbol_name.c_str() );
 }
 
 SEXPR SYMTAB::symbols()
