@@ -85,7 +85,7 @@ static SEXPR newnode( NodeKind kind )
    MEMORY::FreeNodeCount -= 1;
 
    SEXPR n = FreeNodeList;
-   FreeNodeList = FreeNodeList->getnext();
+   FreeNodeList = n->getnext();
    n->kind = kind;
 
    return n;
@@ -154,7 +154,6 @@ void MEMORY::mark( SEXPR n )
          // frame
          auto frame = getenvframe(n);
          mark( getframevars(frame) );
-         mark( getframeclosure(frame) );
          const auto nslots = getframenslots(frame);
          for ( int i = 0; i < nslots; ++i )
             mark( frameref(frame, i) );

@@ -22,7 +22,6 @@ FRAME FrameStore::alloc( UINT32 nslots, SEXPR vars )
    // allocate a frame with all slots defined
    //    framenslots = nslots
    //    framevars = null
-   //    frameclosure = null
    //    frameslots = {null}
    //    framesize = sizeof(header) + sizeof(slots)
    
@@ -35,7 +34,6 @@ FRAME FrameStore::alloc( UINT32 nslots, SEXPR vars )
 
       // reinit
       setframevars( frame, vars );
-      setframeclosure( frame, null );
       for ( int i = 0; i < nslots; ++i )
 	 frameset( frame, i, null );
 

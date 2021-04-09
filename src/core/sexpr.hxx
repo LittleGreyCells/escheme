@@ -76,7 +76,6 @@ struct Frame
    Frame( int nvars, SEXPR vars ) :
       next(nullptr),
       vars(vars),
-      closure(null),
       nslots(nvars),
       slot(new SEXPR[nvars])
    {
@@ -86,7 +85,6 @@ struct Frame
    
    FRAME next;
    SEXPR vars;
-   SEXPR closure;
    UINT32 nslots;
    SEXPR* slot;        // varying numbers
 };
@@ -357,11 +355,9 @@ inline void setenvbase( SEXPR n, SEXPR x ) { getenvbase(n) = x; }
 // frame
 inline auto& getframenslots( FRAME fr ) { return fr->nslots; }
 inline auto& getframevars( FRAME fr ) { return fr->vars; }
-inline auto& getframeclosure( FRAME fr ) { return fr->closure; }
 inline auto& frameref( FRAME fr, int i ) { return fr->slot[i]; }
 inline void setframenslots( FRAME fr, int n ) { getframenslots(fr) = n; }
 inline void setframevars( FRAME fr, SEXPR x ) { getframevars(fr) = x; }
-inline void setframeclosure( FRAME fr, SEXPR x ) { getframeclosure(fr) = x; }
 inline void frameset( FRAME fr, int i, SEXPR x ) { frameref(fr,i) = x; }
 
 // port

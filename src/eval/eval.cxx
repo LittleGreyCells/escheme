@@ -150,7 +150,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
 
    FRAME frame = getenvframe( regstack.top() );
 
-   setframeclosure( frame, closure );
+   // setframeclosure( frame, closure );
 
    if ( rargs == false ) 
    {
