@@ -226,6 +226,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	 case n_free:
 	    SPRINTF(buffer, "{free-cell:%p}", n->id() );
 	    PIO::put(outport, buffer);
+	    error(buffer);
 	    break;
 
 	 default:

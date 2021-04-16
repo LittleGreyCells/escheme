@@ -15,7 +15,6 @@ enum ConfigurationConstants
    INTSTACK_SIZE      = 1000,
    ECE_HISTORY_LENGTH = 100,
    MAX_IMAGE_LENGTH   = 256,
-   MAX_STRING_SIZE    = 0xFFFE,
 };
 
 enum NodeKind
