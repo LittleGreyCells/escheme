@@ -154,47 +154,47 @@ static bool issym( int ch )
    }
 }
 
-static SEXPR number( std::string& s )
+static SEXPR number( const std::string& s )
 {
-   const char* p = s.c_str();
+   int i = 0;
 
-   /* check for a sign */
-   if (*p == '+' || *p == '-')
-      p++;
+   // check for a sign
+   if (s[i] == '+' || s[i] == '-')
+      i++;
 
-   /* check for a string of digits */
+   // check for a string of digits
    int n = 0;
-   while (isdigit(*p)) { p++; n++; }
+   while (isdigit(s[i])) { i++; n++; }
 
-   /* check for a decimal point */
+   // check for a decimal point
    bool d = false;
    int  m = 0;
-   if (*p == '.')
+   if (s[i] == '.')
    {
-      p++;
+      i++;
       d = true;
-      while (isdigit(*p)) { p++; m++; }
+      while (isdigit(s[i])) { i++; m++; }
    }
 
-   /* check for an exponent */
-   if ((n || m) && toupper(*p) == 'E')
+   // check for an exponent
+   if ((n || m) && toupper(s[i]) == 'E')
    {
-      p++;
+      i++;
       d = true;
       // check for a sign
-      if (*p == '+' || *p == '-')
-	 p++;
+      if (s[i] == '+' || s[i] == '-')
+	 i++;
 
       // check for a string of digits
-      while (isdigit(*p)) { p++; m++; }
+      while (isdigit(s[i])) { i++; m++; }
    }
 
-   /* make sure there was at least one digit */
-   if ((n == 0 && m == 0) || *p)
+   // make sure there was at least one digit
+   if ( (n == 0 && m == 0) || (i < s.length()) )
       return null;
 
-   return d ? MEMORY::flonum( atof( s.c_str() ) ) :
-              MEMORY::fixnum( atol( s.c_str() ) );
+   return d ? MEMORY::flonum( std::stod( s ) ) :
+              MEMORY::fixnum( std::stol( s ) );
 }
 
 static void getsymbolname( SEXPR inport, std::string& s )
@@ -282,10 +282,10 @@ SEXPR READER::read_fixnum( SEXPR inport, int base )
   
    while ( ((ch = PIO::get(inport)) != EOF) && issym(ch) ) 
    {
-      if (isupper(ch)) 
+      if ( isupper(ch) ) 
 	 ch = tolower(ch);
 
-      if (!isbasedigit(ch, base))
+      if ( !isbasedigit(ch, base) )
 	 ERROR::severe("invalid digit");
 
       n = n * base + todigit(ch);
@@ -302,7 +302,7 @@ SEXPR READER::read_special( SEXPR inport )
 
    int ch = scan(inport);
 
-   switch (ch)
+   switch ( ch )
    {
       case '(':
 	 return read_vector(inport, ')');
@@ -314,9 +314,9 @@ SEXPR READER::read_special( SEXPR inport )
       {
 	 getsymbolname( inport, s );
 
-	 if ( strcasecmp( s.c_str(), "newline" ) == 0 )
+	 if ( s.compare( "newline" ) == 0 )
 	    ch = '\n';
-	 else if ( strcasecmp( s.c_str(), "space" ) == 0 )
+	 else if ( s.compare( "space" ) == 0 )
 	    ch = ' ';
 	 else if ( s.length() > 1 )
 	    ERROR::severe("unknown special symbol");
@@ -347,11 +347,11 @@ SEXPR READER::read_special( SEXPR inport )
       {
 	 getsymbolname( inport, s );
 
-	 if ( strcasecmp( s.c_str(), "true" ) == 0 )
+	 if ( s.compare( "true" ) == 0 )
 	    return symbol_true;
-	 else if ( strcasecmp( s.c_str(), "false" ) == 0 )
+	 else if ( s.compare( "false" ) == 0 )
 	    return symbol_false;
-	 else if ( strcasecmp( s.c_str(), "null") == 0 )
+	 else if ( s.compare( "null") == 0 )
 	    return null;
 	 else if ( s.length() == 0 )
 	    ERROR::severe("expected special symbol after #!");
@@ -369,9 +369,9 @@ SEXPR READER::read_special( SEXPR inport )
 
 	 getsymbolname( inport, s );
 
-	 if ( strcasecmp( s.c_str(), "t" ) == 0 )
+	 if ( s.compare( "t" ) == 0 )
 	    return symbol_true;
-	 else if ( strcasecmp( s.c_str(), "f" ) == 0)
+	 else if ( s.compare( "f" ) == 0)
 	    return symbol_false;
 	 else
 	 {
@@ -405,14 +405,14 @@ SEXPR READER::read_comma( SEXPR inport )
 
 SEXPR READER::read_sexpr( SEXPR inport )
 {
-   while (true)
+   while ( true )
    {
       const int ch = scan(inport);
 
-      if (ch == EOF)
+      if ( ch == EOF )
 	 return PIO::eof_object;
 
-      switch (ch)
+      switch ( ch )
       {
 	 case ';':
 	    read_comment(inport);
