@@ -33,6 +33,7 @@ static const Function funtab[] =
 {
    { "exit",		     FUNC::exit 	},
    { "gc",		     FUNC::gc		},
+   { "mm",		     FUNC::mm		},
    { "fs",		     FUNC::fs		},
    { "eval-state",	     EVAL::get_evaluator_state },
 

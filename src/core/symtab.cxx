@@ -51,7 +51,7 @@ static unsigned hash( const char* s )
 
 SEXPR SYMTAB::enter( const char* name, SEXPR value )
 {
-   SEXPR s = SYMTAB::enter(name);
+   auto s = SYMTAB::enter(name);
    setvalue(s, value);
    return s;
 }
@@ -88,9 +88,9 @@ SEXPR SYMTAB::enter( const std::string& symbol_name )
 
 SEXPR SYMTAB::symbols()
 {
-   SEXPR symbols = MEMORY::vector(NBUCKETS);
+   const auto symbols = MEMORY::vector(NBUCKETS);
 
-   for ( int i = 0; i < table.size(); ++i )
+   for ( auto i = 0; i < table.size(); ++i )
       vectorset( symbols, i, table[i] );
    
    return symbols;

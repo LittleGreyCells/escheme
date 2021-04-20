@@ -12,7 +12,6 @@ namespace escheme
 {
 
 SEXPR MEMORY::string_null;
-SEXPR MEMORY::vector_null;
 
 namespace MEMORY
 {
@@ -309,7 +308,6 @@ void MEMORY::gc()
 
    // mark memory managed roots
    mark( string_null );
-   mark( vector_null );
    mark( listhead );
 
    // notify all clients to mark their active roots
@@ -348,8 +346,7 @@ SEXPR MEMORY::character( CHAR ch )   // (<char>)
 static char* duplicate( const char* s, int length )
 {
    auto dup = new char[length+1];
-   strncpy( dup, s, length );
-   dup[length] = '\0';
+   strcpy( dup, s );
    return dup;
 }
 
@@ -362,16 +359,14 @@ static SEXPR new_symbol( const char* s, int length )
    return n;
 }
 
-SEXPR MEMORY::symbol( const char* s )        { return new_symbol( s, strlen(s) ); }
-SEXPR MEMORY::symbol( const std::string& s ) { return new_symbol( s.c_str(), s.length() ); }
-
-
-static SEXPR make_string_null()
+SEXPR MEMORY::symbol( const char* s )
 {
-   auto n = newnode(n_string);
-   setstringlength( n, 0 );
-   setstringdata( n, duplicate("", 0) );
-   return n;
+   return new_symbol( s, strlen(s) );
+}
+
+SEXPR MEMORY::symbol( const std::string& s )
+{
+   return new_symbol( s.c_str(), s.length() );
 }
 
 static SEXPR new_string( const char* s, int length )
@@ -389,9 +384,15 @@ static SEXPR new_string( const char* s, int length )
    }
 }
 
-SEXPR MEMORY::string( const char* s )        { return new_string( s, strlen(s) ); }
-SEXPR MEMORY::string( const std::string& s ) { return new_string( s.c_str(), s.length() ); }
+SEXPR MEMORY::string( const char* s )
+{
+   return new_string( s, strlen(s) );
+}
 
+SEXPR MEMORY::string( const std::string& s )
+{
+   return new_string( s.c_str(), s.length() );
+}
 
 SEXPR MEMORY::string_port( SEXPR str, short mode )
 {
@@ -497,7 +498,6 @@ SEXPR MEMORY::code( SEXPR bcodes, SEXPR sexprs )
 //
 //   ()  -- null
 //   ""  -- null string
-//   #() -- null vector
 //
 //   note: the null object is not allocated from node space.
 //
@@ -505,12 +505,19 @@ SEXPR MEMORY::code( SEXPR bcodes, SEXPR sexprs )
 // note: the null object is not allocated from node space
 SEXPR null = new Node( n_null );
 
+static SEXPR make_string_null()
+{
+   auto n = newnode(n_string);
+   setstringlength( n, 0 );
+   setstringdata( n, duplicate("", 0) );
+   return n;
+}
+
 void MEMORY::initialize()
 {
    FreeNodeList = null;
    NewNodeBlock();
    string_null = make_string_null();
-   vector_null = vector( 0 );
    listhead = cons(null, null);
 }
 

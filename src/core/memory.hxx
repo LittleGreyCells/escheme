@@ -24,18 +24,17 @@ namespace MEMORY
 #endif
 
    extern SEXPR string_null;
-   extern SEXPR vector_null;
 
    void initialize();
 
    // allocators
-   SEXPR symbol( const char* name );
-   SEXPR symbol( const std::string& name );
+   SEXPR character( CHAR ch );
    SEXPR fixnum( FIXNUM fixnum );
    SEXPR flonum( FLONUM flonum );
+   SEXPR symbol( const char* name );
+   SEXPR symbol( const std::string& name );
    SEXPR string( const char* string );
    SEXPR string( const std::string& string );
-   SEXPR character( CHAR ch );
    SEXPR cons( SEXPR car, SEXPR cdr );
    SEXPR prim( const char* name, FUNCTION func, NodeKind kind = n_func );
    SEXPR port( FILE* file, short mode );

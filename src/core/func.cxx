@@ -824,11 +824,16 @@ SEXPR FUNC::write_char()
 static SEXPR gc_stats()
 {
    // nodes stats
+#ifdef GC_STATISTICS_DETAILED
    regstack.push( MEMORY::vector(4) );
+#else
+   regstack.push( MEMORY::vector(3) );
+#endif
    
    vectorset( regstack.top(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
    vectorset( regstack.top(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount ) );
    vectorset( regstack.top(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
+   
 #ifdef GC_STATISTICS_DETAILED
    const int N = MEMORY::ReclamationCounts.size();
    regstack.push( MEMORY::vector(N) );
@@ -843,12 +848,20 @@ static SEXPR gc_stats()
 
 SEXPR FUNC::gc()
 {
-   // *
+   //
    // syntax: (gc) -> <statistics>
    //
    argstack.noargs();
    MEMORY::gc();
+   return gc_stats();
+}
 
+SEXPR FUNC::mm()
+{
+   //
+   // syntax: (mm) -> <statistics>
+   //
+   argstack.noargs();
    return gc_stats();
 }
 
