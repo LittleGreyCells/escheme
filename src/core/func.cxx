@@ -1592,7 +1592,7 @@ SEXPR FUNC::integer_to_string()
    // syntax: (integer->string <fixnum>) -> <string>
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getlast(), fixnump);
+   auto s = guard(iter.getlast(), fixnump);
 
    char buf[MAX_IMAGE_LENGTH];
    SPRINTF( buf, "%ld", getfixnum(s) );
@@ -1606,8 +1606,8 @@ SEXPR FUNC::string_to_integer()
    // syntax: (string->integer <string>) -> <fixnum>
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getlast(), stringp);
-   return MEMORY::fixnum( atoi(getstringdata(s)) );
+   auto s = guard(iter.getlast(), stringp);
+   return MEMORY::fixnum( atol(getstringdata(s)) );
 }
 
 //
