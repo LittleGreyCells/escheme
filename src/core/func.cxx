@@ -210,7 +210,7 @@ SEXPR FUNC::bvector()
    const int n = argstack.getargc();
    auto v = MEMORY::byte_vector(n);
 
-   for ( auto i = 0; i < n; ++i )
+   for ( int i = 0; i < n; ++i )
    {
       auto byte = guard(iter.getarg(), fixnump);
       bvecset( v, i, static_cast<BYTE>( getfixnum(byte) ) );
@@ -290,7 +290,7 @@ SEXPR FUNC::vector()
    const int n = argstack.getargc();
    auto v = MEMORY::vector(n);
 
-   for ( auto i = 0; i < n; ++i )
+   for ( int i = 0; i < n; ++i )
       vectorset( v, i, iter.getarg() );
 
    return v;
@@ -362,8 +362,9 @@ SEXPR FUNC::vector_fill()
    ArgstackIterator iter;
    auto v = guard(iter.getarg(), vectorp);
    auto x = iter.getlast();
+   const int vlen = getvectorlength(v);
 
-   for ( auto i = 0; i < getvectorlength(v); ++i )
+   for ( int i = 0; i < vlen; ++i )
       vectorset( v, i, x );
 
    return v;
@@ -382,8 +383,8 @@ SEXPR FUNC::vector_copy()
    if ( dst_s >= getvectorlength(dst) )
       ERROR::severe( "dst-start > dst length" );
 
-   auto src_s = 0;
-   auto src_e = getvectorlength(src);
+   int src_s = 0;
+   int src_e = getvectorlength(src);
 
    if ( iter.more() )
    {
@@ -401,8 +402,8 @@ SEXPR FUNC::vector_copy()
    if ( dst_s + (src_e - src_s) > getvectorlength(dst) )
       ERROR::severe( "dest not large enough for src" );
    
-   auto i = dst_s;
-   for ( auto j = src_s; j < src_e; ++j, ++i )
+   int i = dst_s;
+   for ( int j = src_s; j < src_e; ++j, ++i )
       vectorset( dst, i, vectorref( src, j ) );
 
    return dst;
@@ -418,7 +419,7 @@ SEXPR FUNC::list_to_vector()
    const int len = list_length(list);
    auto v        = MEMORY::vector(len);
 
-   for ( auto i = 0; i < len; ++i, list = cdr(list) )
+   for ( int i = 0; i < len; ++i, list = cdr(list) )
       vectorset(v, i, car(list));
 
    return v;
@@ -436,9 +437,7 @@ SEXPR FUNC::vector_to_list()
    regstack.push(null);
 
    for ( int i = len-1; i >= 0; --i )
-   {
       regstack.top() = MEMORY::cons( vectorref(v, i), regstack.top() );
-   }
 
    return regstack.pop();
 }
