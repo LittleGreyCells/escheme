@@ -521,8 +521,8 @@ SEXPR FUNC::eq()
    // syntax: (eq? <exp1> <exp2>)
    //
    ArgstackIterator iter;
-   const SEXPR e1 = iter.getarg();
-   const SEXPR e2 = iter.getlast();
+   auto e1 = iter.getarg();
+   auto e2 = iter.getlast();
    return  (e1 == e2) ? symbol_true : symbol_false;
 }
 
@@ -532,8 +532,8 @@ SEXPR FUNC::eqv()
    // syntax: (eqv? <exp1> <exp2>)
    //
    ArgstackIterator iter;
-   const SEXPR e1 = iter.getarg();
-   const SEXPR e2 = iter.getlast();
+   auto e1 = iter.getarg();
+   auto e2 = iter.getlast();
    return eqv(e1, e2) ? symbol_true : symbol_false;
 }
 
@@ -543,8 +543,8 @@ SEXPR FUNC::equal()
    // syntax: (equal? <exp1> <exp2>)
    //
    ArgstackIterator iter;
-   const SEXPR e1 = iter.getarg();
-   const SEXPR e2 = iter.getlast();
+   auto e1 = iter.getarg();
+   auto e2 = iter.getlast();
    return equal(e1, e2) ? symbol_true : symbol_false;
 }
 
@@ -558,7 +558,7 @@ SEXPR FUNC::string_to_symbol()
    // syntax: (string->symbol <str>) -> interned symbol
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getlast(), stringp);
+   auto s = guard(iter.getlast(), stringp);
    return SYMTAB::enter(getstringdata(s));
 }
 
@@ -568,11 +568,11 @@ SEXPR FUNC::symbol_to_string()
    // syntax: (symbol->string <sym>)
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getlast(), symbolp);
+   auto s = guard(iter.getlast(), symbolp);
    return MEMORY::string(getname(s));
 }
 
-static auto gensym_number = 0u;
+static unsigned gensym_number = 0;
 
 SEXPR FUNC::gensym()
 {
@@ -585,7 +585,7 @@ SEXPR FUNC::gensym()
 
    if ( iter.more() )
    {
-      const SEXPR arg = iter.getlast();
+      const auto arg = iter.getlast();
 
       if ( symbolp(arg) )
       {
@@ -597,7 +597,7 @@ SEXPR FUNC::gensym()
       }
       else if ( fixnump(arg) )
       {
-	 gensym_number = static_cast<decltype(gensym_number)>(getfixnum(arg));
+	 gensym_number = static_cast<unsigned>(getfixnum(arg));
       }
       else
 	 ERROR::severe("gensym requires [sym|str|fix]");
@@ -616,7 +616,7 @@ SEXPR FUNC::symbol_value()
    // syntax: (symbol-value <sym-expr>)
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getlast(), symbolp);
+   auto s = guard(iter.getlast(), symbolp);
    return getvalue(s);
 }
 
@@ -626,8 +626,8 @@ SEXPR FUNC::set_symbol_value()
    // syntax: (set-symbol-value! <sym-expr> <value>)
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getarg(), symbolp);
-   const SEXPR v = iter.getlast();
+   auto s = guard(iter.getarg(), symbolp);
+   auto v = iter.getlast();
    setvalue(s, v);
    return v;
 }
@@ -638,7 +638,7 @@ SEXPR FUNC::symbol_plist()
    // syntax: (symbol-plist <sym-expr>)
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getlast(), symbolp);
+   auto s = guard(iter.getlast(), symbolp);
    return getplist(s);
 }
 
@@ -648,8 +648,8 @@ SEXPR FUNC::set_symbol_plist()
    // syntax: (set-symbol-plist! <sym-expr> <plist>)
    //
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getarg(), symbolp);
-   const SEXPR p = iter.getlast();
+   auto s = guard(iter.getarg(), symbolp);
+   auto p = iter.getlast();
    setplist(s, p);
    return p;
 }
@@ -660,11 +660,11 @@ SEXPR FUNC::get_property()
    // syntax: (get <sym> <prop>)
    //
    ArgstackIterator iter;
-   SEXPR s = guard(iter.getarg(), symbolp);
-   SEXPR p = guard(iter.getlast(), symbolp);
-   SEXPR plist = getplist(s);
+   auto s = guard(iter.getarg(), symbolp);
+   auto p = guard(iter.getlast(), symbolp);
+   auto plist = getplist(s);
 
-   while (anyp(plist))
+   while ( anyp(plist) )
    {
       if ( eq( p, car(plist) ) )
 	 return car(cdr(plist));
@@ -680,12 +680,12 @@ SEXPR FUNC::put_property()
    // syntax: (put <sym> <prop> <value>)
    //
    ArgstackIterator iter;
-   SEXPR s = guard(iter.getarg(), symbolp);
-   SEXPR p = guard(iter.getarg(), symbolp);
-   SEXPR v = iter.getlast();
-   SEXPR plist = getplist(s);
+   auto s = guard(iter.getarg(), symbolp);
+   auto p = guard(iter.getarg(), symbolp);
+   auto v = iter.getlast();
+   auto plist = getplist(s);
 
-   while (anyp(plist))
+   while ( anyp(plist) )
    {
       if ( eq( p, car(plist) ) )
       {
@@ -696,8 +696,8 @@ SEXPR FUNC::put_property()
    }
   
    // if we got here, then there is no such property
-   regstack.push(MEMORY::cons(v, getplist(s)));  // protect
-   setplist(s, MEMORY::cons(p, regstack.top()));
+   regstack.push( MEMORY::cons(v, getplist(s)) );  // protect
+   setplist( s, MEMORY::cons(p, regstack.top()) );
    regstack.pop();
 
    return p;
