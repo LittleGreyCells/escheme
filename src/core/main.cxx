@@ -25,6 +25,8 @@ int main( int argc, char** argv )
 
    try
    {
+      escheme::GcSuspension gcs("init");
+
       // essential initialization (order is important)
       escheme::MEMORY::initialize();
       escheme::SYMTAB::initialize();
