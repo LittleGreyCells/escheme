@@ -50,18 +50,16 @@ bool procedurep(const SEXPR s) { return primp(s) || closurep(s); }
 SEXPR FUNC::predicate( PREDICATE pred )
 {
    ArgstackIterator iter;
-   const SEXPR arg = iter.getlast();
+   auto arg = iter.getlast();
    return pred(arg) ? symbol_true : symbol_false;
 }
 
 SEXPR FUNC::cxr( const char* x )
 {
    ArgstackIterator iter;
-   SEXPR exp = iter.getlast();
-
+   auto exp = iter.getlast();
    for ( int i = 0; x[i]; ++i )
       exp = (x[i] == 'a') ? car(exp) : cdr(exp);
-
    return exp;
 }
 
@@ -71,7 +69,7 @@ SEXPR FUNC::cxr( const char* x )
 
 SEXPR FUNC::exit()
 {
-   // *
+   //
    // syntax: (exit)
    //
    argstack.noargs();
@@ -88,8 +86,8 @@ SEXPR FUNC::cons()
    // syntax: (cons <car> <cdr>)
    //
    ArgstackIterator iter;
-   const SEXPR car = iter.getarg();
-   const SEXPR cdr = iter.getlast();
+   auto car = iter.getarg();
+   auto cdr = iter.getlast();
    return MEMORY::cons(car, cdr);
 }
 
@@ -117,8 +115,8 @@ SEXPR FUNC::set_car()
    // syntax: (set-car! <cons> <newcar>) -> <cons>
    //
    ArgstackIterator iter;
-   const SEXPR cons = guard( iter.getarg(), consp );
-   const SEXPR newcar = iter.getlast();
+   auto cons = guard( iter.getarg(), consp );
+   auto newcar = iter.getlast();
    setcar( cons, newcar );
    return cons;
 }
@@ -129,8 +127,8 @@ SEXPR FUNC::set_cdr()
    // syntax: (set-cdr! <cons> <newcdr>) -> <cons>
    //
    ArgstackIterator iter;
-   const SEXPR cons = guard( iter.getarg(), consp );
-   const SEXPR newcdr = iter.getlast();
+   auto cons = guard( iter.getarg(), consp );
+   auto newcdr = iter.getlast();
    setcdr( cons, newcdr );
    return cons;
 }
@@ -141,7 +139,7 @@ SEXPR FUNC::length()
    // syntax: (length <list>)
    //
    ArgstackIterator iter;
-   const SEXPR n = guard(iter.getlast(), listp);
+   auto n = guard(iter.getlast(), listp);
    return MEMORY::fixnum(list_length(n));
 }
 
@@ -175,23 +173,23 @@ SEXPR FUNC::liststar()
    else
    {
       ArgstackIterator iter;
-      if  (argc ==  1)
+      if  ( argc == 1 )
 	 return iter.getlast();
 
-      SEXPR cell = MEMORY::cons(iter.getarg(), null);
+      auto cell = MEMORY::cons(iter.getarg(), null);
       regstack.push(cell);
 
-      while (true)
+      while ( true )
       {
-	 SEXPR next = iter.getarg();
+	 auto next = iter.getarg();
 	 if ( !iter.more() )
 	 {
-	    setcdr(cell, next);
+	    setcdr( cell, next );
 	    return regstack.pop();
 	 }
 	 else
 	 {
-	    setcdr(cell, MEMORY::cons(next, null));
+	    setcdr( cell, MEMORY::cons(next, null) );
 	    cell = getcdr(cell);
 	 }
       }
@@ -210,11 +208,11 @@ SEXPR FUNC::bvector()
    //
    ArgstackIterator iter;
    const int n = argstack.getargc();
-   SEXPR v = MEMORY::byte_vector(n);
+   auto v = MEMORY::byte_vector(n);
 
-   for ( int i = 0; i < n; ++i )
+   for ( auto i = 0; i < n; ++i )
    {
-      const SEXPR byte = guard(iter.getarg(), fixnump);
+      auto byte = guard(iter.getarg(), fixnump);
       bvecset( v, i, static_cast<BYTE>( getfixnum(byte) ) );
    }
 
@@ -241,11 +239,11 @@ SEXPR FUNC::bvector_ref()
    // syntax: (byte-vector-ref <vector> <index>)
    //
    ArgstackIterator iter;
-   const SEXPR bv      = guard(iter.getarg(), bvecp);
-   const SEXPR bvindex = guard(iter.getlast(), fixnump);
-   const int   index   = getfixnum(bvindex);
+   auto bv      = guard(iter.getarg(), bvecp);
+   auto bvindex = guard(iter.getlast(), fixnump);
+   const int index = getfixnum(bvindex);
 
-   if ( index < 0 || index >= static_cast<int>(getbveclength(bv)) )
+   if ( index < 0 || index >= getbveclength(bv) )
       ERROR::severe("index out of range");
 
    return MEMORY::fixnum(bvecref(bv, index));
@@ -257,12 +255,12 @@ SEXPR FUNC::bvector_set()
    // syntax: (byte-vector-set! <vector> <index> <value>)
    //
    ArgstackIterator iter;
-   const SEXPR bv      = guard(iter.getarg(), bvecp);
-   const SEXPR bvindex = guard(iter.getarg(), fixnump);
-   const SEXPR bvalue  = guard(iter.getlast(), fixnump);
-   const int   index   = getfixnum(bvindex);
+   auto bv      = guard(iter.getarg(), bvecp);
+   auto bvindex = guard(iter.getarg(), fixnump);
+   auto bvalue  = guard(iter.getlast(), fixnump);
+   const int index = getfixnum(bvindex);
 
-   if ( index < 0 || index >= static_cast<int>(getbveclength(bv)) )
+   if ( index < 0 || index >= getbveclength(bv) )
       ERROR::severe("index out of range");
 
    bvecset( bv, index, getfixnum(bvalue) );
@@ -275,7 +273,7 @@ SEXPR FUNC::bvector_length()
    // syntax: (byte-vector-length <byte-vector>)
    //
    ArgstackIterator iter;
-   const SEXPR v = guard(iter.getlast(), bvecp);
+   auto v = guard(iter.getlast(), bvecp);
    return MEMORY::fixnum(getbveclength(v));
 }
 
@@ -290,9 +288,9 @@ SEXPR FUNC::vector()
    //
    ArgstackIterator iter;
    const int n = argstack.getargc();
-   SEXPR v = MEMORY::vector(n);
+   auto v = MEMORY::vector(n);
 
-   for ( int i = 0; i < n; ++i )
+   for ( auto i = 0; i < n; ++i )
       vectorset( v, i, iter.getarg() );
 
    return v;
@@ -318,7 +316,7 @@ SEXPR FUNC::vector_length()
    // syntax: (vector-length <vector>)
    //
    ArgstackIterator iter;
-   const SEXPR v = guard(iter.getlast(), vectorp);
+   auto v = guard(iter.getlast(), vectorp);
    return MEMORY::fixnum(getvectorlength(v));
 }
 
@@ -328,11 +326,11 @@ SEXPR FUNC::vector_ref()
    // syntax: (vector-ref <vector> <index>)
    //
    ArgstackIterator iter;
-   const SEXPR v      = guard(iter.getarg(), vectorp);
-   const SEXPR vindex = guard(iter.getlast(), fixnump);
-   const int   index  = getfixnum(vindex);
+   auto v      = guard(iter.getarg(), vectorp);
+   auto vindex = guard(iter.getlast(), fixnump);
+   const int index = getfixnum(vindex);
 
-   if ( index < 0 || index >= static_cast<int>(getvectorlength(v)) )
+   if ( index < 0 || index >= getvectorlength(v) )
       ERROR::severe("index out of range");
 
    return vectorref( v, index );
@@ -344,12 +342,12 @@ SEXPR FUNC::vector_set()
    // syntax: (vector-set! <vector> <index> <value>)
    //
    ArgstackIterator iter;
-   const SEXPR v      = guard(iter.getarg(), vectorp);
-   const SEXPR vindex = guard(iter.getarg(), fixnump);
-   const SEXPR x      = iter.getlast();
-   const int   index  = getfixnum(vindex);
+   auto v      = guard(iter.getarg(), vectorp);
+   auto vindex = guard(iter.getarg(), fixnump);
+   auto x      = iter.getlast();
+   const int index = getfixnum(vindex);
 
-   if ( index < 0 || index >= static_cast<int>(getvectorlength(v)) )
+   if ( index < 0 || index >= getvectorlength(v) )
       ERROR::severe("index out of range");
 
    vectorset( v, index, x );
@@ -362,10 +360,10 @@ SEXPR FUNC::vector_fill()
    // syntax: (vector-fill! <vector> <value>) -> <vector>
    //
    ArgstackIterator iter;
-   const SEXPR v      = guard(iter.getarg(), vectorp);
-   const SEXPR x      = iter.getlast();
+   auto v = guard(iter.getarg(), vectorp);
+   auto x = iter.getlast();
 
-   for ( int i = 0; i < getvectorlength(v); ++i )
+   for ( auto i = 0; i < getvectorlength(v); ++i )
       vectorset( v, i, x );
 
    return v;
@@ -377,39 +375,34 @@ SEXPR FUNC::vector_copy()
    // syntax: (vector-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
    //
    ArgstackIterator iter;
-   const SEXPR dst   = guard(iter.getarg(), vectorp);
-   const int   dst_s = getfixnum(guard(iter.getarg(), fixnump));
-   const SEXPR src   = guard(iter.getarg(), vectorp);
+   auto dst   = guard(iter.getarg(), vectorp);
+   auto dst_s = getfixnum(guard(iter.getarg(), fixnump));
+   auto src   = guard(iter.getarg(), vectorp);
 
-   if ( dst_s >= static_cast<int>(getvectorlength(dst)) )
+   if ( dst_s >= getvectorlength(dst) )
       ERROR::severe( "dst-start > dst length" );
 
-   int src_s;
-   int src_e;
+   auto src_s = 0;
+   auto src_e = getvectorlength(src);
 
    if ( iter.more() )
    {
       src_s = getfixnum(guard(iter.getarg(), fixnump));
       src_e = getfixnum(guard(iter.getlast(), fixnump));
 
-      if ( src_s >= static_cast<int>(getvectorlength(src)) )
+      if ( src_s >= getvectorlength(src) )
 	 ERROR::severe( "src-start >= src length" );
-      if ( src_e > static_cast<int>(getvectorlength(src)) )
+      if ( src_e > getvectorlength(src) )
 	 ERROR::severe( "src-end > src length" );  
       if ( src_s >= src_e )
 	 ERROR::severe( "src-start >= src-end" );
    }
-   else
-   {
-      src_s = 0;
-      src_e = getvectorlength(src);
-   }
 
-   if ( dst_s + (src_e - src_s) > static_cast<int>(getvectorlength(dst)) )
+   if ( dst_s + (src_e - src_s) > getvectorlength(dst) )
       ERROR::severe( "dest not large enough for src" );
    
-   int i = dst_s;
-   for ( int j = src_s; j < src_e; ++j, ++i )
+   auto i = dst_s;
+   for ( auto j = src_s; j < src_e; ++j, ++i )
       vectorset( dst, i, vectorref( src, j ) );
 
    return dst;
@@ -421,11 +414,11 @@ SEXPR FUNC::list_to_vector()
    // syntax: (list->vector <list>) -> <vector>
    //
    ArgstackIterator iter;
-   SEXPR list    = guard(iter.getlast(), listp);
+   auto list     = guard(iter.getlast(), listp);
    const int len = list_length(list);
-   SEXPR v = MEMORY::vector(len);
+   auto v        = MEMORY::vector(len);
 
-   for ( int i = 0; i < len; ++i, list = cdr(list) )
+   for ( auto i = 0; i < len; ++i, list = cdr(list) )
       vectorset(v, i, car(list));
 
    return v;
@@ -437,7 +430,7 @@ SEXPR FUNC::vector_to_list()
    // syntax: (vector->list <vector>) -> <list>
    //
    ArgstackIterator iter;
-   SEXPR v = guard(iter.getlast(), vectorp);
+   auto v = guard(iter.getlast(), vectorp);
    const int len = getvectorlength(v);
 
    regstack.push(null);
