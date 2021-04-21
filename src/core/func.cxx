@@ -725,7 +725,7 @@ SEXPR FUNC::read()
    ArgstackIterator iter;
    if ( iter.more() )
    { 
-      const SEXPR port = guard(iter.getlast(), anyinportp);
+      auto port = guard(iter.getlast(), anyinportp);
       return READER::read(port); 
    }
    else
@@ -740,10 +740,10 @@ SEXPR FUNC::read()
 static SEXPR basic_print( int newline )
 {
    ArgstackIterator iter;
-   const SEXPR s = iter.getarg();
-   const SEXPR port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
+   auto s = iter.getarg();
+   auto port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
    
-   PRINTER::print(port, s);
+   PRINTER::print( port, s );
    if ( newline )
       PRINTER::newline(port);
    return symbol_true;
@@ -758,10 +758,10 @@ SEXPR FUNC::display()
    // syntax: (display <sexpr> [<outport>]) -> #t
    //
    ArgstackIterator iter;
-   const SEXPR s = iter.getarg();
-   const SEXPR port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
+   auto s = iter.getarg();
+   auto port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
 
-   PRINTER::print(port, s, PRINTER::NO_QUOTE);
+   PRINTER::print( port, s, PRINTER::NO_QUOTE );
    return symbol_true;
 }
 
@@ -771,9 +771,9 @@ SEXPR FUNC::newline()
    // syntax: (newline [<outport>]) -> #t
    //
    ArgstackIterator iter;
-   const SEXPR port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
+   auto port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
 
-   PRINTER::newline(port);
+   PRINTER::newline( port );
    return symbol_true;
 }
 
@@ -783,7 +783,7 @@ SEXPR FUNC::read_char()
    // syntax: (read-char [<inport>])
    //
    ArgstackIterator iter;
-   const SEXPR port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdin_port;
+   auto port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdin_port;
 
    const char ch = PIO::get(port);
    return (ch == EOF) ? PIO::eof_object : MEMORY::character(ch);
@@ -795,10 +795,10 @@ SEXPR FUNC::write_char()
    // syntax: (write-char <sexpr> [<outport>]) -> #t
    //
    ArgstackIterator iter;
-   const char  ch = getcharacter(guard(iter.getarg(), charp));
-   const SEXPR port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdout_port;
+   const char ch = getcharacter(guard(iter.getarg(), charp));
+   auto port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdout_port;
 
-   PIO::put(port, ch);
+   PIO::put( port, ch );
    return symbol_true;
 }
 
@@ -824,7 +824,7 @@ static SEXPR gc_stats()
    regstack.push( MEMORY::vector(N) );
    for ( int i = 0; i < N; ++i )
       vectorset( regstack.top(), i, MEMORY::fixnum( MEMORY::ReclamationCounts[i]) );
-   SEXPR reclamations = regstack.pop();
+   auto reclamations = regstack.pop();
    vectorset( regstack.top(), 3, reclamations );
 #endif
    
