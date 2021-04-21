@@ -69,7 +69,7 @@ static void define_system()
         (string-append home "/" file))))
 )";
 
-   escheme::GcSuspension gcs("defsys");
+   GcSuspension gcs("defsys");
 
    auto port = PIO::open_on_string( MEMORY::string(system), pm_input );
    
