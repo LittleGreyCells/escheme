@@ -895,7 +895,7 @@ SEXPR FUNC::env_parent()
    // syntax: (environment-parent <env>)
    //
    ArgstackIterator iter;
-   const SEXPR env = guard(iter.getlast(), envp);
+   auto env = guard(iter.getlast(), envp);
    return getenvbase(env);
 }
 
@@ -905,17 +905,17 @@ SEXPR FUNC::env_bindings()
    // syntax: (environment-bindings <env>) -> (<pair1> <pair2> ...)
    //
    ArgstackIterator iter;
-   const SEXPR arg = iter.getlast();
+   const auto arg = iter.getlast();
 
    // treat the empty list of bindings as a null env
    if ( nullp(arg) )
       return null;
 
-   const SEXPR env = guard(arg, envp);
+   const auto env = guard(arg, envp);
 
    // convert a frame into a list of bindings
-   FRAME frame = getenvframe(env);
-   SEXPR vars = getframevars(frame);
+   const auto frame = getenvframe(env);
+   auto vars = getframevars(frame);
    
    ListBuilder bindings;
 
@@ -936,8 +936,8 @@ SEXPR FUNC::make_environment()
    // syntax: (%make-environment <pairs> <baseenv>)
    //
    ArgstackIterator iter;
-   SEXPR pairs = guard(iter.getarg(), listp);
-   const SEXPR benv = iter.getlast();
+   auto pairs = guard(iter.getarg(), listp);
+   const auto benv = iter.getlast();
 
    if ( !(nullp(benv) || envp(benv)) )
       ERROR::severe( "expected a base environment", benv );
@@ -947,14 +947,14 @@ SEXPR FUNC::make_environment()
 
    // if empty, extend base environment w/ empty frame
 
-   SEXPR env = MEMORY::environment( len, null, benv );
+   const auto env = MEMORY::environment( len, null, benv );
    regstack.push( env );
    {
       ListBuilder vars;
       
       for ( int i = 0; anyp(pairs); ++i )
       {
-         SEXPR x = car(pairs);
+         auto x = car(pairs);
          
          if ( consp(x) )
          {
@@ -989,14 +989,14 @@ SEXPR FUNC::make_closure()
    // syntax: (%make-closure <code> <params> <env>)
    //
    ArgstackIterator iter;
-   SEXPR code = guard(iter.getarg(), listp);
-   SEXPR params = guard(iter.getarg(), listp);
-   const SEXPR env = iter.getlast();
+   auto code = guard(iter.getarg(), listp);
+   auto params = guard(iter.getarg(), listp);
+   const auto env = iter.getlast();
 
    if ( !(nullp(env) || envp(env)) )
       ERROR::severe( "expected an environment", env );
 
-   SEXPR closure = MEMORY::closure( code, env );
+   const auto closure = MEMORY::closure( code, env );
    regstack.push( closure );
    EVAL::parse_formals( params, 
                         getclosurevars(closure),
@@ -1011,9 +1011,9 @@ SEXPR FUNC::parse_formals()
    // syntax: (%parse-formals <params>)
    //
    ArgstackIterator iter;
-   SEXPR params = iter.getlast();
+   auto params = iter.getlast();
 
-   SEXPR v = MEMORY::vector( 3 );
+   auto v = MEMORY::vector( 3 );
    regstack.push( v );
 
    SEXPR vars;
@@ -1036,8 +1036,8 @@ SEXPR FUNC::make_code()
    // syntax: (%make-code <bvec> <vec>)
    //
    ArgstackIterator iter;
-   SEXPR bcodes = guard(iter.getarg(), bvecp);
-   SEXPR sexprs = guard(iter.getlast(), vectorp);
+   auto bcodes = guard(iter.getarg(), bvecp);
+   auto sexprs = guard(iter.getlast(), vectorp);
    return MEMORY::code( bcodes, sexprs );
 }
 
@@ -1047,7 +1047,7 @@ SEXPR FUNC::get_bcodes()
    // syntax: (%get-bcodes <code>)
    //
    ArgstackIterator iter;
-   SEXPR code = guard(iter.getlast(), codep);
+   auto code = guard(iter.getlast(), codep);
    return code_getbcodes(code);
 }
 
@@ -1057,7 +1057,7 @@ SEXPR FUNC::get_sexprs()
    // syntax: (%get-sexprs <code>)
    //
    ArgstackIterator iter;
-   SEXPR code = guard(iter.getlast(), codep);
+   auto code = guard(iter.getlast(), codep);
    return code_getsexprs(code);
 }
 
@@ -1076,9 +1076,8 @@ SEXPR FUNC::unix_system()
    // syntax: (system <string>) -> <fixnum>
    //
    ArgstackIterator iter;
-   const SEXPR cmd = guard(iter.getlast(), stringp);
-   const int result = system(getstringdata(cmd));
-   return MEMORY::fixnum( result );
+   auto cmd = guard(iter.getlast(), stringp);
+   return MEMORY::fixnum( system(getstringdata(cmd)) );
 }
 
 SEXPR FUNC::unix_getargs()
@@ -1088,7 +1087,7 @@ SEXPR FUNC::unix_getargs()
    //
    argstack.noargs();
 
-   SEXPR es_argv = MEMORY::vector(unix_argc);
+   const auto es_argv = MEMORY::vector(unix_argc);
    regstack.push(es_argv);
    for ( int i = 0; i < unix_argc; ++i )
       vset( es_argv, i, MEMORY::string(unix_argv[i]) );
@@ -1101,8 +1100,8 @@ SEXPR FUNC::unix_getenv()
    // syntax: (getenv <var>) -> <string-value>
    //
    ArgstackIterator iter;
-   const SEXPR var = guard(iter.getlast(), stringp);
-   const char* val = ::getenv( getstringdata(var) );
+   auto var = guard(iter.getlast(), stringp);
+   auto val = ::getenv( getstringdata(var) );
    return ( val == nullptr ) ? MEMORY::string_null : MEMORY::string(val);
 }
 
@@ -1112,9 +1111,9 @@ SEXPR FUNC::unix_setenv()
    // syntax: (setenv <var> <val> <replace>) -> <fixnum>
    //
    ArgstackIterator iter;
-   const SEXPR var = guard(iter.getarg(), stringp);
-   const SEXPR val = guard(iter.getarg(), stringp);
-   FIXNUM replace = 1;
+   auto var = guard(iter.getarg(), stringp);
+   auto val = guard(iter.getarg(), stringp);
+   int replace = 1;
    if ( iter.more() )
       replace = getfixnum( guard(iter.getlast(), fixnump) );
 
@@ -1130,7 +1129,7 @@ SEXPR FUNC::unix_unsetenv()
    // syntax: (unsetenv <var>) -> <fixnum>
    //
    ArgstackIterator iter;
-   const SEXPR var = guard(iter.getlast(), stringp);
+   auto var = guard(iter.getlast(), stringp);
    const int result = ::unsetenv( getstringdata(var) );
    return MEMORY::fixnum( result );
 }
@@ -1142,7 +1141,7 @@ SEXPR FUNC::unix_gettime()
    //
    argstack.noargs();
 
-   SEXPR time = MEMORY::cons(null, null);
+   auto time = MEMORY::cons(null, null);
    regstack.push( time );
 
    struct timespec ts;
@@ -1160,7 +1159,7 @@ SEXPR FUNC::unix_change_dir()
    // syntax: (chdir <string>) -> <fixnum>
    //
    ArgstackIterator iter;
-   const SEXPR path = guard(iter.getlast(), stringp);
+   auto path = guard(iter.getlast(), stringp);
    const int result = ::chdir( getstringdata(path) );
    return MEMORY::fixnum((FIXNUM)result);
 }
@@ -1172,7 +1171,7 @@ SEXPR FUNC::unix_current_dir()
    //
    argstack.noargs();
    char buffer[200];
-   const char* result = ::getcwd( buffer, sizeof(buffer) );
+   const auto result = ::getcwd( buffer, sizeof(buffer) );
    if ( result == NULL )
       return null;
    else
@@ -1189,7 +1188,7 @@ SEXPR FUNC::open_input_file()
    // syntax: (open-input-file <str>)
    //
    ArgstackIterator iter;
-   const SEXPR fname = guard(iter.getlast(), stringp);
+   auto fname = guard(iter.getlast(), stringp);
    return PIO::open( fname, pm_input, "r" );
 }
 
@@ -1209,7 +1208,7 @@ SEXPR FUNC::open_append_file()
    // syntax: (open-append-file <str>)
    //
    ArgstackIterator iter;
-   const SEXPR fname = guard(iter.getlast(), stringp);
+   auto fname = guard(iter.getlast(), stringp);
    return PIO::open( fname, pm_output, "a" );
 }
 
@@ -1219,7 +1218,7 @@ SEXPR FUNC::open_update_file()
    // syntax: (open-update-file <str>)
    //
    ArgstackIterator iter;
-   const SEXPR fname = guard(iter.getlast(), stringp);
+   auto fname = guard(iter.getlast(), stringp);
    return PIO::open( fname, pm_input|pm_output, "r+" );
 }
 
@@ -1229,8 +1228,8 @@ SEXPR FUNC::close_port()
    // syntax: (close-port <port>) -> #t
    //
    ArgstackIterator iter;
-   const SEXPR port = guard(iter.getlast(), portp);
-   PIO::close(port);
+   auto port = guard(iter.getlast(), portp);
+   PIO::close( port );
    return symbol_true;
 }
 
@@ -1240,8 +1239,8 @@ SEXPR FUNC::close_input_port()
    // syntax: (close-input-port <port>) -> #t
    //
    ArgstackIterator iter;
-   const SEXPR port = guard(iter.getlast(), inportp);
-   PIO::close(port);
+   auto port = guard(iter.getlast(), inportp);
+   PIO::close( port );
    return symbol_true;
 }
 
@@ -1251,8 +1250,8 @@ SEXPR FUNC::close_output_port()
    // syntax: (close-output-port <port>) -> #t
    //
    ArgstackIterator iter;
-   const SEXPR port = guard(iter.getlast(), outportp);
-   PIO::close(port);
+   auto port = guard(iter.getlast(), outportp);
+   PIO::close( port );
    return symbol_true;
 }
 
@@ -1262,9 +1261,9 @@ SEXPR FUNC::set_file_position()
    // syntax: (set-file-position <port> <pos>) -> #t
    //
    ArgstackIterator iter;
-   const SEXPR port = guard(iter.getarg(), portp);
-   const SEXPR pos = guard(iter.getlast(), fixnump);
-   PIO::set_position(port, pos);
+   auto port = guard(iter.getarg(), portp);
+   auto pos = guard(iter.getlast(), fixnump);
+   PIO::set_position( port, pos );
    return symbol_true;
 }
 
@@ -1274,8 +1273,8 @@ SEXPR FUNC::get_file_position()
    // syntax: (get-file-position <port>)
    //
    ArgstackIterator iter;
-   const SEXPR port = guard(iter.getlast(), portp);
-   return PIO::get_position(port);
+   auto port = guard(iter.getlast(), portp);
+   return PIO::get_position( port );
 }
 
 SEXPR FUNC::flush_output_port()
@@ -1286,11 +1285,11 @@ SEXPR FUNC::flush_output_port()
    ArgstackIterator iter;
    if ( iter.more() )
    {
-      const SEXPR port = guard(iter.getlast(), outportp);
-      PIO::flush(port);
+      auto port = guard(iter.getlast(), outportp);
+      PIO::flush( port );
    }
    else
-      PIO::flush(PIO::stdout_port);
+      PIO::flush( PIO::stdout_port );
    return symbol_true;
 }
 
@@ -1304,7 +1303,7 @@ SEXPR FUNC::open_input_string()
    // syntax: (open-input-string <str>)
    //
    ArgstackIterator iter;
-   const SEXPR str = guard(iter.getlast(), stringp);
+   auto str = guard(iter.getlast(), stringp);
    return PIO::open_on_string( str, pm_input );
 }
 
@@ -1314,8 +1313,7 @@ SEXPR FUNC::open_output_string()
    // syntax: (open-output-string)
    //
    argstack.noargs();
-   SEXPR port = PIO::open_on_string( MEMORY::string_null, pm_output );
-   return port;
+   return PIO::open_on_string( MEMORY::string_null, pm_output );
 }
 
 SEXPR FUNC::get_output_string()
@@ -1336,7 +1334,7 @@ SEXPR FUNC::get_output_string()
 SEXPR FUNC::string_length()
 {
    ArgstackIterator iter;
-   const SEXPR s = guard(iter.getlast(), stringp);
+   auto s = guard(iter.getlast(), stringp);
    return MEMORY::fixnum(getstringlength(s));
 }
 
@@ -1363,10 +1361,10 @@ SEXPR FUNC::string_ref()
    // syntax: (string-ref <s> <index>) -> <char>
    //
    ArgstackIterator iter;
-   SEXPR s = guard(iter.getarg(), stringp);
+   auto s = guard(iter.getarg(), stringp);
    const int n = getfixnum(guard(iter.getlast(), fixnump));
 
-   if ( n < 0 || n >= static_cast<int>(getstringlength(s)) )
+   if ( n < 0 || n >= getstringlength(s) )
       ERROR::severe("index out of string bounds");
       
    return MEMORY::character(getstringdata(s)[n]);
@@ -1382,7 +1380,7 @@ SEXPR FUNC::string_set()
    const int n = getfixnum(guard(iter.getarg(), fixnump));
    const int ch = getcharacter(guard(iter.getlast(), charp));
 
-   if ( n < 0 || n >= static_cast<int>(getstringlength(s)) )
+   if ( n < 0 || n >= getstringlength(s) )
       ERROR::severe("index out of string bounds");
       
    getstringdata(s)[n] = ch;
@@ -1395,7 +1393,7 @@ SEXPR FUNC::substring()
    // syntax: (substring <s> <start> <end>) -> <string>
    //
    ArgstackIterator iter;
-   SEXPR s = guard(iter.getarg(), stringp);
+   auto s = guard(iter.getarg(), stringp);
    const int start = getfixnum(guard(iter.getarg(), fixnump));
    const int end   = getfixnum(guard(iter.getlast(), fixnump));
 
@@ -1417,8 +1415,8 @@ SEXPR FUNC::string_fill()
    // syntax: (string-fill! <s> <ch>) -> <string>
    //
    ArgstackIterator iter;
-   SEXPR s = guard(iter.getarg(), stringp);
-   const int ch = getcharacter(guard(iter.getlast(), charp));
+   auto s = guard(iter.getarg(), stringp);
+   const char ch = getcharacter(guard(iter.getlast(), charp));
 
    for ( int i = 0; i < getstringlength(s); ++i )
       getstringdata(s)[i] = ch;
@@ -1438,31 +1436,26 @@ SEXPR FUNC::string_copy()
    const int   dst_s = getfixnum(guard(iter.getarg(), fixnump));
    const SEXPR src   = guard(iter.getarg(), stringp);
 
-   if ( dst_s >= static_cast<int>(getstringlength(dst)) )
+   if ( dst_s >= getstringlength(dst) )
       ERROR::severe( "string dst-start > dst length" );
 
-   int src_s;
-   int src_e;
+   int src_s = 0;
+   int src_e = getstringlength(src);
 
    if ( iter.more() )
    {
       src_s = getfixnum(guard(iter.getarg(), fixnump));
       src_e = getfixnum(guard(iter.getlast(), fixnump));
 
-      if ( src_s >= static_cast<int>(getstringlength(src)) )
+      if ( src_s >= getstringlength(src) )
 	 ERROR::severe( "string src-start >= src length" );
-      if ( src_e > static_cast<int>(getstringlength(src)) )
+      if ( src_e > getstringlength(src) )
 	 ERROR::severe( "string src-end > src length" );  
       if ( src_s >= src_e )
 	 ERROR::severe( "string src-start >= src-end" );
    }
-   else
-   {
-      src_s = 0;
-      src_e = getstringlength(src);
-   }
 
-   if ( dst_s + (src_e - src_s) > static_cast<int>(getstringlength(dst)) )
+   if ( dst_s + (src_e - src_s) > getstringlength(dst) )
       ERROR::severe( "string dest not large enough for src" );
    
    int i = dst_s;
@@ -1478,7 +1471,7 @@ SEXPR FUNC::list_to_string()
    // syntax: (list->string <list-of-chars>) -> <string>
    //
    ArgstackIterator iter;
-   SEXPR list = guard(iter.getarg(), listp);
+   auto list = guard(iter.getarg(), listp);
    const int len = list_length(list);
 
    std::string s;
@@ -1495,7 +1488,7 @@ SEXPR FUNC::string_to_list()
    // syntax: (string->list <string>) -> <list-of-chars>
    //
    ArgstackIterator iter;
-   SEXPR s = guard(iter.getlast(), stringp);
+   auto s = guard(iter.getlast(), stringp);
    const int len = getstringlength(s);
 
    regstack.push(null);
@@ -1518,8 +1511,8 @@ using StrCmpFuncType = int (*)( const char*, const char* );
 static SEXPR string_compare( RelOp op, StrCmpFuncType compare )
 {
    ArgstackIterator iter;
-   const char* s1 = getstringdata(guard(iter.getarg(), stringp));
-   const char* s2 = getstringdata(guard(iter.getlast(), stringp));
+   const auto s1 = getstringdata(guard(iter.getarg(), stringp));
+   const auto s2 = getstringdata(guard(iter.getlast(), stringp));
 
    switch (op)
    {
