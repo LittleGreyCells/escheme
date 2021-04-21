@@ -512,9 +512,7 @@ bool FUNC::equal( SEXPR e1, SEXPR e2 )
       }
       else if ( consp(e1) )
       {
-	 return consp(e2) && 
-	    equal(car(e1), car(e2)) && 
-	    equal(cdr(e1), cdr(e2));
+	 return consp(e2) && equal(car(e1), car(e2)) && equal(cdr(e1), cdr(e2));
       }
    }
 
@@ -615,7 +613,6 @@ SEXPR FUNC::gensym()
 
    char number[80];
    SPRINTF( number, "%u", gensym_number++ );
-
    new_sym += number;
   
    return MEMORY::symbol( new_sym );
@@ -673,7 +670,6 @@ SEXPR FUNC::get_property()
    ArgstackIterator iter;
    SEXPR s = guard(iter.getarg(), symbolp);
    SEXPR p = guard(iter.getlast(), symbolp);
-
    SEXPR plist = getplist(s);
 
    while (anyp(plist))
@@ -695,7 +691,6 @@ SEXPR FUNC::put_property()
    SEXPR s = guard(iter.getarg(), symbolp);
    SEXPR p = guard(iter.getarg(), symbolp);
    SEXPR v = iter.getlast();
-
    SEXPR plist = getplist(s);
 
    while (anyp(plist))
@@ -722,7 +717,6 @@ SEXPR FUNC::symbols()
    // syntax: (symbols) -> <vector>
    //
    argstack.noargs();
-
    return SYMTAB::symbols();
 }
 
@@ -756,7 +750,7 @@ static SEXPR basic_print( int newline )
    ArgstackIterator iter;
    const SEXPR s = iter.getarg();
    const SEXPR port = iter.more() ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
-
+   
    PRINTER::print(port, s);
    if ( newline )
       PRINTER::newline(port);
@@ -813,7 +807,6 @@ SEXPR FUNC::write_char()
    const SEXPR port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdout_port;
 
    PIO::put(port, ch);
-
    return symbol_true;
 }
 
@@ -911,7 +904,6 @@ SEXPR FUNC::env_parent()
    //
    ArgstackIterator iter;
    const SEXPR env = guard(iter.getlast(), envp);
-  
    return getenvbase(env);
 }
 
@@ -924,7 +916,7 @@ SEXPR FUNC::env_bindings()
    const SEXPR arg = iter.getlast();
 
    // treat the empty list of bindings as a null env
-   if (nullp(arg))
+   if ( nullp(arg) )
       return null;
 
    const SEXPR env = guard(arg, envp);
@@ -965,7 +957,6 @@ SEXPR FUNC::make_environment()
 
    SEXPR env = MEMORY::environment( len, null, benv );
    regstack.push( env );
-
    {
       ListBuilder vars;
       
@@ -989,13 +980,10 @@ SEXPR FUNC::make_environment()
          {
             ERROR::severe( "expected a symbol or (symbol . val)", x );
          }
-         
          pairs = cdr(pairs);
       }
-      
       setframevars( getenvframe(env), vars.get() );
    }
-
    return regstack.pop();
 }
 
@@ -1018,12 +1006,10 @@ SEXPR FUNC::make_closure()
 
    SEXPR closure = MEMORY::closure( code, env );
    regstack.push( closure );
-
    EVAL::parse_formals( params, 
-                           getclosurevars(closure),
-                           getclosurenumv(closure),
-                           getclosurerargs(closure) );
-
+                        getclosurevars(closure),
+                        getclosurenumv(closure),
+                        getclosurerargs(closure) );
    return regstack.pop();
 }
 
@@ -1041,13 +1027,12 @@ SEXPR FUNC::parse_formals()
    SEXPR vars;
    BYTE numv;
    BYTE rargs;
-
    EVAL::parse_formals( params, vars, numv, rargs );
 
    vset( v, 0, vars );
    vset( v, 1, MEMORY::fixnum(numv) );
    vset( v, 2, rargs ? symbol_true : symbol_false );
-
+   
    return regstack.pop();
 }
 
@@ -1061,7 +1046,6 @@ SEXPR FUNC::make_code()
    ArgstackIterator iter;
    SEXPR bcodes = guard(iter.getarg(), bvecp);
    SEXPR sexprs = guard(iter.getlast(), vectorp);
-
    return MEMORY::code( bcodes, sexprs );
 }
 
@@ -1072,7 +1056,6 @@ SEXPR FUNC::get_bcodes()
    //
    ArgstackIterator iter;
    SEXPR code = guard(iter.getlast(), codep);
-
    return code_getbcodes(code);
 }
 
@@ -1083,7 +1066,6 @@ SEXPR FUNC::get_sexprs()
    //
    ArgstackIterator iter;
    SEXPR code = guard(iter.getlast(), codep);
-
    return code_getsexprs(code);
 }
 
@@ -1116,10 +1098,8 @@ SEXPR FUNC::unix_getargs()
 
    SEXPR es_argv = MEMORY::vector(unix_argc);
    regstack.push(es_argv);
-
    for ( int i = 0; i < unix_argc; ++i )
       vset( es_argv, i, MEMORY::string(unix_argv[i]) );
-
    return regstack.pop();
 }
 
@@ -1131,7 +1111,6 @@ SEXPR FUNC::unix_getenv()
    ArgstackIterator iter;
    const SEXPR var = guard(iter.getlast(), stringp);
    const char* val = ::getenv( getstringdata(var) );
-
    return ( val == nullptr ) ? MEMORY::string_null : MEMORY::string(val);
 }
 
@@ -1395,12 +1374,10 @@ SEXPR FUNC::string_ref()
    SEXPR s = guard(iter.getarg(), stringp);
    const int n = getfixnum(guard(iter.getlast(), fixnump));
 
-   if ( n >= 0 && n < static_cast<int>(getstringlength(s)) )
-      return MEMORY::character(getstringdata(s)[n]);
-   else
+   if ( n < 0 || n >= static_cast<int>(getstringlength(s)) )
       ERROR::severe("index out of string bounds");
-
-   return s;
+      
+   return MEMORY::character(getstringdata(s)[n]);
 }
 
 SEXPR FUNC::string_set()
@@ -1413,11 +1390,10 @@ SEXPR FUNC::string_set()
    const int n = getfixnum(guard(iter.getarg(), fixnump));
    const int ch = getcharacter(guard(iter.getlast(), charp));
 
-   if ( n >= 0 && n < static_cast<int>(getstringlength(s)) )
-      getstringdata(s)[n] = ch;
-   else
+   if ( n < 0 || n >= static_cast<int>(getstringlength(s)) )
       ERROR::severe("index out of string bounds");
-
+      
+   getstringdata(s)[n] = ch;
    return s;
 }
 
@@ -1431,23 +1407,16 @@ SEXPR FUNC::substring()
    const int start = getfixnum(guard(iter.getarg(), fixnump));
    const int end   = getfixnum(guard(iter.getlast(), fixnump));
 
-   if ( start < static_cast<int>(getstringlength(s)) &&
-        end <= static_cast<int>(getstringlength(s)))
-   {
-      if ( start >= end )
-	 return MEMORY::string_null;
-      else
-      {
-	 const int slen = end - start;
-         std::string ss( &getstringdata(s)[start], slen );
-         return MEMORY::string( ss );
-      }
-   }
-   else
-   {
+   if ( !(start < static_cast<int>(getstringlength(s)) &&
+          end <= static_cast<int>(getstringlength(s))) )
       ERROR::severe("index out of string bounds");
-      return null;
-   }
+
+   if ( start >= end )
+      return MEMORY::string_null;
+   
+   const int slen = end - start;
+   std::string ss( &getstringdata(s)[start], slen );
+   return MEMORY::string( ss );
 }
 
 SEXPR FUNC::string_fill()
@@ -1461,7 +1430,6 @@ SEXPR FUNC::string_fill()
 
    for ( int i = 0; i < getstringlength(s); ++i )
       getstringdata(s)[i] = ch;
-
    return s;
 }
 
@@ -1676,7 +1644,6 @@ static SEXPR member_search( bool(*eqtest)(SEXPR, SEXPR), SEXPR exp, SEXPR list )
 {
    while ( anyp(list) && !eqtest( exp, car(list) ) )
       list = cdr(list);
-
    return list;
 }
 
@@ -1812,7 +1779,6 @@ SEXPR FUNC::append()
 	 b = cdr(b);
       }
    }
-
    return list.get();
 }
 
@@ -1838,13 +1804,11 @@ SEXPR FUNC::reverse()
 
    // protect the structure under construction
    regstack.push(null);
-
    while ( anyp(list) )
    {
       regstack.top() = MEMORY::cons( car(list), regstack.top() );
       list = cdr(list);
    }
-
    return regstack.pop();
 }
 
@@ -1867,7 +1831,6 @@ SEXPR FUNC::last_pair()
 
    while ( consp(cdr(list)) )
       list = cdr(list);
-
    return list;
 }
 
@@ -1902,7 +1865,6 @@ SEXPR FUNC::list_tail()
       n -= 1;
       list = cdr(list);
    }
-
    return list;
 }
 
