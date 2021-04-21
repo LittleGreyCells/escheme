@@ -1,19 +1,16 @@
 #include "symtab.hxx"
 
 #include <array>
-#include <string.h>
+#include <unordered_map>
 
 #include "memory.hxx"
-#include "regstack.hxx"
 
 namespace escheme
 {
 
-namespace
-{
-   constexpr int NBUCKETS = 64;
-   std::array<SEXPR, NBUCKETS> table;
-}
+using UMAP = std::unordered_map< std::string, SEXPR >;
+
+UMAP table;
 
 // canonical truth and other symbols
 SEXPR symbol_unbound;
@@ -41,72 +38,60 @@ SEXPR symbol_let;
 SEXPR symbol_letrec;
 SEXPR symbol_access;
 
-static unsigned hash( const char* s )
-{
-   unsigned i = 0;
-   while ( *s )
-      i = (i << 2) ^ *s++;
-   return i % NBUCKETS;
-}
 
-SEXPR SYMTAB::enter( const char* name, SEXPR value )
+SEXPR SYMTAB::enter( const std::string& name, SEXPR value )
 {
-   auto s = SYMTAB::enter(name);
+   auto s = SYMTAB::enter( name );
    setvalue(s, value);
    return s;
 }
 
-SEXPR SYMTAB::enter( const char* symbol_name )
-{
-   auto& element = table[ hash(symbol_name) ];
-
-   if ( anyp(element) )
-   {
-      for ( SEXPR n = element; anyp(n); n = getcdr(n) )
-      {
-	 SEXPR s = getcar(n);
-	 if ( strcmp(name(s), symbol_name) == 0 )
-	    return s;
-      }
-   }
-
-   regstack.push( MEMORY::symbol(symbol_name) );
-   setvalue( regstack.top(), symbol_unbound );
-   element = MEMORY::cons( regstack.top(), element );
-   return regstack.pop();
-}
-
-SEXPR SYMTAB::enter( const std::string& name, SEXPR value )
-{
-   return enter( name.c_str(), value );
-}
-
 SEXPR SYMTAB::enter( const std::string& symbol_name )
 {
-   return enter( symbol_name.c_str() );
+   auto pair = table.find( symbol_name );
+   if ( pair == table.end() )
+   {
+      using PAIR = std::pair< std::string, SEXPR >;
+      // item not found
+      auto sym = MEMORY::symbol( symbol_name );
+      setvalue( sym, symbol_unbound );
+      table.insert( PAIR( symbol_name, sym ) );
+      return sym;
+   }
+   else
+   {
+      // item found
+      return pair->second;
+   }
 }
 
+SEXPR SYMTAB::enter( const char* name )
+{
+   return SYMTAB::enter( std::string(name) );
+}
+   
+SEXPR SYMTAB::enter( const char* name, SEXPR value )
+{
+   return SYMTAB::enter( std::string(name), value );
+}
+   
 SEXPR SYMTAB::symbols()
 {
-   const auto symbols = MEMORY::vector(NBUCKETS);
-
-   for ( auto i = 0; i < table.size(); ++i )
-      vectorset( symbols, i, table[i] );
-   
-   return symbols;
+   auto v = MEMORY::vector( table.size() );
+   int i = 0;
+   for ( auto& element : table )
+      vectorset( v, i++, element.second ); 
+   return v;
 }
 
 static void symtab_marker()
 {
-   for ( auto element : table )
-      MEMORY::mark( element );
+   for ( auto& element : table )
+      MEMORY::mark( element.second );
 }
 
 void SYMTAB::initialize()
 {
-   for ( auto& element : table )
-      element = null;
-
    // initialize the unbound symbol first
    symbol_unbound  	 = enter("*unbound*");
    setvalue(symbol_unbound, symbol_unbound);
