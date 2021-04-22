@@ -2,7 +2,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-
 #include <string>
 
 #include "core/error.hxx"
