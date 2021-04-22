@@ -10,7 +10,7 @@
 namespace escheme
 {
 
-void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
+SEXPR ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
 {
    using PIO::put;
    using PRINTER::print;
@@ -20,32 +20,21 @@ void ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
    
    if ( exp1 != nullptr )
    {
-      put(" [");
+      put(" '");
       print(exp1);
-      put("]");
+      put("'");
    }
    
    if ( exp2 != nullptr )
    {
-      put(" [");
+      put(" '");
       print(exp2);
-      put("]");
+      put("'");
    }
    
    put("\n");
 
    throw SevereError();
-}
-
-void ERROR::fatal( const char* s )
-{
-   using PIO::put;
-
-   put("fatal error: ");
-   put( s );
-   put("\n");
-   
-   throw FatalError();
 }
 
 void ERROR::warning( const char* s, SEXPR exp )
@@ -58,12 +47,28 @@ void ERROR::warning( const char* s, SEXPR exp )
    
    if ( exp != nullptr )
    {
-      put(" [");
+      put(" '");
       print(exp);
-      put("]");
+      put("'");
    }
    
    put("\n");
+}
+
+SEXPR ERROR::fatal( const char* s )
+{
+   using PIO::put;
+
+   put("fatal error: ");
+   put( s );
+   put("\n");
+   
+   throw FatalError();
+}
+
+SEXPR ERROR::exit()
+{
+   throw Exit();
 }
 
 }

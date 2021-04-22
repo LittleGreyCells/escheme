@@ -936,8 +936,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    
 	 default:
 	 {
-	    ERROR::severe("unknown/unexpected evaluation state", MEMORY::fixnum(next));
-	    break;
+	    return ERROR::severe("unknown/unexpected evaluation state", MEMORY::fixnum(next));
 	 }
       }
    }

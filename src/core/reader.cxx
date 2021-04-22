@@ -215,8 +215,7 @@ SEXPR READER::read_symbol( SEXPR inport )
 
    if ( s.length() == 0 )
    {
-      ERROR::severe("expecting symbol name");
-      return null;
+      return ERROR::severe("expecting symbol name");
    }
    else
    {
@@ -354,7 +353,7 @@ SEXPR READER::read_special( SEXPR inport )
 	 else if ( s.compare( "null") == 0 )
 	    return null;
 	 else if ( s.length() == 0 )
-	    ERROR::severe("expected special symbol after #!");
+	    return ERROR::severe("expected special symbol after #!");
 	 else
 	 {
             std::string ss = "#!";
@@ -374,10 +373,7 @@ SEXPR READER::read_special( SEXPR inport )
 	 else if ( s.compare( "f" ) == 0)
 	    return symbol_false;
 	 else
-	 {
-	    ERROR::severe("unknown special symbol");
-	    return null;
-	 }
+	    return ERROR::severe("unknown special symbol");
       }
    }
 }
@@ -429,7 +425,7 @@ SEXPR READER::read_sexpr( SEXPR inport )
 
 	 case ')':
 	 case ']':
-	    ERROR::severe("misplaced right paren/bracket");
+	    return ERROR::severe("misplaced right paren/bracket");
 
 	 case '\"':
 	    return read_string(inport);

@@ -73,7 +73,7 @@ SEXPR FUNC::exit()
    // syntax: (exit)
    //
    argstack.noargs();
-   throw ERROR::Exit();
+   return ERROR::exit();
 }
 
 //
@@ -1522,10 +1522,7 @@ static SEXPR string_compare( RelOp op, StrCmpFuncType compare )
       case GTop: return (compare(s1, s2) >  0) ? symbol_true : symbol_false;
       case GEop: return (compare(s1, s2) >= 0) ? symbol_true : symbol_false;
       default:
-      {
-	 ERROR::fatal("bad string comparison operator");
-	 return null;
-      }
+	 return ERROR::fatal("bad string comparison operator");
    }
 }
 
@@ -1564,10 +1561,7 @@ static SEXPR char_compare( RelOp op, int ci )
       case GTop: return (c1 >  c2) ? symbol_true : symbol_false;
       case GEop: return (c1 >= c2) ? symbol_true : symbol_false;
       default:
-      {
-	 ERROR::fatal("bad character comparison operator");
-	 return null;
-      }
+	 return ERROR::fatal("bad character comparison operator");
    }
 }
 

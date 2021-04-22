@@ -35,9 +35,9 @@ void MEMORY::register_marker( Marker marker )
 // Node Block Pool
 //
 
-long  MEMORY::TotalNodeCount  = 0;
-long  MEMORY::FreeNodeCount   = 0;
-int   MEMORY::CollectionCount = 0;
+long MEMORY::TotalNodeCount  = 0;
+long MEMORY::FreeNodeCount   = 0;
+int  MEMORY::CollectionCount = 0;
 
 static SEXPR FreeNodeList;
 
@@ -113,8 +113,8 @@ int MEMORY::suspensions = 0;
 static void badnode( SEXPR n )
 {
    char buffer[80];
-   SPRINTF(buffer, "bad node (%p,%d) during gc", n->id(), nodekind(n));
-   ERROR::fatal(buffer);
+   SPRINTF( buffer, "bad node (%p,%d) during gc", n->id(), nodekind(n) );
+   ERROR::fatal( buffer );
 }
 
 void MEMORY::mark( SEXPR n )

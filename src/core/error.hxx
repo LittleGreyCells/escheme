@@ -8,13 +8,14 @@ namespace escheme
 
 namespace ERROR
 {
-   struct SevereError {};
-   struct FatalError {};
-   struct Exit {};
+   struct SevereError{};
+   struct FatalError{};
+   struct Exit{};
    
-   void severe( const char*, SEXPR exp1 = nullptr, SEXPR exp2 = nullptr );
-   void fatal( const char* );
+   SEXPR severe( const char*, SEXPR exp1 = nullptr, SEXPR exp2 = nullptr );
    void warning( const char*, SEXPR exp = nullptr );
+   SEXPR fatal( const char* );
+   SEXPR exit();
 }
 
 }
