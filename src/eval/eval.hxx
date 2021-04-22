@@ -49,11 +49,11 @@ enum EVSTATE
    EVAL_SEQUENCE,
    EVAL_SEQUENCE_BODY,
    EV_LET,
-   EV_LETREC,
    EV_LET_ARG_LOOP,
    EV_LET_ACCUM_ARG,
    EV_LET_ACCUM_LAST_ARG,
    EV_LET_BODY,
+   EV_LETREC,
    EV_WHILE,
    EVAL_WHILE_COND,
    EVAL_WHILE_BODY,
@@ -64,6 +64,10 @@ enum EVSTATE
    EV_FOR_APPLY,
    EV_DELAY,
    EV_FORCE_VALUE,
+#ifdef BYTE_CODE_EVALUATOR
+   EVAL_CODE,
+   EVAL_RETURN,
+#endif
    EV_DONE,
    EV_SIZE
 };
@@ -78,12 +82,24 @@ namespace EVAL
    extern SEXPR unev;
    extern EVSTATE cont;
    extern EVSTATE next;
-
    extern SEXPR theGlobalEnv;
+
+#ifdef BYTE_CODE_EVALUATOR
+   extern int pc;
+   extern SEXPR map_code;
+   extern SEXPR for_code;
+   extern SEXPR rte_code;
+   extern SEXPR rtc_code;
+   extern SEXPR fep_code;
+#endif
 
    void initialize();
   
    SEXPR eceval( SEXPR sexpr );
+#ifdef BYTE_CODE_EVALUATOR
+   void bceval();
+   void bceval( SEXPR sexpr );
+#endif
 
    inline SEXPR the_environment() { return env; }
 
@@ -97,7 +113,7 @@ namespace EVAL
 
    SEXPR extend_env_fun( SEXPR closure );
    SEXPR extend_env_vars( SEXPR bindings, SEXPR benv );
-   
+
    SEXPR create_continuation();
    void restore_continuation( SEXPR continuation );
 }
@@ -109,6 +125,40 @@ inline void save( SEXPR x ) { regstack.push(x); }
 inline void restore( EVSTATE& x ) { x = EVSTATE( intstack.pop() ); }
 inline void restore( int& x ) { x = intstack.pop(); }
 inline void restore( SEXPR& x ) { x = regstack.pop(); }
+
+#ifdef BYTE_CODE_EVALUATOR
+//
+// Save and Restore the Byte Code Evaluator Registers
+//
+
+inline void SAVE_BCE_REGISTERS()
+{
+   save( EVAL::env );
+   save( EVAL::unev );
+   save( EVAL::pc );
+}
+
+inline void RESTORE_BCE_REGISTERS()
+{
+   restore( EVAL::pc );
+   restore( EVAL::unev );
+   restore( EVAL::env );
+}
+
+inline void SAVE_RTE()
+{
+   save( EVAL::env );
+   save( EVAL::rte_code );
+   save( 0 );
+}
+
+inline void SAVE_RTC()
+{
+   save( EVAL::env );
+   save( EVAL::rtc_code );
+   save( 0 );
+}
+#endif
 
 }
 

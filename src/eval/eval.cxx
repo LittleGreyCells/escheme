@@ -2,6 +2,10 @@
 
 #include <cstdlib>
 
+#ifdef BYTE_CODE_EVALUATOR
+#include "code.hxx"
+#endif
+
 #include "core/error.hxx"
 #include "core/symtab.hxx"
 #include "core/memory.hxx"
@@ -22,6 +26,15 @@ SEXPR EVAL::unev;
 EVSTATE EVAL::cont;
 EVSTATE EVAL::next;
 SEXPR EVAL::theGlobalEnv;
+
+#ifdef BYTE_CODE_EVALUATOR
+int EVAL::pc;
+SEXPR EVAL::map_code;
+SEXPR EVAL::for_code;
+SEXPR EVAL::rte_code;
+SEXPR EVAL::rtc_code;
+SEXPR EVAL::fep_code;
+#endif
 
 //
 // New: A frame-based representation
@@ -45,10 +58,10 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
    {
       FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
-
+      
       for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
       {
-         if (getcar(vars) == var) 
+         if ( getcar(vars) == var ) 
             return frameref(frame, i);
       }
    }
@@ -69,21 +82,21 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 
    for ( ; anyp(env); env = getenvbase(env) )
    {
-      FRAME frame = getenvframe(env);
+      FRAME frame = getenvframe(env);  
       SEXPR vars = getframevars(frame);
 
       for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
       {
-         if (getcar(vars) == var)
+         if ( getcar(vars) == var )
          {
-            frameset(frame, i, val);
+            frameset( frame, i, val );
             return;
          }
       }
    }
 
    // global var
-   set(var, val);
+   set( var, val );
 }
 
 //
@@ -91,7 +104,7 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 //
 //   parameter lists
 //     (a ...)
-//     traditional rest arg
+//     tradition rest
 //       (a . b) == (a #!rest b)
 //
 
@@ -123,11 +136,11 @@ void EVAL::parse_formals( SEXPR formals, SEXPR& vars, INT32& numv, bool& rargs )
    vars = varlist.get();
 }
 
-static void arg_error( const char* text, unsigned n1, unsigned n2 )
+static void arg_error( const char* text, unsigned n1, unsigned n2, SEXPR fun )
 {
    char buffer[80];
    SPRINTF( buffer, "%s -- actual=%u, expected=%u", text, n1, n2 );
-   ERROR::severe( buffer );
+   ERROR::severe( buffer, fun );
 }
 
 SEXPR EVAL::extend_env_fun( SEXPR closure )
@@ -159,9 +172,9 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       if ( nactual != nformal )
       {
 	 if ( nactual < nformal )
-	    arg_error( "too few arguments", nactual, nformal );
+	    arg_error( "too few arguments", nactual, nformal, closure );
 	 else
-	    arg_error( "too many arguments", nactual, nformal );
+	    arg_error( "too many arguments", nactual, nformal, closure );
       }
      
       int p = argstack.getfirstargindex();
@@ -179,7 +192,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       const int nrequired = nformal - 1;
 
       if ( nactual < nrequired )
-	 arg_error( "too few arguments", nactual, nrequired );
+	 arg_error( "too few arguments", nactual, nrequired, closure );
      
       int p = argstack.getfirstargindex();
      
@@ -189,7 +202,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
 
       // BIND rest
       regstack.push(null);
-      
+
       for ( int i = p + (nactual - nformal); i >= p; --i )
 	 regstack.top() = cons( argstack[i], regstack.top() );
      
@@ -263,7 +276,7 @@ SEXPR EVAL::get_evaluator_state()
 const int ContSingletons = 3;
 
 // the number of byte vector locations reserved for saved int values
-const int BvReserved = 3;
+const int BvReserved = 4;
 
 SEXPR EVAL::create_continuation()
 {
@@ -277,13 +290,16 @@ SEXPR EVAL::create_continuation()
    
    // byte vector includes the intstack and the three(3) stack depth values
    const int ByteVectorLength = ints_depth + BvReserved;
-   SEXPR bv = MEMORY::byte_vector( ByteVectorLength*sizeof(INT16) );
+   auto bv = MEMORY::byte_vector( ByteVectorLength*sizeof(INT16) );
    
    INT16* pint16 = reinterpret_cast<INT16*>(getbvecdata(bv));
 
    pint16[0] = regs_depth;
    pint16[1] = args_depth;
    pint16[2] = ints_depth;
+#ifdef BYTE_CODE_EVALUATOR
+   pint16[3] = pc;
+#endif
 
    // no additional allocations
    auto state = cont_getstate( regstack.top() );
@@ -321,6 +337,9 @@ void EVAL::restore_continuation( SEXPR cc )
    const int regs_depth = pint16[0];
    const int args_depth = pint16[1];
    const int ints_depth = pint16[2];
+#ifdef BYTE_CODE_EVALUATOR
+   pc                   = pint16[3];
+#endif
 
    int j = ContSingletons;
    
@@ -352,6 +371,13 @@ static void eval_marker()
    MEMORY::mark( EVAL::aux );
    MEMORY::mark( EVAL::val );
    MEMORY::mark( EVAL::unev );
+#ifdef BYTE_CODE_EVALUATOR
+   MEMORY::mark( EVAL::map_code );
+   MEMORY::mark( EVAL::for_code );
+   MEMORY::mark( EVAL::rte_code );
+   MEMORY::mark( EVAL::rtc_code );
+   MEMORY::mark( EVAL::fep_code );
+#endif
 }
 
 void EVAL::initialize()
@@ -362,11 +388,12 @@ void EVAL::initialize()
    val = null;
    aux = null;
    unev = null;
-
    cont = EV_DONE;
    next = EV_DONE;
-
    theGlobalEnv = null;
+#ifdef BYTE_CODE_EVALUATOR
+   pc = 0;
+#endif
 
    // set the special form dispatch value
    setform( symbol_quote,    EV_QUOTE );
@@ -385,6 +412,48 @@ void EVAL::initialize()
    setform( symbol_or,       EV_OR );
    setform( symbol_access,   EV_ACCESS );
    setform( null,            EV_APPLICATION );
+
+#ifdef BYTE_CODE_EVALUATOR
+   //
+   // create code fragments
+   //
+   auto map_bcodes = MEMORY::byte_vector( 5 );
+   auto for_bcodes = MEMORY::byte_vector( 5 );
+   auto rte_bcodes = MEMORY::byte_vector( 1 );
+   auto rtc_bcodes = MEMORY::byte_vector( 1 );
+   auto fep_bcodes = MEMORY::byte_vector( 2 );;
+
+   bvecset( map_bcodes, 0, OP_MAP_INIT );
+   bvecset( map_bcodes, 1, OP_MAP_APPLY );
+   bvecset( map_bcodes, 2, OP_APPLY );
+   bvecset( map_bcodes, 3, OP_MAP_RESULT );
+   bvecset( map_bcodes, 4, OP_GOTO_CONT );
+
+   bvecset( for_bcodes, 0, OP_FOR_INIT );
+   bvecset( for_bcodes, 1, OP_FOR_APPLY );
+   bvecset( for_bcodes, 2, OP_APPLY );
+   bvecset( for_bcodes, 3, OP_FOR_RESULT );
+   bvecset( for_bcodes, 4, OP_GOTO_CONT );
+
+   bvecset( rte_bcodes, 0, OP_RTE );
+   bvecset( rtc_bcodes, 0, OP_RTC );
+
+   bvecset( fep_bcodes, 0, OP_FORCE_VALUE );
+   bvecset( fep_bcodes, 1, OP_GOTO_CONT );
+
+   auto vector_null = MEMORY::vector(0);
+   map_code = MEMORY::code( map_bcodes, vector_null );
+   for_code = MEMORY::code( for_bcodes, vector_null );
+   rte_code = MEMORY::code( rte_bcodes, vector_null );
+   rtc_code = MEMORY::code( rtc_bcodes, vector_null );
+   fep_code = MEMORY::code( fep_bcodes, vector_null );
+
+   SYMTAB::enter( "%%map-code", map_code );
+   SYMTAB::enter( "%%for-code", for_code );
+   SYMTAB::enter( "%%rte-code", rte_code );
+   SYMTAB::enter( "%%rtc-code", rtc_code );
+   SYMTAB::enter( "%%fep-code", fep_code );
+#endif
 
    MEMORY::register_marker( eval_marker );
 }

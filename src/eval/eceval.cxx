@@ -21,6 +21,10 @@ SEXPR EVAL::eceval( SEXPR sexpr )
    // integer valued
    cont = EV_DONE;
    next = EVAL_DISPATCH;
+   
+#ifdef BYTE_CODE_EVALUATOR
+   pc   = 0;
+#endif
 
    //
    // When analyzing forms *always* use the type-safe accessors:
@@ -33,6 +37,16 @@ SEXPR EVAL::eceval( SEXPR sexpr )
    {
       switch ( next )
       {
+#ifdef BYTE_CODE_EVALUATOR
+	 case EVAL_RETURN:
+	    RESTORE_BCE_REGISTERS();
+	    bceval();
+	    break;
+
+	 case EVAL_CODE:
+	    bceval();
+	    break;
+#endif
 	 case EVAL_DISPATCH:
 	 {
             //
@@ -56,6 +70,19 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  break;
 	       }
 
+#ifdef BYTE_CODE_EVALUATOR
+	       case n_code:
+	       {
+		  // compiled code evaluation
+		  //   compiled code expects to exit with goto-cont
+		  save( cont );
+		  unev = exp;
+		  pc = 0;
+		  next = EVAL_CODE;
+		  SAVE_RTE();
+		  break;
+	       }
+#endif
 	       default:
 	       {
 		  // self evaluating
@@ -182,11 +209,11 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  catch ( ERROR::SevereError& )
 		  {
 		     PRINTER::print( val );
-                     PRINTER::newline();
+		     PRINTER::newline();
 		     throw;
 		  }
 		  argstack.removeargc();
-		  restore(cont);
+		  restore( cont );
 		  next = cont;
 		  break;
 	       }
@@ -195,7 +222,20 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       {
 		  env = extend_env_fun(val);
 		  unev = getclosurecode(val);
+#ifdef BYTE_CODE_EVALUATOR
+		  if ( _codep(unev) )
+		  {
+		     pc = 0;
+		     next = EVAL_CODE;
+		     SAVE_RTE();
+		  }
+		  else
+		  {
+		     next = EVAL_SEQUENCE;
+		  }
+#else
 		  next = EVAL_SEQUENCE;
+#endif
 		  break;
 	       }
 
@@ -226,7 +266,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		     env = theGlobalEnv;
 		  }
 		  argstack.removeargc();
-		  restore(cont);
+		  restore( cont );
 		  next = EVAL_DISPATCH;
 		  break;
 	       }
@@ -248,8 +288,21 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  argstack.removeargc();
 		  restore_continuation(val);
 		  val = ccresult;
-		  restore(cont);
+#ifdef BYTE_CODE_EVALUATOR
+		  // determine if the continuation should resume here or in the BCE
+		  if ( _codep( regstack.top() ) )
+		  {
+		     next = EVAL_RETURN;
+		  }
+		  else
+		  {
+		     restore( cont );
+		     next = cont;
+		  }
+#else
+		  restore( cont );
 		  next = cont;
+#endif
 		  break;
 	       }
 
@@ -266,7 +319,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       case n_foreach:
 	       {
 		  if ( argstack.argc < 2 )
-		     ERROR::severe( "foreach requires two or more arguments" );
+		     ERROR::severe("foreach requires two or more arguments");
 		  save( argstack.argc );
 		  save( null );              // no accume == ()
 		  next = EV_FOR_APPLY;
@@ -331,7 +384,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       val = car(val);                // val == <list>
 	       restore( argstack.argc );
 	       argstack.removeargc();
-	       restore( cont );           // cont
+	       restore( cont );          // cont
 	       next = cont;
 	    }
 	    else
@@ -455,8 +508,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 case EV_WHILE:
 	 {
 	    save( cont );
-	    unev = cdr(exp);                    // (<cond> <sequence>)
-	    save( env );                        // prep for cond eval
+	    unev = cdr(exp);                  // (<cond> <sequence>)
+	    save( env );                      // prep for cond eval
 	    save( unev );
 	    next = EVAL_WHILE_COND;
 	    break;
@@ -514,7 +567,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       cont = EV_SET_VALUE;
 	       next = EVAL_DISPATCH;
 	    }
-	    else if (_consp(var_exp) && getcar(var_exp) == symbol_access)
+	    else if ( _consp(var_exp) && getcar(var_exp) == symbol_access )
 	    {
 	       // ((access <var> <env2>) <exp>)
 	       exp = car(cdr(cdr(var_exp)));     // exp = <env2>
@@ -589,7 +642,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    next = cont;
 	    break;
 	 }
-	   
+	 
 	 //
 	 // syntax: (define <var> <exp>>
 	 // syntax: (define (<var> [<param>...]) [<exp> ...])
@@ -613,7 +666,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
             else if ( consp(cadr_exp) )
             {
                 // (define (<var> [<param>...]) [<exp> ...])
-                unev = car(cadr_exp);             // <var>
+                unev = car(cadr_exp);                 // <var>
                 save( unev );
                 save( env );
                 save( cont );
@@ -656,9 +709,9 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 //
 	 case EV_LAMBDA:
 	 {
-	    // params = car(cdr(exp))
-	    // code == cdr(cdr(exp))
-            exp = cdr(exp);
+            // params = car(cdr(exp))
+            // code == cdr(cdr(exp))
+	    exp = cdr(exp);
 	    val = MEMORY::closure( cdr(exp), env );     // <code> <benv>
             parse_formals( car(exp), 
                            getclosurevars(val),
@@ -857,8 +910,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 {
 	    save( cont );
 	    exp = cdr(exp);
-	    unev = car(exp);                          // bindings; ((v1 e1) (v2 e2) ...)
-	    exp = cdr(exp);                           // body: (<body>)
+	    unev = car(exp);                      // bindings; ((v1 e1) (v2 e2) ...)
+	    exp = cdr(exp);                       // body: (<body>)       
 	    save( exp );                          // save the body
 	    save( extend_env_vars( unev, env ) ); // save xenv
             // no additional allocations
@@ -943,6 +996,5 @@ SEXPR EVAL::eceval( SEXPR sexpr )
    
    return null;
 }
-
 
 }
