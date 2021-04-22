@@ -13,7 +13,7 @@ NOISE  = $(SRCLOC)/linenoise
 INCLUDES = -I$(SRCLOC)
 
 SRCS	= \
-	$(REP)/rep.cxx \
+	$(REP)/rep_interp.cxx \
 	$(EVAL)/eval.cxx \
 	$(EVAL)/eceval.cxx \
 	$(CORE)/sexpr.cxx \

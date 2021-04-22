@@ -4,4 +4,5 @@ src/eval/*.o
 src/rep/*.o
 src/linenoise/*.o
 history.txt
+*~
 
