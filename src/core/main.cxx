@@ -40,12 +40,12 @@ int main( int argc, char** argv )
    }
    catch (...)
    {
-      printf( "error during initialization; terminating." );
+      printf( "error during initialization\n" );
       return 0;
    }
 
    // enter REP and return on controlled exit
-   escheme::rep_loop();
+   escheme::rep_loop( argc, argv );
 
    return 0;
 }

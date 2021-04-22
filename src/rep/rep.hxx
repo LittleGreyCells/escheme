@@ -4,7 +4,7 @@
 namespace escheme
 {
    
-extern void rep_loop();
+   extern void rep_loop( int argc, char** argv );
 
 }
 

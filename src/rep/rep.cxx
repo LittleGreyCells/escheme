@@ -15,6 +15,9 @@
 #include "core/regstack.hxx"
 
 #include "eval/eval.hxx"
+#ifdef BYTE_CODE_EVALUATOR
+#include "eval/imager.hxx"
+#endif
 
 namespace escheme
 {
@@ -24,6 +27,7 @@ const std::string SYSTEM_REPLOOP = "*system-rep-loop*";
 const std::string SYSTEM_LOADER  = "*system-loader*";
 const std::string SYSTEM_PATH    = "*system-path*";
 const std::string TOPLEVEL       = "*toplevel*";
+const std::string REP_LOOP       = "*rep-loop*";
 
 static void define_system()
 {
@@ -31,23 +35,26 @@ static void define_system()
 (begin
    (define *version* "<interpreter>")
    (set-prompt "noise> ")
+   (define *rep-loop*
+     (lambda ()
+       (while #t
+         (let ((sexpr (read *terminal*)))
+           (add-history sexpr)
+           (print (eval sexpr))))))
    (let ((x 0))
      (call/cc (lambda (cc) (set! *toplevel* cc)))
      (if (= x 0)
        (begin
          (set! x 1)
          (load (system-path "escheme.scm"))
-         )))
+          )))
      (display "escheme ")
      (display *version*)
      (newline)
      (newline)
      (flush-output)
      (call/cc (lambda (cc) (set! *toplevel* cc)))
-     (while #t
-       (let ((sexpr (read *terminal*)))
-         (add-history sexpr)
-         (print (eval sexpr)))))
+     (*rep-loop*))
 
 (define (load file . noisily)
   (if (not (string? file))
@@ -78,12 +85,35 @@ static void define_system()
    setvalue( SYMTAB::enter(SYSTEM_PATH), READER::read(port) );
 }
 
-void rep_loop()
+#ifdef BYTE_CODE_EVALUATOR
+static std::string system_path( const std::string& file )
+{
+   auto home = ::getenv( "ESCHEME" );
+   if ( home )
+      return std::string(home) + "/" + file;
+   else
+      return file;
+}
+#endif
+
+void rep_loop( int argc, char** argv )
 {
    // build the "system"
 
    try
    {
+#ifdef BYTE_CODE_EVALUATOR
+      bool load_compiler = true;
+      if ( argc > 1 )
+      {
+	 std::string arg1 = argv[1];
+	 if ( arg1 == "-i" || arg1 == "--interpreter" )
+	    load_compiler = false;
+      }
+
+      if ( load_compiler )
+	 IMAGER::image_load( system_path("compiler/compiler-image.scm") );
+#endif
       define_system();
       
       EVAL::eceval( getvalue(SYMTAB::enter(SYSTEM_LOADER)) );
@@ -114,7 +144,7 @@ void rep_loop()
       {
 	 exp = SYMTAB::enter(TOPLEVEL);
 
-	 if ( contp(getvalue(exp))  )
+	 if ( contp(getvalue(exp)) )
 	 {
 	    // make it into an application
 	    exp = MEMORY::cons( exp, null );
@@ -133,12 +163,13 @@ void rep_loop()
       }
       catch ( ERROR::Exit& )
       {
+	 // place holder for Exit actions
 	 TRANSCRIPT::off();
 	 return;
       }
       catch ( ... )
       {
-	 printf( "handling unexpected error\n" );
+	 printf( "handling other error\n" );
 	 return;
       }
    }
