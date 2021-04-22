@@ -114,8 +114,8 @@ struct VECTOR
 
 struct CLOSURE
 {
-   BYTE numv;
-   BYTE rargs;
+   INT32 numv;
+   bool rargs;
    SEXPR* data;
 };
 
@@ -342,8 +342,8 @@ inline void setclosuredata( SEXPR n, SEXPR* x ) { getclosuredata(n) = x; }
 inline void setclosurecode( SEXPR n, SEXPR x ) { getclosurecode(n) = x; }
 inline void setclosurebenv( SEXPR n, SEXPR x ) { getclosurebenv(n) = x; }
 inline void setclosurevars( SEXPR n, SEXPR x ) { getclosurevars(n) = x; }
-inline void setclosurenumv( SEXPR n, BYTE x ) { getclosurenumv(n) = x; }
-inline void setclosurerargs( SEXPR n, BYTE x ) { getclosurerargs(n) = x; }
+inline void setclosurenumv( SEXPR n, INT32 x ) { getclosurenumv(n) = x; }
+inline void setclosurerargs( SEXPR n, bool x ) { getclosurerargs(n) = x; }
 
 // environment
 inline auto& getenvframe( SEXPR n ) { return n->u.environ.frame; }

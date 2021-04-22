@@ -1017,8 +1017,8 @@ SEXPR FUNC::parse_formals()
    regstack.push( v );
 
    SEXPR vars;
-   BYTE numv;
-   BYTE rargs;
+   INT32 numv;
+   bool rargs;
    EVAL::parse_formals( params, vars, numv, rargs );
 
    vset( v, 0, vars );

@@ -95,7 +95,7 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 //       (a . b) == (a #!rest b)
 //
 
-void EVAL::parse_formals( SEXPR formals, SEXPR& vars, BYTE& numv, BYTE& rargs )
+void EVAL::parse_formals( SEXPR formals, SEXPR& vars, INT32& numv, bool& rargs )
 {
    numv = 0;
    rargs = false;
@@ -125,9 +125,9 @@ void EVAL::parse_formals( SEXPR formals, SEXPR& vars, BYTE& numv, BYTE& rargs )
 
 static void arg_error( const char* text, unsigned n1, unsigned n2 )
 {
-   char msg[80];
-   SPRINTF( msg, "%s -- actual=%u, expected=%u", text, n1, n2 );
-   ERROR::severe( msg );
+   char buffer[80];
+   SPRINTF( buffer, "%s -- actual=%u, expected=%u", text, n1, n2 );
+   ERROR::severe( buffer );
 }
 
 SEXPR EVAL::extend_env_fun( SEXPR closure )
@@ -142,7 +142,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
 
    const auto nactual = static_cast<int>(argstack.getargc());
    const auto nformal = static_cast<int>(getclosurenumv(closure));
-   const SEXPR benv = getclosurebenv(closure);
+   const auto benv = getclosurebenv(closure);
    const bool rargs = getclosurerargs(closure);
 
    // create an extended environment
@@ -158,7 +158,7 @@ SEXPR EVAL::extend_env_fun( SEXPR closure )
       //
       if ( nactual != nformal )
       {
-	 if (nactual < nformal)
+	 if ( nactual < nformal )
 	    arg_error( "too few arguments", nactual, nformal );
 	 else
 	    arg_error( "too many arguments", nactual, nformal );
@@ -218,7 +218,7 @@ SEXPR EVAL::extend_env_vars( SEXPR bindings, SEXPR benv )
    while ( anyp(bindings) )
    {
       nvars++;
-      SEXPR v = car(bindings);
+      auto v = car(bindings);
       if ( consp(v) )
 	 v = car(v);
       vars.add( v );
@@ -246,7 +246,7 @@ SEXPR EVAL::get_evaluator_state()
    for ( int i = 0; i < is_depth; ++i )
       vectorset( regstack.top(), i, MEMORY::fixnum(intstack[i]) );
 
-   SEXPR evs = MEMORY::vector(3);
+   auto evs = MEMORY::vector(3);
    vectorset( evs, 2, regstack.pop() );
    vectorset( evs, 1, regstack.pop() );
    vectorset( evs, 0, regstack.pop() );
