@@ -14,6 +14,7 @@
 namespace escheme
 {
 
+#ifndef NO_INTERP
 //
 // Evaluator States
 //
@@ -71,7 +72,9 @@ enum EVSTATE
    EV_DONE,
    EV_SIZE
 };
- 
+#endif
+
+
 namespace EVAL
 {
    // private:
@@ -80,22 +83,27 @@ namespace EVAL
    extern SEXPR val;
    extern SEXPR aux;
    extern SEXPR unev;
+   extern SEXPR theGlobalEnv;
+#ifndef NO_INTERP
    extern EVSTATE cont;
    extern EVSTATE next;
-   extern SEXPR theGlobalEnv;
-
+#endif
 #ifdef BYTE_CODE_EVALUATOR
    extern int pc;
    extern SEXPR map_code;
    extern SEXPR for_code;
-   extern SEXPR rte_code;
-   extern SEXPR rtc_code;
    extern SEXPR fep_code;
+   extern SEXPR rtc_code;
+#ifndef NO_INTERP
+   extern SEXPR rte_code;
+#endif
 #endif
 
    void initialize();
   
+#ifndef NO_INTERP
    SEXPR eceval( SEXPR sexpr );
+#endif
 #ifdef BYTE_CODE_EVALUATOR
    void bceval();
    void bceval( SEXPR sexpr );
@@ -118,11 +126,15 @@ namespace EVAL
    void restore_continuation( SEXPR continuation );
 }
 
+#ifndef NO_INTERP
 inline void save( EVSTATE x )  { intstack.push(int(x)); }
+#endif
 inline void save( int x )  { intstack.push(x); }
 inline void save( SEXPR x ) { regstack.push(x); }
    
+#ifndef NO_INTERP
 inline void restore( EVSTATE& x ) { x = EVSTATE( intstack.pop() ); }
+#endif
 inline void restore( int& x ) { x = intstack.pop(); }
 inline void restore( SEXPR& x ) { x = regstack.pop(); }
 
@@ -145,19 +157,22 @@ inline void RESTORE_BCE_REGISTERS()
    restore( EVAL::env );
 }
 
-inline void SAVE_RTE()
-{
-   save( EVAL::env );
-   save( EVAL::rte_code );
-   save( 0 );
-}
-
 inline void SAVE_RTC()
 {
    save( EVAL::env );
    save( EVAL::rtc_code );
    save( 0 );
 }
+
+#ifndef NO_INTERP
+inline void SAVE_RTE()
+{
+   save( EVAL::env );
+   save( EVAL::rte_code );
+   save( 0 );
+}
+#endif
+   
 #endif
 
 }

@@ -23,17 +23,20 @@ SEXPR EVAL::env;
 SEXPR EVAL::val;
 SEXPR EVAL::aux;
 SEXPR EVAL::unev;
+SEXPR EVAL::theGlobalEnv;
+#ifndef NO_INTERP
 EVSTATE EVAL::cont;
 EVSTATE EVAL::next;
-SEXPR EVAL::theGlobalEnv;
-
+#endif
 #ifdef BYTE_CODE_EVALUATOR
 int EVAL::pc;
 SEXPR EVAL::map_code;
 SEXPR EVAL::for_code;
-SEXPR EVAL::rte_code;
-SEXPR EVAL::rtc_code;
 SEXPR EVAL::fep_code;
+SEXPR EVAL::rtc_code;
+#ifndef NO_INTERP
+SEXPR EVAL::rte_code;
+#endif
 #endif
 
 //
@@ -374,9 +377,11 @@ static void eval_marker()
 #ifdef BYTE_CODE_EVALUATOR
    MEMORY::mark( EVAL::map_code );
    MEMORY::mark( EVAL::for_code );
-   MEMORY::mark( EVAL::rte_code );
-   MEMORY::mark( EVAL::rtc_code );
    MEMORY::mark( EVAL::fep_code );
+   MEMORY::mark( EVAL::rtc_code );
+#ifndef NO_INTERP
+   MEMORY::mark( EVAL::rte_code );
+#endif
 #endif
 }
 
@@ -388,13 +393,16 @@ void EVAL::initialize()
    val = null;
    aux = null;
    unev = null;
+   theGlobalEnv = null;
+#ifndef NO_INTERP
    cont = EV_DONE;
    next = EV_DONE;
-   theGlobalEnv = null;
+#endif
 #ifdef BYTE_CODE_EVALUATOR
    pc = 0;
 #endif
 
+#ifndef NO_INTERP
    // set the special form dispatch value
    setform( symbol_quote,    EV_QUOTE );
    setform( symbol_delay,    EV_DELAY );
@@ -412,6 +420,7 @@ void EVAL::initialize()
    setform( symbol_or,       EV_OR );
    setform( symbol_access,   EV_ACCESS );
    setform( null,            EV_APPLICATION );
+#endif
 
 #ifdef BYTE_CODE_EVALUATOR
    //
@@ -419,9 +428,11 @@ void EVAL::initialize()
    //
    auto map_bcodes = MEMORY::byte_vector( 5 );
    auto for_bcodes = MEMORY::byte_vector( 5 );
-   auto rte_bcodes = MEMORY::byte_vector( 1 );
    auto rtc_bcodes = MEMORY::byte_vector( 1 );
    auto fep_bcodes = MEMORY::byte_vector( 2 );;
+#ifndef NO_INTERP
+   auto rte_bcodes = MEMORY::byte_vector( 1 );
+#endif
 
    bvecset( map_bcodes, 0, OP_MAP_INIT );
    bvecset( map_bcodes, 1, OP_MAP_APPLY );
@@ -435,24 +446,30 @@ void EVAL::initialize()
    bvecset( for_bcodes, 3, OP_FOR_RESULT );
    bvecset( for_bcodes, 4, OP_GOTO_CONT );
 
-   bvecset( rte_bcodes, 0, OP_RTE );
-   bvecset( rtc_bcodes, 0, OP_RTC );
-
    bvecset( fep_bcodes, 0, OP_FORCE_VALUE );
    bvecset( fep_bcodes, 1, OP_GOTO_CONT );
+
+   bvecset( rtc_bcodes, 0, OP_RTC );
+#ifndef NO_INTERP
+   bvecset( rte_bcodes, 0, OP_RTE );
+#endif
 
    auto vector_null = MEMORY::vector(0);
    map_code = MEMORY::code( map_bcodes, vector_null );
    for_code = MEMORY::code( for_bcodes, vector_null );
-   rte_code = MEMORY::code( rte_bcodes, vector_null );
-   rtc_code = MEMORY::code( rtc_bcodes, vector_null );
    fep_code = MEMORY::code( fep_bcodes, vector_null );
+   rtc_code = MEMORY::code( rtc_bcodes, vector_null );
+#ifndef NO_INTERP
+   rte_code = MEMORY::code( rte_bcodes, vector_null );
+#endif
 
    SYMTAB::enter( "%%map-code", map_code );
    SYMTAB::enter( "%%for-code", for_code );
-   SYMTAB::enter( "%%rte-code", rte_code );
-   SYMTAB::enter( "%%rtc-code", rtc_code );
    SYMTAB::enter( "%%fep-code", fep_code );
+   SYMTAB::enter( "%%rtc-code", rtc_code );
+#ifndef NO_INTERP
+   SYMTAB::enter( "%%rte-code", rte_code );
+#endif
 #endif
 
    MEMORY::register_marker( eval_marker );
