@@ -10,7 +10,7 @@ supporting approximately 90% of the R3RS standard. It has been principally an ex
 testbed for exploring models of evaluation, interpreter design and construction.
 Along the way _escheme_ has become a capable programming language, not a toy.
 Many additional functions are added to support environments, input/output, the host OS 
-(linux/unix) and access _escheme_ internals. Bignums are not supported.
+(linux/unix) and access _escheme_ internals.
 
 Abelson and Sussman's _Structure and Interpretation of Computer Programs_
 chapter 5 describes an explicit control evalutor for scheme. That material has provided the impetus
