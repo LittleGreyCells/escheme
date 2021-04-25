@@ -41,6 +41,7 @@ namespace PIO
    void put( SEXPR outport, int ch );
    
    inline void put( const char* s ) { put(stdout_port, s); }
+   inline void put( const std::string& s ) { put(stdout_port, s); }
    inline void put( int ch ) { put(stdout_port, ch); }
 }
 
