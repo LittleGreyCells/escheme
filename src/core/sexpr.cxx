@@ -5,6 +5,7 @@
 #include "sexpr.hxx"
 #include "memory.hxx"
 #include "error.hxx"
+#include "format.hxx"
 
 namespace escheme
 {
@@ -174,10 +175,7 @@ SEXPR guard( SEXPR s, PREDICATE predicate )
 	 }
       }
 
-      char message[80];
-      SPRINTF( message, "argument wrong type--expected %s, not", expected );
-
-      ERROR::severe( message, s );
+      ERROR::severe( format( "argument wrong type--expected %s, not", expected).c_str(), s );
    }
 
    return s;

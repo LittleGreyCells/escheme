@@ -19,9 +19,31 @@ enum ConfigurationConstants
 
 enum NodeKind
 {
-   n_free, n_null, n_symbol, n_fixnum, n_flonum, n_char, n_string, n_cons, n_vector,
-   n_bvec, n_environment, n_promise, n_closure, n_continuation, n_port, n_string_port,
-   n_func, n_eval, n_apply, n_callcc, n_map, n_foreach, n_force, n_code, NUMKINDS
+   n_free,
+   n_null,
+   n_symbol,
+   n_fixnum,
+   n_flonum,
+   n_char,
+   n_string,
+   n_cons,
+   n_vector,
+   n_bvec,
+   n_environment,
+   n_promise,
+   n_closure,
+   n_continuation,
+   n_port,
+   n_string_port,
+   n_func,
+   n_eval,
+   n_apply,
+   n_callcc,
+   n_map,
+   n_foreach,
+   n_force,
+   n_code,
+   NUMKINDS
 };
 
 enum PortMode
@@ -47,14 +69,7 @@ using INT16   = signed short;
 using UINT16  = unsigned short;
 using INT32   = signed int;
 using UINT32  = unsigned int;
-   
-//
-// Formmatted string output
-//
-
-#define SPRINTF(buffer, ...) snprintf(buffer, sizeof(buffer), __VA_ARGS__)
-
- 
+    
 //
 // Node Representational Scheme
 //

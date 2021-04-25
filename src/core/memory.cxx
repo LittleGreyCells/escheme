@@ -7,6 +7,7 @@
 #include "error.hxx"
 #include "regstack.hxx"
 #include "framestore.hxx"
+#include "format.hxx"
 
 namespace escheme
 {
@@ -112,9 +113,7 @@ int MEMORY::suspensions = 0;
 
 static void badnode( SEXPR n )
 {
-   char buffer[80];
-   SPRINTF( buffer, "bad node (%p,%d) during gc", n->id(), nodekind(n) );
-   ERROR::fatal( buffer );
+   ERROR::fatal( format( "bad node (%p, %d) during gc", n->id(), (int)nodekind(n) ).c_str() );
 }
 
 void MEMORY::mark( SEXPR n )

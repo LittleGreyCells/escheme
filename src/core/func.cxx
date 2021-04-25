@@ -20,6 +20,7 @@
 #include "pio.hxx"
 #include "tio.hxx"
 #include "transcript.hxx"
+#include "format.hxx"
 
 #include "eval/eval.hxx"
 
@@ -603,9 +604,7 @@ SEXPR FUNC::gensym()
 	 ERROR::severe("gensym requires [sym|str|fix]");
    }
 
-   char number[80];
-   SPRINTF( number, "%u", gensym_number++ );
-   new_sym += number;
+   new_sym += format( "%u", gensym_number++ );
   
    return MEMORY::symbol( new_sym );
 }
@@ -1588,10 +1587,7 @@ SEXPR FUNC::integer_to_string()
    ArgstackIterator iter;
    auto s = guard(iter.getlast(), fixnump);
 
-   char buf[MAX_IMAGE_LENGTH];
-   SPRINTF( buf, "%ld", getfixnum(s) );
-  
-   return MEMORY::string( buf );
+   return MEMORY::string( format("%d", getfixnum(s)) );
 }
 
 SEXPR FUNC::string_to_integer()

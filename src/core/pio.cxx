@@ -175,6 +175,11 @@ void PIO::put( SEXPR port, const char* s )
    }
 }
 
+void PIO::put( SEXPR port, const std::string& s )
+{
+   put( port, s.c_str() );
+}
+   
 static void pio_marker()
 {
    // mark the PIO objects

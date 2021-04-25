@@ -3,18 +3,12 @@
 #include "sexpr.hxx"
 #include "error.hxx"
 #include "recumark.hxx"
+#include "format.hxx"
 
 namespace escheme
 {
 
 static char buffer[MAX_IMAGE_LENGTH];
-
-static void error( const char* s )
-{
-   char message[300];
-   SPRINTF(message, "PRINTER error: %s\n", s);
-   ERROR::severe(message);
-}
 
 void PRINTER::newline( SEXPR outport )
 {
@@ -117,13 +111,11 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	    break;
 
 	 case n_fixnum:
-	    SPRINTF(buffer, "%ld", getfixnum(n));
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format("%d", getfixnum(n)) );
 	    break;
 
 	 case n_flonum:
-	    SPRINTF(buffer, "%lf", getflonum(n));
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format("%f", getflonum(n)) );
 	    break;
 
 	 case n_string:
@@ -133,7 +125,7 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	 case n_char:
 	    if ( style == QUOTE )
 	    {
-	       const int ch = getcharacter(n);
+	       const char ch = getcharacter(n);
 	       if (ch == '\n')
 	       {
 		  PIO::put(outport, "#\\newline");
@@ -144,14 +136,12 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	       }
 	       else
 	       {
-		  SPRINTF(buffer, "#\\%c", ch);
-		  PIO::put(outport, buffer);
+		  PIO::put( outport, format( "#\\%c", ch ) );
 	       }
 	    }
 	    else
 	    {
-	       SPRINTF(buffer, "%c", (int)getcharacter(n));
-	       PIO::put(outport, buffer);
+	       PIO::put( outport, format( "%c", getcharacter(n) ) );
 	    }
 	    break;
 
@@ -162,77 +152,64 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	 case n_map:
 	 case n_foreach:
 	 case n_force:
-	    SPRINTF(buffer, "{primitive:%s}", getprimname(n));
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{primitive:%s}", getprimname(n) ) );
 	    break;
 
 	 case n_port:
-	    SPRINTF(buffer, "{port:%p}", n->id() );
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{port:%p}", n->id() ) );
 	    break;
 
 	 case n_string_port:
-	    SPRINTF(buffer, "{string-port:%p}", n->id() );
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{string-port:%p}", n->id() ) );
 	    break;
 
 	 case n_closure:
-	    SPRINTF(buffer, "{closure:%p}", n->id() );
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{closure:%p}", n->id() ) );
 	    break;
 
 	 case n_continuation:
-	    SPRINTF(buffer, "{continuation:%p}", n->id() );
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{continuation:%p}", n->id() ) );
 	    break;
 
 	 case n_bvec:
 	    if ( 0 )
 	    {
-	       SPRINTF(buffer, "{byte-vector:%p}", n->id() );
-	       PIO::put(outport, buffer);
+	       PIO::put( outport, format( "{byte-vector:%p}", n->id() ) );
 	    }
 	    else
 	    {
 	       PIO::put(outport, "#(");
-	       for (UINT32 i = 0; i < getbveclength(n);)
+	       for ( auto i = 0; i < getbveclength(n); )
 	       {
-		  const BYTE b = bvecref(n, i);
-		  SPRINTF( buffer, "%d", b );
-		  PIO::put(outport, buffer);
+		  const auto b = (unsigned)bvecref(n, i);
+		  PIO::put(outport, format( "%d", b) );
 		  i += 1;
-		  if (i < getbveclength(n))
-		     PIO::put(outport, " ");
+		  if ( i < getbveclength(n) )
+		     PIO::put( outport, ' ' );
 	       }
-	       PIO::put(outport, ")");
+	       PIO::put( outport, ')' );
 	    }
 	    break;
 
 	 case n_environment:
-	    SPRINTF(buffer, "{environment:%p}", n->id() );
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{environment:%p}", n->id() ) );
 	    break;
 
 	 case n_promise:
-	    SPRINTF(buffer, "{promise:%p}", n->id() );
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{promise:%p}", n->id() ) );
 	    break;
 
 	 case n_code:
-	    SPRINTF(buffer, "{code:%p}", n->id() );
-	    PIO::put(outport, buffer);
+	    PIO::put( outport, format( "{code:%p}", n->id() ) );
 	    break;
 
 	 case n_free:
-	    SPRINTF(buffer, "{free-cell:%p}", n->id() );
-	    PIO::put(outport, buffer);
-	    error(buffer);
+	    ERROR::severe( format( "{free-cell:%p}", n->id() ).c_str() );
 	    break;
 
 	 default:
 	 {
-	    SPRINTF( buffer, "bad node (%p, %d)", n->id(), nodekind(n));
-	    error(buffer);
+	    ERROR::severe( format("bad node (%p, %d) during printing", n->id(), (int)nodekind(n)).c_str() );
 	 }
 	 break;
       }
