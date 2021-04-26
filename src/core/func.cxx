@@ -174,6 +174,7 @@ SEXPR FUNC::liststar()
    else
    {
       ArgstackIterator iter;
+      
       if  ( argc == 1 )
 	 return iter.getlast();
 
@@ -700,6 +701,37 @@ SEXPR FUNC::put_property()
    regstack.pop();
 
    return p;
+}
+
+SEXPR FUNC::rem_property()
+{
+   //
+   // syntax: (remprop <sym> <prop>)
+   //
+   ArgstackIterator iter;
+   auto s = guard(iter.getarg(), symbolp);
+   auto p = guard(iter.getlast(), symbolp);
+   auto plist = getplist(s);
+   auto prev = null;
+   
+   while ( anyp(plist) )
+   {
+      if ( eq( p, car(plist) ) )
+      {
+	 // remove the entire property
+	 const auto x = cdr(plist);
+	 const auto prop = car(x);
+	 if ( nullp(prev) )
+	    setplist( s, cdr(x) );
+	 else
+	    setcdr( cdr(prev), cdr(x) );
+	 return prop;
+      }
+      prev = plist;
+      plist = cdr(cdr(plist));
+   }
+  
+   return null;
 }
 
 SEXPR FUNC::symbols()
@@ -1386,7 +1418,7 @@ SEXPR FUNC::string_set()
    return s;
 }
 
-SEXPR FUNC::substring()
+SEXPR FUNC::string_substring()
 {
    //
    // syntax: (substring <s> <start> <end>) -> <string>
@@ -1424,7 +1456,7 @@ SEXPR FUNC::string_fill()
 
 SEXPR FUNC::string_copy()
 {
-   // *
+   //
    // syntax: (string-copy! <dest> <dest-start> <src> [<src-start> <src-end>]) -> <dest>
    //
    //   <dest> == s_dst
@@ -1462,6 +1494,25 @@ SEXPR FUNC::string_copy()
       getstringdata(dst)[i] = getstringdata(src)[j];
 
    return dst;
+}
+
+SEXPR FUNC::string_find()
+{
+   ArgstackIterator iter;
+   auto s1 = guard(iter.getarg(), stringp);
+   auto ss = guard(iter.getlast(), stringp);
+
+   auto pos = ::strstr( getstringdata(s1), getstringdata(ss) );
+
+   if ( pos == NULL )
+   {
+      return null;
+   }
+   else
+   {
+      auto offset = pos - getstringdata(s1);
+      return MEMORY::fixnum( reinterpret_cast<FIXNUM>(offset) );
+   }
 }
 
 SEXPR FUNC::list_to_string()
@@ -2076,29 +2127,6 @@ SEXPR FUNC::objaddr()
    ArgstackIterator iter;
    auto obj = iter.getlast();
    return MEMORY::fixnum( reinterpret_cast<FIXNUM>(obj) );
-}
-
-//
-// string
-//
-
-SEXPR FUNC::find()
-{
-   ArgstackIterator iter;
-   auto s1 = guard(iter.getarg(), stringp);
-   auto ss = guard(iter.getlast(), stringp);
-
-   auto pos = ::strstr( getstringdata(s1), getstringdata(ss) );
-
-   if ( pos == NULL )
-   {
-      return null;
-   }
-   else
-   {
-      auto offset = pos - getstringdata(s1);
-      return MEMORY::fixnum( reinterpret_cast<FIXNUM>(offset) );
-   }
 }
 
    

@@ -115,6 +115,7 @@ static const Function funtab[] =
    { "set-symbol-plist!",    FUNC::set_symbol_plist },
    { "get",                  FUNC::get_property     },
    { "put",                  FUNC::put_property     },
+   { "remprop",              FUNC::rem_property     },
    { "*symbols*",            FUNC::symbols          },
 
    { "read",		     FUNC::read		},
@@ -247,7 +248,8 @@ static const Function funtab[] =
    { "string-set!",           FUNC::string_set },
    { "string-fill!",          FUNC::string_fill },
    { "string-copy!",          FUNC::string_copy },
-   { "substring",             FUNC::substring },
+   { "substring",             FUNC::string_substring },
+   { "string-find",           FUNC::string_find      },
 
    { "string=?",              FUNC::string_EQ },
    { "string<?",              FUNC::string_LT },
@@ -299,8 +301,6 @@ static const Function funtab[] =
    { "show-history",	      FUNC::history_show  },
    { "clear-history",	      FUNC::history_clear },
    { "set-prompt",	      FUNC::set_prompt    },
-
-   { "find",                  FUNC::find         },
 
    { "%closure-code",         FUNC::closure_code },
    { "%closure-benv",         FUNC::closure_benv },

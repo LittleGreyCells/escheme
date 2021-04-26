@@ -70,6 +70,7 @@ namespace FUNC
    SEXPR set_symbol_plist();
    SEXPR get_property();
    SEXPR put_property();
+   SEXPR rem_property();
    SEXPR symbols();
 
    // other conversion
@@ -144,9 +145,11 @@ namespace FUNC
    SEXPR string_append();
    SEXPR string_ref();
    SEXPR string_set();
-   SEXPR substring();
+   SEXPR string_substring();
    SEXPR string_fill();
    SEXPR string_copy();
+   SEXPR string_find();   
+
 
    SEXPR string_EQ();
    SEXPR string_LT();
@@ -213,9 +216,6 @@ namespace FUNC
    SEXPR history_clear();
    SEXPR history_show();
    SEXPR set_prompt();
-
-   // string
-   SEXPR find();   
 
    // equality
    bool eq( SEXPR e1, SEXPR e2 );
