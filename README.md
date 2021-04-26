@@ -8,7 +8,7 @@ A scheme interpreter utilizing an explicit control evaluator
 _escheme_ is an aspiring implementation of the algorithmic language scheme, 
 supporting approximately 90% of the R3RS standard. Granted, it is a bit dated,
 conforming to a scheme report from the late 1980s.
-This is due both to the time of its inception as well as well as a desire to
+This is due both to the time of its inception as well as from a desire to
 contrain the design target. As such it has been principally an experimental
 testbed for exploring models of evaluation, interpreter design and construction.
 
@@ -22,15 +22,15 @@ _escheme_ is not related to emacs or eLisp in any way.
 ## Implementation 
 
 _escheme_ is implemented in C++14, using a modest set of language features,
-exploiting class initialization/finalization semantics for deferred execution 
-and cleanup. Templates are used for control stack and argument stack 
-implementation. Exceptions are used for non-local returns. 
+exploiting class initialization/finalization for deferred execution 
+and cleanup. Templates are used primarily for evaluator stack 
+implementations. Exceptions are used for non-local returns. 
 
-Even so, one might mistaken _escheme's_ program structure for one typical for modular
+Even so, one might mistaken _escheme's_ program structure for one typical for module based
 languages like Modula-2 or a D's "better C". It is organized into 21 modules, constituting
-8 design domains: object representations, reader, printer, port and terminal
+8 functional domains: object representations, reader, printer, port and terminal
 IO, memory manager, symbol table(s) and, lastly, the interpreter with its supporting
-apparati. While efficiency has been an important consideration, intelligibility has
+apparatus. While efficiency has been an important consideration, intelligibility has
 been paramount.
 
 
