@@ -27,7 +27,7 @@ and cleanup. Templates are used primarily for evaluator stack
 implementations. Exceptions are used for non-local returns. 
 
 Even so, one might mistaken _escheme's_ program structure for one typical for module based
-languages like Modula-2 or a D's "better C". It is organized into 21 modules, constituting
+languages like Modula-2 or D's "better C". It is organized into 21 modules, constituting
 8 functional domains: object representations, reader, printer, port and terminal
 IO, memory manager, symbol table(s) and, lastly, the interpreter with its supporting
 apparatus. While efficiency has been an important consideration, intelligibility has
