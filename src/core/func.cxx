@@ -1362,6 +1362,16 @@ SEXPR FUNC::get_output_string()
 // strings
 //
 
+SEXPR FUNC::string_make()
+{
+   ArgstackIterator iter;
+   auto length = (INT32)fixnum(guard(iter.getarg(), fixnump));
+   auto ch = ' ';
+   if ( iter.more() )
+      ch = getcharacter(guard(iter.getlast(), charp));
+   return MEMORY::string( length, ch );
+}
+
 SEXPR FUNC::string_length()
 {
    ArgstackIterator iter;

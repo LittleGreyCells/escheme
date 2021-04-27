@@ -242,6 +242,7 @@ static const Function funtab[] =
 #endif
    { "string-null?",          []{ return FUNC::predicate(string_nullp); } },
    
+   { "make-string",           FUNC::string_make },
    { "string-length",         FUNC::string_length },
    { "string-append",         FUNC::string_append },
    { "string-ref",            FUNC::string_ref },

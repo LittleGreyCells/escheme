@@ -141,6 +141,7 @@ namespace FUNC
    // predicates
    SEXPR procedurep();
 
+   SEXPR string_make();
    SEXPR string_length();
    SEXPR string_append();
    SEXPR string_ref();

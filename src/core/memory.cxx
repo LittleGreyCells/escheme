@@ -393,6 +393,15 @@ SEXPR MEMORY::string( const std::string& s )
    return new_string( s.c_str(), s.length() );
 }
 
+SEXPR MEMORY::string( UINT32 length, char ch )
+{
+   auto s = new_string( "", length );
+   for ( int i = 0; i < length; ++i )
+      getstringdata(s)[i] = ch;
+   getstringdata(s)[length] = '\0';
+   return s;
+}
+
 SEXPR MEMORY::string_port( SEXPR str, short mode )
 {
    auto n = newnode(n_string_port);
