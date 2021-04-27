@@ -498,10 +498,57 @@
   (assert (string-ci>=? "A" "a"))
   (assert (not (string-ci>=? "" "a")))
 
-  (let ((pos (string-find "12abc45" "abc")))
-    (assert (and (number? pos) (= pos 2))))
+  (assert (eqv? (substring "abc" 0 3) "abc"))
+  (assert (eqv? (substring "abc" 0 2) "ab"))
+  (assert (eqv? (substring "abc" 0 1) "a"))
+  (assert (eqv? (substring "abc" 0 0) ""))
+  (assert (eqv? (substring "abc" 1 2) "b"))
+  (assert (eqv? (substring "abc" 2 3) "c"))
+
+  (begin
+  (assert (eqv? (string-find "12abab" "ab" 0) 2))
+  (assert (eqv? (string-find "12abab" "ab" 1) 2))
+  (assert (eqv? (string-find "12abab" "ab" 2) 2))
+  (assert (eqv? (string-find "12abab" "ab" 3) 4))
+  (assert (eqv? (string-find "12abab" "ab" 4) 4))
+  (assert (null? (string-find "12abab" "ab" 5)))
+  (assert (eqv? (string-find "12abab" "ab" 0 4) 2))
+  (assert (null? (string-find "12abab" "ab" 0 3)))
+  (assert (null? (string-find "12abab" "ab" 0 2)))
+  (assert (eqv? (string-find "12abc45" "abc" 0 6) 2))
+  (assert (eqv? (string-find "12abc45" "abc" 0 5) 2))
+  (assert (null? (string-find "12abc45" "abc" 0 4)))
+  (assert (eqv? (string-find "12abc45" "abc") 2))
+  (assert (eqv? (string-find "12abc45" "12abc45") 0))
+  (assert (null? (string-find "12abc45" "12abc45z")))
   (assert (null? (string-find "12abc45" "xyz")))
+  (assert (null? (string-find "12abc45" "5z")))
+
+  
+  (set! s1 "abc")
+  (set! s2 "abc")
+  (set! s3 "ABC")
+  (assert (string=? (string-upcase! s1) "ABC"))
+  (assert (string=? (string-downcase! s1) "abc"))
+  (assert (string=? (string-upcase! (string-dup s2)) "ABC"))
+  (assert (string=? s2 "abc"))
+  (assert (string=? (string-downcase! (string-dup s2)) "abc"))
+  (assert (string=? s3 "ABC"))
+
+  (assert (string=? (string-trim " a ") "a"))
+  (assert (string=? (string-trim-left " a ") "a "))
+  (assert (string=? (string-trim-right " a ") " a"))
+
+  (set! s1 (list->string (list #\tab #\a #\tab)))
+  (set! s2 (list->string (list #\tab #\a)))
+  (set! s3 (list->string (list #\a #\tab)))
+  (assert (string=? (string-trim s1) "a"))
+  (assert (string=? (string-trim-left s1) s3))
+  (assert (string=? (string-trim-right s1) s2))
+  )
 )
+	
+
 
 
 (define (test-chars)
