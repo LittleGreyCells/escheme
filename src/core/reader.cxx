@@ -317,6 +317,8 @@ SEXPR READER::read_special( SEXPR inport )
 	    ch = '\n';
 	 else if ( s.compare( "space" ) == 0 )
 	    ch = ' ';
+	 else if ( s.compare( "tab" ) == 0 )
+	    ch = '\t';
 	 else if ( s.length() > 1 )
 	    ERROR::severe("unknown special symbol");
 	 else if ( s.length() == 0 )

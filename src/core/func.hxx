@@ -148,7 +148,13 @@ namespace FUNC
    SEXPR string_substring();
    SEXPR string_fill();
    SEXPR string_copy();
-   SEXPR string_find();   
+   SEXPR string_dup();
+   SEXPR string_find();
+   SEXPR string_trim();
+   SEXPR string_trim_left();
+   SEXPR string_trim_right();
+   SEXPR string_downcase();
+   SEXPR string_upcase();
 
 
    SEXPR string_EQ();

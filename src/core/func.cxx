@@ -1421,7 +1421,10 @@ SEXPR FUNC::string_set()
 SEXPR FUNC::string_substring()
 {
    //
-   // syntax: (substring <s> <start> <end>) -> <string>
+   // syntax: (substring <s> <s-start> <s-end>) -> <string>
+   //
+   //    inclusive of <s-start>
+   //    exclusive of <s-end>
    //
    ArgstackIterator iter;
    auto s = guard(iter.getarg(), stringp);
@@ -1496,23 +1499,155 @@ SEXPR FUNC::string_copy()
    return dst;
 }
 
+SEXPR FUNC::string_dup()
+{
+   //
+   // syntax: (string <str>) -> <str-duplicated>
+   //
+   ArgstackIterator iter;
+   auto s = guard(iter.getarg(), stringp);
+
+   return MEMORY::string( getstringdata(s) );
+}
+
 SEXPR FUNC::string_find()
 {
+   //
+   // syntax: (string-find <s1> <s2> [<start> [<end>]]) -> <fixnum> or null
+   //
    ArgstackIterator iter;
    auto s1 = guard(iter.getarg(), stringp);
-   auto ss = guard(iter.getlast(), stringp);
+   auto s2 = guard(iter.getarg(), stringp);
 
-   auto pos = ::strstr( getstringdata(s1), getstringdata(ss) );
+   int start = 0;
+   int end = getstringlength(s1);
 
-   if ( pos == NULL )
-   {
+   if ( iter.more() )
+      start = getfixnum(guard(iter.getarg(), fixnump));
+   if ( iter.more() )
+      end = getfixnum(guard(iter.getlast(), fixnump));
+
+   if ( start < 0 )
+      ERROR::severe( "start < 0" );
+   if ( end > getstringlength(s1) )
+      ERROR::severe( "end > string length" );
+   if ( start >= end )
+      ERROR::severe( "start >= end" );
+
+   std::string str1 = getstringdata(s1);
+
+   auto pos = str1.find( getstringdata(s2), start );
+
+   if ( pos == std::string::npos || pos + getstringlength(s2) > end )
       return null;
-   }
    else
-   {
-      auto offset = pos - getstringdata(s1);
-      return MEMORY::fixnum( reinterpret_cast<FIXNUM>(offset) );
-   }
+      return MEMORY::fixnum( pos );
+}
+
+static const char* whitespace = " \t\n\v\f\r";
+
+SEXPR FUNC::string_trim_left()
+{
+   //
+   // syntax: (string-trim-left <s1> <s2>) -> <string>
+   //
+   // remove <s1>'s leading white space along with <s2>'s chars if given
+   //
+   ArgstackIterator iter;
+   auto s1 = guard(iter.getarg(), stringp);
+
+   std::string ws = whitespace;
+   if ( iter.more() )
+      ws += getstringdata(guard(iter.getlast(), stringp));
+
+   std::string s = getstringdata(s1);
+
+   auto pos = s.find_first_not_of( ws ); 
+
+   return MEMORY::string( s.substr(pos) );
+}
+
+SEXPR FUNC::string_trim_right()
+{
+   //
+   // syntax: (string-trim-right <s1> <s2>) -> <string>
+   //
+   // remove <s1>'s trailing white space along with <s2>'s chars if given
+   //
+   ArgstackIterator iter;
+   auto s1 = guard(iter.getarg(), stringp);
+
+   std::string ws = whitespace;
+   if ( iter.more() )
+      ws += getstringdata(guard(iter.getlast(), stringp));
+
+   std::string s = getstringdata(s1);
+
+   auto pos = s.find_last_not_of( ws );
+
+   if ( pos == std::string::npos )
+      return MEMORY::string( s );
+   else
+      return MEMORY::string( s.substr(0, pos+1) );
+}
+
+SEXPR FUNC::string_trim()
+{
+   //
+   // syntax: (string-trim <s1> <s2>) -> <string>
+   //
+   // remove <s1>'s leading and trailing white space along with <s2>'s chars if given
+   //
+   ArgstackIterator iter;
+   auto s1 = guard(iter.getarg(), stringp);
+
+   std::string ws = whitespace;
+   if ( iter.more() )
+      ws += getstringdata(guard(iter.getlast(), stringp));
+
+   std::string s = getstringdata(s1);
+
+   auto pos1 = s.find_first_not_of( ws );
+   auto pos2 = s.find_last_not_of( ws );
+
+   if ( pos1 == std::string::npos )
+      return MEMORY::string( s.substr(pos1) );
+   else
+      return MEMORY::string( s.substr(pos1, pos2-pos1+1) );
+}
+
+SEXPR FUNC::string_upcase()
+{
+   //
+   // syntax: (string-upcase! <s>) -> <string>
+   //
+   ArgstackIterator iter;
+   auto s = guard(iter.getlast(), stringp);
+
+   auto p = getstringdata(s);
+   const int slen = getstringlength(s);
+   
+   for ( int i = 0; i < slen; ++i )
+      p[i] = toupper(p[i]);
+
+   return s;
+}
+
+SEXPR FUNC::string_downcase()
+{
+   //
+   // syntax: (string-downcase! <s>) -> <string>
+   //
+   ArgstackIterator iter;
+   auto s = guard(iter.getlast(), stringp);
+
+   auto p = getstringdata(s);
+   const int slen = getstringlength(s);
+   
+   for ( int i = 0; i < slen; ++i )
+      p[i] = tolower(p[i]);
+
+   return s;
 }
 
 SEXPR FUNC::list_to_string()

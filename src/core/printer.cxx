@@ -134,6 +134,10 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	       {
 		  PIO::put(outport, "#\\space");
 	       }
+	       else if (ch == '\t')
+	       {
+		  PIO::put(outport, "#\\tab");
+	       }
 	       else
 	       {
 		  PIO::put( outport, format( "#\\%c", ch ) );
