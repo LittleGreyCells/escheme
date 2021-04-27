@@ -1364,6 +1364,9 @@ SEXPR FUNC::get_output_string()
 
 SEXPR FUNC::string_make()
 {
+   //
+   // syntax: (string-make <length> [<char>]) -> <string>
+   //
    ArgstackIterator iter;
    auto length = (INT32)fixnum(guard(iter.getarg(), fixnump));
    auto ch = ' ';
@@ -1658,6 +1661,53 @@ SEXPR FUNC::string_downcase()
       p[i] = tolower(p[i]);
 
    return s;
+}
+
+SEXPR FUNC::string_pad_left()
+{
+   //
+   // syntax: (string-pad-left <s> <k> [<char>]) -> <string>
+   //
+   ArgstackIterator iter;
+   auto s = guard(iter.getarg(), stringp);
+   auto k = (int)fixnum(guard(iter.getarg(), fixnump));
+   char pad = iter.more() ? getcharacter(guard(iter.getlast(), charp)) : ' ';
+
+   if ( k < 0 )
+      ERROR::severe( "pad size must be > 0");
+
+   if ( getstringlength(s) > k )
+   {
+      return MEMORY::string( &getstringdata(s)[getstringlength(s)-k] );
+   }
+   else
+   {
+      auto s2 = MEMORY::string( k, pad );
+      ::strcpy( &getstringdata(s2)[k-getstringlength(s)], getstringdata(s) );
+      return s2;
+   }
+}
+
+SEXPR FUNC::string_pad_right()
+{
+   //
+   // syntax: (string-pad-right <s> <k> [<char>]) -> <string>
+   //
+   ArgstackIterator iter;
+   auto s = guard(iter.getarg(), stringp);
+   auto k = (int)fixnum(guard(iter.getarg(), fixnump));
+   char pad = iter.more() ? getcharacter(guard(iter.getlast(), charp)) : ' ';
+
+    if ( k < 0 )
+      ERROR::severe( "pad size must be > 0");
+
+   const int count = ( getstringlength(s) > k ) ? k : getstringlength(s);
+   auto s2 = MEMORY::string( k, pad );
+   
+   for ( int i = 0; i < count; ++i )
+      getstringdata(s2)[i] = getstringdata(s)[i];
+   
+   return s2;
 }
 
 SEXPR FUNC::list_to_string()

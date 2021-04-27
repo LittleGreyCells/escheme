@@ -545,6 +545,23 @@
   (assert (string=? (string-trim s1) "a"))
   (assert (string=? (string-trim-left s1) s3))
   (assert (string=? (string-trim-right s1) s2))
+
+  (set! s1 "abc")
+  (assert (string=? (string-pad-left s1 6) "   abc"))
+  (assert (string=? (string-pad-left s1 5) "  abc"))
+  (assert (string=? (string-pad-left s1 4) " abc"))
+  (assert (string=? (string-pad-left s1 3) "abc"))
+  (assert (string=? (string-pad-left s1 2) "bc"))
+  (assert (string=? (string-pad-left s1 1) "c"))
+  (assert (string=? (string-pad-left s1 0) ""))
+
+  (assert (string=? (string-pad-right s1 6) "abc   "))
+  (assert (string=? (string-pad-right s1 5) "abc  "))
+  (assert (string=? (string-pad-right s1 4) "abc "))
+  (assert (string=? (string-pad-right s1 3) "abc"))
+  (assert (string=? (string-pad-right s1 2) "ab"))
+  (assert (string=? (string-pad-right s1 1) "a"))
+  (assert (string=? (string-pad-right s1 0) ""))
   )
 )
 	

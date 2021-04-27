@@ -156,6 +156,8 @@ namespace FUNC
    SEXPR string_trim_right();
    SEXPR string_downcase();
    SEXPR string_upcase();
+   SEXPR string_pad_left();
+   SEXPR string_pad_right();
 
 
    SEXPR string_EQ();
