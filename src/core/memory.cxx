@@ -118,11 +118,29 @@ static void badnode( SEXPR n )
 
 void MEMORY::mark( SEXPR n )
 {
-   if ( nullp(n) || markedp(n) )
+   if ( markedp(n) )
       return;
 
    switch ( nodekind(n) )
    {
+      case n_null:
+      case n_bvec:
+      case n_string:
+      case n_string_port:
+      case n_fixnum:
+      case n_flonum:
+      case n_port:
+      case n_char:
+      case n_func:
+      case n_eval:
+      case n_apply:
+      case n_callcc:
+      case n_map:
+      case n_foreach:
+      case n_force:
+	 setmark(n);
+	 break;
+
       case n_cons:
 	 setmark(n);
 	 mark( getcar(n) );
@@ -152,7 +170,7 @@ void MEMORY::mark( SEXPR n )
          // frame
          auto frame = getenvframe(n);
          mark( getframevars(frame) );
-         const auto nslots = getframenslots(frame);
+         const int nslots = getframenslots(frame);
          for ( int i = 0; i < nslots; ++i )
             mark( frameref(frame, i) );
          // benv
@@ -163,7 +181,7 @@ void MEMORY::mark( SEXPR n )
       case n_vector:
       {
 	 setmark(n);
-	 const auto length = getvectorlength(n);
+	 const int length = getvectorlength(n);
 	 for ( int i = 0; i < length; ++i )
 	    mark( vectorref(n, i) );
 	 break;
@@ -183,33 +201,6 @@ void MEMORY::mark( SEXPR n )
 	 mark( getpair(n) );
 	 break;
          
-      case n_bvec:
-	 setmark(n);
-         break;
-         
-      case n_string:
-	 setmark(n);
-	 break;
-
-      case n_string_port:
-      case n_fixnum:
-      case n_flonum:
-      case n_port:
-      case n_char:
-      case n_func:
-      case n_eval:
-      case n_apply:
-      case n_callcc:
-      case n_map:
-      case n_foreach:
-      case n_force:
-	 setmark(n);
-	 break;
-
-      case n_null:
-	 // null is not allocated from node space
-	 break;
-   
       case n_free:
       default:
 	 badnode(n);
