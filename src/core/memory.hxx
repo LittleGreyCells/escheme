@@ -18,6 +18,7 @@ namespace MEMORY
    extern long FreeNodeCount;
    extern int  CollectionCount;
    extern FrameStore frameStore;
+   extern int  MaxGcstackDepth;
 
 #ifdef GC_STATISTICS_DETAILED
    extern std::array<UINT32, NUMKINDS> ReclamationCounts;

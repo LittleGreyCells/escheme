@@ -8,6 +8,10 @@
 #include "regstack.hxx"
 #include "framestore.hxx"
 #include "format.hxx"
+#include "regstack.hxx"
+
+#define RECURSIVE_MARK
+#undef RECURSIVE_MARK
 
 namespace escheme
 {
@@ -39,6 +43,7 @@ void MEMORY::register_marker( Marker marker )
 long MEMORY::TotalNodeCount  = 0;
 long MEMORY::FreeNodeCount   = 0;
 int  MEMORY::CollectionCount = 0;
+int  MEMORY::MaxGcstackDepth = 0;
 
 static SEXPR FreeNodeList;
 
@@ -111,11 +116,17 @@ inline void resetmark( SEXPR n ) { n->mark = 0; }
 
 int MEMORY::suspensions = 0;
 
+static REGSTACK gcstack( 10000 );
+
 static void badnode( SEXPR n )
 {
    ERROR::fatal( format( "bad node (%p, %d) during gc", n->id(), (int)nodekind(n) ).c_str() );
 }
 
+#ifdef RECURSIVE_MARK
+//
+// recursive marking function
+//
 void MEMORY::mark( SEXPR n )
 {
    if ( markedp(n) )
@@ -208,12 +219,132 @@ void MEMORY::mark( SEXPR n )
    }
 }
 
+#else
+
+//
+// iterative marking function
+//
+void MEMORY::mark( SEXPR n )
+{
+   if ( markedp(n) )
+      return;
+
+   gcstack.flush();
+   gcstack.push(n);
+
+   while ( !gcstack.emptyp() )
+   {
+      auto n = gcstack.upop();
+
+     start_mark:
+	 
+      if ( !markedp(n) )
+      {
+	 setmark(n);
+
+	 switch ( nodekind(n) )
+	 {
+	    case n_null:
+	    case n_bvec:
+	    case n_string:
+	    case n_string_port:
+	    case n_fixnum:
+	    case n_flonum:
+	    case n_port:
+	    case n_char:
+	    case n_func:
+	    case n_eval:
+	    case n_apply:
+	    case n_callcc:
+	    case n_map:
+	    case n_foreach:
+	    case n_force:
+	       break;
+	       
+	    case n_cons:
+	       gcstack.push( getcar(n) );
+	       // gcstack.push( getcdr(n) );
+	       n = getcdr(n);
+	       goto start_mark;
+	       break;
+	       
+	    case n_promise:
+	       gcstack.push( promise_getexp(n) );
+	       // gcstack.push( promise_getval(n) );
+	       n = promise_getval(n);
+	       goto start_mark;
+	       break;
+	       
+	    case n_code:
+	       // gcstack.push( code_getbcodes(n) );
+	       setmark( code_getbcodes(n) );
+	       // gcstack.push( code_getsexprs(n) );
+	       n = code_getsexprs(n);
+	       goto start_mark;
+	       break;
+	       
+	    case n_continuation:
+	       // gcstack.push( cont_getstate(n) );
+	       n = cont_getstate(n);
+	       goto start_mark;
+	       break;
+	       
+	    case n_environment:
+	    {
+	       // frame
+	       auto frame = getenvframe(n);
+	       gcstack.push( getframevars(frame) );
+	       const int nslots = getframenslots(frame);
+	       for ( int i = 0; i < nslots; ++i )
+		  gcstack.push( frameref(frame, i) );
+	       // benv
+	       // gcstack.push( getenvbase(n) );
+	       n = getenvbase(n);
+	       goto start_mark;
+	       break;
+	    }
+	    case n_vector:
+	    {
+	       const int length = getvectorlength(n);
+	       for ( int i = 0; i < length; ++i )
+		  gcstack.push( vectorref(n, i) );
+	       break;
+	    }
+	    
+	    case n_closure:
+	    {
+	       gcstack.push( getclosurecode(n) );
+	       gcstack.push( getclosurebenv(n) );
+	       // gcstack.push( getclosurevars(n) );
+	       n = getclosurevars(n);
+	       goto start_mark;
+	       break;
+	    }
+	    
+	    case n_symbol:
+	       // gcstack.push( getpair(n) );
+	       n = getpair(n);
+	       goto start_mark;
+	       break;
+	       
+	    case n_free:
+	    default:
+	       badnode(n);
+	       break;
+	 }
+      }
+   }
+}
+
+#endif
+
 void MEMORY::mark( TSTACK<SEXPR>& stack )
 {
    const auto depth = stack.getdepth();
    for ( int i = 0; i < depth; ++i )
       mark( stack[i] );
 }
+
 
 static void sweep()
 {
@@ -303,6 +434,12 @@ void MEMORY::gc()
    // notify all clients to mark their active roots
    for ( auto marker : markers )
       marker();
+
+   #ifdef MAX_DEPTH
+   #ifndef RECURSIVE_MARK
+   MaxGcstackDepth = gcstack.max_depth;
+   #endif
+   #endif
 
    // collect the unused nodes
    sweep();
