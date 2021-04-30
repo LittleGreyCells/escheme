@@ -165,24 +165,20 @@ void MEMORY::mark( SEXPR n )
 	       gcstack.push( getcar(n) );
 	       n = getcdr(n);
 	       goto start_mark;
-	       //break;
 	       
 	    case n_promise:
 	       gcstack.push( promise_getexp(n) );
 	       n = promise_getval(n);
 	       goto start_mark;
-	       //break;
 	       
 	    case n_code:
 	       setmark( code_getbcodes(n) );
 	       n = code_getsexprs(n);
 	       goto start_mark;
-	       //break;
 	       
 	    case n_continuation:
 	       n = cont_getstate(n);
 	       goto start_mark;
-	       //break;
 	       
 	    case n_environment:
 	    {
@@ -195,7 +191,6 @@ void MEMORY::mark( SEXPR n )
 	       // benv
 	       n = getenvbase(n);
 	       goto start_mark;
-	       //break;
 	    }
 	    case n_vector:
 	    {
@@ -211,13 +206,11 @@ void MEMORY::mark( SEXPR n )
 	       gcstack.push( getclosurebenv(n) );
 	       n = getclosurevars(n);
 	       goto start_mark;
-	       //break;
 	    }
 	    
 	    case n_symbol:
 	       n = getpair(n);
 	       goto start_mark;
-	       //break;
 	       
 	    case n_free:
 	    default:
