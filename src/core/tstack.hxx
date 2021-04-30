@@ -11,9 +11,6 @@ public:
    explicit TSTACK<T>( int stacksize )
    {
       data = new T[size = stacksize];
-      #ifdef MAX_DEPTH
-      max_depth = 0;
-      #endif
       flush();
    }
   
@@ -21,14 +18,7 @@ public:
    { 
       if ( fullp() )
 	 overflow();
-      #ifdef MAX_DEPTH
-      ++top_index;
-      if ( top_index > max_depth )
-	 max_depth = top_index;
-      data[top_index] = s;
-      #else
       data[++top_index] = s; 
-      #endif
    }
    
    T pop()
@@ -45,7 +35,7 @@ public:
       return data[top_index];
    }
    
-   T upop() { return data[top_index--]; }
+   T unchecked_pop() { return data[top_index--]; }
    
    int emptyp() { return top_index == -1; }
    int fullp()  { return top_index == size-1; }
@@ -67,9 +57,6 @@ public:
    T* data;
    int size;
    int top_index;
-   #ifdef MAX_DEPTH
-   int max_depth;
-   #endif
 };
 
 }

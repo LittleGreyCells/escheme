@@ -849,7 +849,7 @@ static SEXPR gc_stats()
    vectorset( regstack.top(), 0, MEMORY::fixnum( MEMORY::CollectionCount ) );
    vectorset( regstack.top(), 1, MEMORY::fixnum( MEMORY::TotalNodeCount ) );
    vectorset( regstack.top(), 2, MEMORY::fixnum( MEMORY::FreeNodeCount ) );
-   vectorset( regstack.top(), 3, MEMORY::fixnum( MEMORY::MaxGcstackDepth ) );
+   vectorset( regstack.top(), 3, MEMORY::fixnum( MEMORY::MaxIterMarkDepth ) );
    
 #ifdef GC_STATISTICS_DETAILED
    const int N = MEMORY::ReclamationCounts.size();

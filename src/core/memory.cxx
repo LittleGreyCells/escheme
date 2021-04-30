@@ -3,12 +3,13 @@
 #include <cstring>
 #include <array>
 #include <list>
+#include <stack>
+#include <algorithm>
 
 #include "error.hxx"
 #include "regstack.hxx"
 #include "framestore.hxx"
 #include "format.hxx"
-#include "regstack.hxx"
 
 namespace escheme
 {
@@ -40,7 +41,7 @@ void MEMORY::register_marker( Marker marker )
 long MEMORY::TotalNodeCount  = 0;
 long MEMORY::FreeNodeCount   = 0;
 int  MEMORY::CollectionCount = 0;
-int  MEMORY::MaxGcstackDepth = 0;
+int  MEMORY::MaxIterMarkDepth = 0;
 
 static SEXPR FreeNodeList;
 
@@ -113,8 +114,6 @@ inline void resetmark( SEXPR n ) { n->mark = 0; }
 
 int MEMORY::suspensions = 0;
 
-static REGSTACK gcstack( 10000 );
-
 static void badnode( SEXPR n )
 {
    ERROR::fatal( format( "bad node (%p, %d) during gc", n->id(), (int)nodekind(n) ).c_str() );
@@ -129,12 +128,17 @@ void MEMORY::mark( SEXPR n )
    if ( markedp(n) )
       return;
 
-   gcstack.flush();
-   gcstack.push(n);
+   std::stack<SEXPR> sexprs;
 
-   while ( !gcstack.emptyp() )
+   sexprs.push(n);
+
+   while ( !sexprs.empty() )
    {
-      auto n = gcstack.upop();
+      #ifdef MAX_DEPTH
+      MaxIterMarkDepth = std::max( MaxIterMarkDepth, (int)sexprs.size() );
+      #endif
+      auto n = sexprs.top();
+      sexprs.pop();
 
      start_mark:
 	 
@@ -162,12 +166,12 @@ void MEMORY::mark( SEXPR n )
 	       break;
 	       
 	    case n_cons:
-	       gcstack.push( getcar(n) );
+	       sexprs.push( getcar(n) );
 	       n = getcdr(n);
 	       goto start_mark;
 	       
 	    case n_promise:
-	       gcstack.push( promise_getexp(n) );
+	       sexprs.push( promise_getexp(n) );
 	       n = promise_getval(n);
 	       goto start_mark;
 	       
@@ -184,10 +188,10 @@ void MEMORY::mark( SEXPR n )
 	    {
 	       // frame
 	       auto frame = getenvframe(n);
-	       gcstack.push( getframevars(frame) );
+	       sexprs.push( getframevars(frame) );
 	       const int nslots = getframenslots(frame);
 	       for ( int i = 0; i < nslots; ++i )
-		  gcstack.push( frameref(frame, i) );
+		  sexprs.push( frameref(frame, i) );
 	       // benv
 	       n = getenvbase(n);
 	       goto start_mark;
@@ -196,14 +200,14 @@ void MEMORY::mark( SEXPR n )
 	    {
 	       const int length = getvectorlength(n);
 	       for ( int i = 0; i < length; ++i )
-		  gcstack.push( vectorref(n, i) );
+		  sexprs.push( vectorref(n, i) );
 	       break;
 	    }
 	    
 	    case n_closure:
 	    {
-	       gcstack.push( getclosurecode(n) );
-	       gcstack.push( getclosurebenv(n) );
+	       sexprs.push( getclosurecode(n) );
+	       sexprs.push( getclosurebenv(n) );
 	       n = getclosurevars(n);
 	       goto start_mark;
 	    }
@@ -416,12 +420,6 @@ void MEMORY::gc()
    // notify all clients to mark their active roots
    for ( auto marker : markers )
       marker();
-
-   #ifdef MAX_DEPTH
-   #ifndef RECURSIVE_MARK
-   MaxGcstackDepth = gcstack.max_depth;
-   #endif
-   #endif
 
    // collect the unused nodes
    sweep();
