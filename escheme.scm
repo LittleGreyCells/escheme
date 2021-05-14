@@ -34,12 +34,13 @@
                 (exit))))
        (set! options (cdr options)))
     ;; boot the intepreter
-    (set! *version* "v1.0 (interpeter)")
-    (set-prompt "escheme> ")
+    (set! *version* "-- an explicit control evaluator")
+    (set-prompt "ece> ")
     (load (system-path "boot/standard-functions.scm"))
     (load (system-path "macros/macros.scm"))
     (load (system-path "macros/qquote.scm"))
     (load (system-path "boot/macro-definitions.scm"))
+    (load (system-path "boot/catch-throw.scm"))
     (let ((try-load
            (lambda (file)
              (let ((result (load file)))
