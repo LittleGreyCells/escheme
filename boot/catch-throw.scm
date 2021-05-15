@@ -16,7 +16,7 @@
 ;;       (print exp)
 ;;       2
 ;;
-;;   How would we restate this using continuations?
+;;   How can we implement this using continuations?
 ;;
 ;;       (define exp1 (catch foo (let ((x 1)) (throw foo (+ x 1)))))
 ;;                               ^1
@@ -29,11 +29,11 @@
 ;;           - evaluate the expression "(+ x 1)"
 ;;           - fetch the continuation associated with foo
 ;;             = remove any intervening continuations
-;;             = perform and and all unwind-protect cleanup (see below)
+;;             = perform an all unwind-protect cleanup (see below)
 ;;           - apply the continuation
 ;;
 ;;         o (^3) the second return from the continuation
-;;           - suppies the last throw form
+;;           - suppies the result of the last throw form
 ;;
 
 ;;
@@ -71,7 +71,7 @@
 	    (for-each (lambda (exp) (set! last (eval exp env))) catch-forms)
 	    (%pop-catch)
 	    last))
-	  ;; (^2) process throw's return
+	  ;; (^3) process throw's return
 	  ret
 	  )))
 
@@ -86,7 +86,7 @@
 		    (if (eq? tag (cadr x))
 			(begin
 			  (set! target (cddr x))
-			  ;; target = <continuation>
+			  ;; (^2) target = <continuation>
 			  (set! done #t))))
 		   ((eq? 'unwind (car x))
 		    ;; x = (unwind . (<env> . <cleanup-forms>))
@@ -100,7 +100,9 @@
 	    (error (eval (car throw-forms) env))
 	    (error "no throw target found" tag)))
     (let (last)
+      ;; (^2) evaluate throw forms
       (for-each (lambda (exp) (set! last (eval exp env))) throw-forms)
+      ;; (^2) apply the continuation
       (target last)
       )))
 
