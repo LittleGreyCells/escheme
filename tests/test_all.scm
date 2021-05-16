@@ -1,6 +1,6 @@
 (if #f
     (begin
-      (load "./tests/test_driver1.scm")
+      (load "./tests/test_all.scm")
       ))
 
 (define displayln
