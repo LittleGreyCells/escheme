@@ -18,18 +18,18 @@
 ;;
 ;;   How can we implement this using continuations?
 ;;
-;;       (define exp1 (catch foo (let ((x 1)) (throw foo (+ x 1)))))
+;;       (define exp1 (catch 'foo (let ((x 1)) (throw 'foo (+ x 1)))))
 ;;                               ^1
 ;;                                             ^2
 ;;                     ^3
-;;         o (^1) somewhere after the first "foo" we need to save a continuation
-;;           - the first return will allow us to process a create-catch for foo
+;;         o (^1) after the first 'foo we need to save a continuation
+;;           - the first return will allow us to process a create-catch for 'foo
 ;;
-;;         o (^2) in the body, when the "throw foo" is encountered, we need to:
+;;         o (^2) in the body, when the "throw 'foo" is encountered, we need to:
 ;;           - evaluate the expression "(+ x 1)"
 ;;           - fetch the continuation associated with foo
 ;;             = remove any intervening continuations
-;;             = perform an all unwind-protect cleanup (see below)
+;;             = perform all unwind-protect cleanup (see below)
 ;;           - apply the continuation
 ;;
 ;;         o (^3) the second return from the continuation
@@ -86,7 +86,7 @@
 		    (if (eq? tag (cadr x))
 			(begin
 			  (set! target (cddr x))
-			  ;; (^2) target = <continuation>
+			  ;; (^3) target = <continuation>
 			  (set! done #t))))
 		   ((eq? 'unwind (car x))
 		    ;; x = (unwind . (<env> . <cleanup-forms>))
