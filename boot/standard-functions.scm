@@ -7,23 +7,23 @@
 ;;
 
 (define (error msg . object)
-  (display "error: ")
-  (display msg)
+  (display "error: " *stderr*)
+  (display msg *stderr*)
   (if object
-      (begin (display " [") 
-             (display object)
-             (display "]")))
-  (newline)
+      (begin (display " [" *stderr*) 
+             (display (car object) *stderr*)
+             (display "]" *stderr*) ))
+  (newline *stderr*)
   (*toplevel*))
 
 (define (fatal msg . object)
-  (display "fatal error: ")
-  (display msg)
+  (display "fatal error: " *stderr*)
+  (display msg *stderr*)
   (if object
-      (begin (display " [") 
-             (display object)
-             (display "]")))
-  (newline)
+      (begin (display " [" *stderr*) 
+             (display (car object) *stderr*)
+             (display "]" *stderr*) ))
+  (newline *stderr*)
   (exit))
 
 ;;
@@ -33,6 +33,10 @@
 ;; cdr past the 1st n elements and return car of remaining list
 (define (list-ref list n)
   (car (list-tail list n)))
+
+(define first car)
+(define second cadr)
+(define third caddr)
 
 ;;
 ;; arrays
