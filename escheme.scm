@@ -38,7 +38,7 @@
     (set-prompt "ece> ")
     (load (system-path "boot/standard-functions.scm"))
     (load (system-path "macros/qquote.scm"))
-    (load (system-path "macros/macros.scm"))
+    (load (system-path "macros/macros-interpreter.scm"))
     (load (system-path "boot/macro-definitions.scm"))
     (load (system-path "boot/catch-throw.scm"))
     (let ((try-load
