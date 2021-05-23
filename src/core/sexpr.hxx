@@ -277,6 +277,7 @@ bool promisep( const SEXPR n );
 bool codep( const SEXPR n );
 bool vcp( const SEXPR n );
 bool primp( const SEXPR n );
+bool anyenvp( const SEXPR n );
 
 SEXPR guard( SEXPR s, PREDICATE predicate );
 

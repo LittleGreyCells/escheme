@@ -126,6 +126,8 @@ bool anyoutportp( const SEXPR n ) { return outportp(n) || outstringportp(n); }
 bool lastp( SEXPR n )  { return nullp(cdr(n)); }
 bool promisep( SEXPR n )  { return n->kind == n_promise; }
 bool codep( const SEXPR n ) { return n->kind == n_code; }
+   
+bool anyenvp( const SEXPR n ) { return nullp(n) || envp(n); }
 
 struct PredMap { PREDICATE pred; const char* name; };
 
@@ -158,6 +160,7 @@ std::vector<PredMap> predicate_map =
    { lastp, "last argument" },
    { promisep, "promise" },
    { primp, "func or special" },
+   { anyenvp, "any environment" },
 };
 
 SEXPR guard( SEXPR s, PREDICATE predicate )

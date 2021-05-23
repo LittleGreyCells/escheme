@@ -24,7 +24,6 @@ SEXPR EVAL::env;
 SEXPR EVAL::val;
 SEXPR EVAL::aux;
 SEXPR EVAL::unev;
-SEXPR EVAL::theGlobalEnv;
 #ifndef NO_INTERP
 EVSTATE EVAL::cont;
 EVSTATE EVAL::next;
@@ -392,7 +391,6 @@ void EVAL::initialize()
    val = null;
    aux = null;
    unev = null;
-   theGlobalEnv = null;
 #ifndef NO_INTERP
    cont = EV_DONE;
    next = EV_DONE;

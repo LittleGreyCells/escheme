@@ -83,7 +83,6 @@ namespace EVAL
    extern SEXPR val;
    extern SEXPR aux;
    extern SEXPR unev;
-   extern SEXPR theGlobalEnv;
 #ifndef NO_INTERP
    extern EVSTATE cont;
    extern EVSTATE next;
