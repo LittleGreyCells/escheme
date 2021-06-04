@@ -26,8 +26,7 @@ exploiting class initialization/finalization for deferred execution
 and cleanup. Templates are used primarily for evaluator stack 
 implementations. Exceptions are used for non-local returns. 
 
-Even so, one might mistaken _escheme's_ program structure as one typical for module based
-languages. It is organized into 21 related spec/body groupings, constituting
+The implementation is organized into 21 related spec/body groupings, constituting
 8 domains: object representations, reader, printer, port and terminal
 IO, memory manager, symbol table and, lastly, the interpreter with its supporting
 apparatus. While efficiency has been an important consideration, intelligibility has
