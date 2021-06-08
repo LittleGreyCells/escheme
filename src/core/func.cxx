@@ -734,13 +734,13 @@ SEXPR FUNC::rem_property()
    return null;
 }
 
-SEXPR FUNC::symbols()
+SEXPR FUNC::all_symbols()
 {
    //
    // syntax: (symbols) -> <vector>
    //
    argstack.noargs();
-   return SYMTAB::symbols();
+   return SYMTAB::all_symbols();
 }
 
 

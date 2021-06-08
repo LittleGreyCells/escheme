@@ -40,7 +40,7 @@ namespace SYMTAB
    SEXPR enter( const std::string& name );
    SEXPR enter( const std::string& name, SEXPR value );
 
-   SEXPR symbols();
+   SEXPR all_symbols();
 }
 
 inline bool falsep( SEXPR n ) { return n == symbol_false || n == null; }

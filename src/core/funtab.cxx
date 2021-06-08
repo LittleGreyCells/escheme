@@ -116,7 +116,7 @@ static const Function funtab[] =
    { "get",                  FUNC::get_property     },
    { "put",                  FUNC::put_property     },
    { "remprop",              FUNC::rem_property     },
-   { "*symbols*",            FUNC::symbols          },
+   { "all-symbols",          FUNC::all_symbols      },
 
    { "read",		     FUNC::read		},
    { "print",		     FUNC::print	},
