@@ -46,6 +46,7 @@ namespace escheme
          (let ((sexpr (read *terminal*)))
            (add-history sexpr)
            (print (eval sexpr))))))
+   (define *toplevel*)
    (let ((x 0))
      (call/cc (lambda (cc) (set! *toplevel* cc)))
      (if (= x 0)

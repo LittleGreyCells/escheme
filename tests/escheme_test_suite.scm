@@ -91,7 +91,6 @@
        (set! failures (1+ failures))
        )))
 
-
 (define (test-structured-ops)  
   
   (assert (equal? (cons 1 2) '(1 . 2)))
@@ -118,19 +117,21 @@
   (assert (equal? (make-vector 0) #()))
   (assert (equal? (make-vector 1) #(()) ))
   (assert (equal? (make-vector 2) #(() ()) ))
-  
-  (set! v (vector 1 2))
-  (assert (equal? (vector-ref v 0) 1))
-  (assert (equal? (vector-ref v 1) 2))
 
-  (vector-set! v 0 10)
-  (assert (equal? (vector-ref v 0) 10))
-  (assert (equal? v #(10 2)) )
-
-  (vector-set! v 1 20)
-  (assert (equal? v #(10 20)) )
-  (assert (equal? (vector-length #()) 0))
-  (assert (equal? (vector-length #(1)) 1))
+  (let (v)
+    (set! v (vector 1 2))
+    (assert (equal? (vector-ref v 0) 1))
+    (assert (equal? (vector-ref v 1) 2))
+    
+    (vector-set! v 0 10)
+    (assert (equal? (vector-ref v 0) 10))
+    (assert (equal? v #(10 2)) )
+    
+    (vector-set! v 1 20)
+    (assert (equal? v #(10 20)) )
+    (assert (equal? (vector-length #()) 0))
+    (assert (equal? (vector-length #(1)) 1))
+  )
   
   (assert (equal? (vector->list (list->vector '())) '()))
   (assert (equal? (vector->list (list->vector '(1))) '(1)))
@@ -144,34 +145,37 @@
 
 (define (test-equality)
   
-  (set! s1 "abc")
-  (set! s2 "abc")
-  (set! n1 10)
-  (set! n2 10)
-  (set! f1 10.0)
-  (set! f2 10.0)
-  
-  ;;(assert '(eq? s1 s1))
-  ;;(assert '(not (eq? s1 s2)))
-  (assert (eqv? s1 s2))
-  (assert (equal? s1 s2))
-  
-  ;;(assert '(not (eq? n1 n2)))
-  (assert (eqv? n1 n2))
-  (assert (equal? n1 n2))
-  
-  
-  (assert (equal? (string->symbol (symbol->string 'a)) 'a))
-  (assert (symbol? (gensym)))
+  (let (s1 s2 n1 n2 f1 f2)
+    (set! s1 "abc")
+    (set! s2 "abc")
+    (set! n1 10)
+    (set! n2 10)
+    (set! f1 10.0)
+    (set! f2 10.0)
+    
+    ;;(assert '(eq? s1 s1))
+    ;;(assert '(not (eq? s1 s2)))
+    (assert (eqv? s1 s2))
+    (assert (equal? s1 s2))
+    
+    ;;(assert '(not (eq? n1 n2)))
+    (assert (eqv? n1 n2))
+    (assert (equal? n1 n2))
+    
+    
+    (assert (equal? (string->symbol (symbol->string 'a)) 'a))
+    (assert (symbol? (gensym)))
+  )
 )
 
+(define x)
 
 (define (test-property-lists)  
   
   (set-symbol-plist! 'x ())
   (set-symbol-plist! 'foo ())
   (set-symbol-plist! 'bar ())
-  
+
   (assert (begin (set! x 10) (equal? (symbol-value 'x) 10)))
   (assert (begin (set-symbol-value! 'x 20) (equal? (symbol-value 'x) 20)))
   
@@ -266,11 +270,15 @@
   (assert (= (shift-right-arithmetic #xFFFFFFFFFFFFFFFE 1) #xFFFFFFFFFFFFFFFF))
 )
 
+(define foo)
+(define foo2)
+(define e)
+(define x)
 
 (define (test-environment)
-
+    
   (set! foo (lambda (a b) (the-environment)))
-  
+    
   (assert (equal? (environment-bindings (foo 1 2)) '((a . 1) (b . 2))) )
   
   (set! foo (lambda (a b) 
@@ -279,7 +287,7 @@
 		bar)))
   
   (assert (equal? (environment-bindings (procedure-environment (foo 1 2))) 
-		   '((a . 1) (b . 2))) )
+		  '((a . 1) (b . 2))) )
   
   (set! foo2 (lambda (a b) 
 	       (let ((bar (lambda (n)
@@ -294,8 +302,8 @@
   (assert (equal? (access b (foo2 1 2)) 2))
   (assert (equal? ((access bar (foo2 1 2)) 3) '(1 2 3)))
 )
-
-
+  
+  
 (define (test-predicates)
   
   (assert (not #f))
@@ -378,195 +386,195 @@
   (assert (not (even? 1)))
 )
 
-
+  
 (define (test-strings)
 
-  (set! s1 "abc")
-  (set! s2 "abc")
-  (set! s3 "axy")
+  (let (s1 s2 s3)
+    (set! s1 "abc")
+    (set! s2 "abc")
+    (set! s3 "axy")
+    
+    (assert (equal? (string-length s1) 3))
+    (assert (equal? (string-append s1 s2) "abcabc"))
+    (assert (equal? (string-ref s1 0) #\a))
+    
+    (assert (equal? (substring s1 0 1) "a"))
+    (assert (equal? (substring s1 1 0) ""))
+    (assert (equal? (substring s1 1 1) ""))
+    (assert (equal? (substring s1 1 2) "b"))
+    (assert (equal? (substring s1 1 3) "bc"))
+    (assert (equal? (substring s1 0 (string-length s1)) s1))
+    
+    ;;
+    ;; string comparison -- case senstive
+    ;;
+    
+    (assert (string=? s1 s1))
+    (assert (string=? s1 s2))
+    (assert (not (string=? s1 s3)))
+    
+    (assert (string<? "abc" "abx"))
+    (assert (string<? "abc" "ax"))
+    (assert (string<? "abc" "x"))
+    (assert (string<? "" "a"))
+    (assert (not (string<? "a" "a")))
+    (assert (not (string<? "a" "")))
+    
+    (assert (string<=? "abc" "abx"))
+    (assert (string<=? "abc" "ax"))
+    (assert (string<=? "abc" "x"))
+    (assert (string<=? "" "a"))
+    (assert (string<=? "a" "a"))
+    (assert (not (string<=? "a" "")))
+    
+    (assert (string>? "abx" "abc"))
+    (assert (string>? "ax" "abc"))
+    (assert (string>? "x" "abc"))
+    (assert (string>? "a" ""))
+    (assert (not (string>? "a" "a")))
+    (assert (not (string>? "" "a")))
+    
+    (assert (string>=? "abx" "abc"))
+    (assert (string>=? "ax" "abc"))
+    (assert (string>=? "x" "abc"))
+    (assert (string>=? "a" "a"))
+    (assert (not (string>=? "" "a")))
+    
+    ;;
+    ;; string comparison -- case insenstive
+    ;;
+    
+    (assert (string-ci=? "abc" "abc"))
+    (assert (string-ci=? "abc" "ABC"))
+    (assert (not (string-ci=? "AbC" "AxY")))
+    
+    (assert (string-ci<? "abc" "ABX"))
+    (assert (string-ci<? "abc" "AX"))
+    (assert (string-ci<? "abc" "X"))
+    (assert (string-ci<? "" "A"))
+    (assert (not (string-ci<? "a" "A")))
+    (assert (not (string-ci<? "a" "")))
+    
+    (assert (string-ci<=? "abc" "ABX"))
+    (assert (string-ci<=? "abc" "AX"))
+    (assert (string-ci<=? "abc" "X"))
+    (assert (string-ci<=? "" "A"))
+    (assert (string-ci<=? "a" "A"))
+    (assert (not (string-ci<=? "a" "")))
+    
+    (assert (string-ci>? "abx" "ABC"))
+    (assert (string-ci>? "ax" "ABC"))
+    (assert (string-ci>? "x" "ABC"))
+    (assert (string-ci>? "a" ""))
+    (assert (not (string-ci>? "a" "A")))
+    (assert (not (string-ci>? "" "A")))
+    
+    (assert (string-ci>=? "abx" "ABC"))
+    (assert (string-ci>=? "ax" "ABC"))
+    (assert (string-ci>=? "x" "ABC"))
+    (assert (string-ci>=? "a" "A"))
+    (assert (not (string-ci>=? "" "A")))
+    
+    ;; swap case of 1st and 2nd arguments
+    
+    (assert (string-ci=? "ABC" "abc"))
+    (assert (not (string-ci=? "ABC" "axy")))
+    
+    (assert (string-ci<? "ABC" "abx"))
+    (assert (string-ci<? "ABC" "ax"))
+    (assert (string-ci<? "ABC" "x"))
+    (assert (string-ci<? "" "A"))
+    (assert (not (string-ci<? "A" "a")))
+    (assert (not (string-ci<? "A" "")))
+    
+    (assert (string-ci<=? "ABC" "abx"))
+    (assert (string-ci<=? "ABC" "ax"))
+    (assert (string-ci<=? "ABC" "x"))
+    (assert (string-ci<=? "" "a"))
+    (assert (string-ci<=? "A" "a"))
+    (assert (not (string-ci<=? "A" "")))
+    
+    (assert (string-ci>? "ABX" "abc"))
+    (assert (string-ci>? "AX" "abc"))
+    (assert (string-ci>? "X" "abc"))
+    (assert (string-ci>? "A" ""))
+    (assert (not (string-ci>? "A" "a")))
+    (assert (not (string-ci>? "" "a")))
+    
+    (assert (string-ci>=? "ABX" "abc"))
+    (assert (string-ci>=? "AX" "abc"))
+    (assert (string-ci>=? "X" "abc"))
+    (assert (string-ci>=? "A" "a"))
+    (assert (not (string-ci>=? "" "a")))
+    
+    (assert (eqv? (substring "abc" 0 3) "abc"))
+    (assert (eqv? (substring "abc" 0 2) "ab"))
+    (assert (eqv? (substring "abc" 0 1) "a"))
+    (assert (eqv? (substring "abc" 0 0) ""))
+    (assert (eqv? (substring "abc" 1 2) "b"))
+    (assert (eqv? (substring "abc" 2 3) "c"))
+    
+    (begin
+      (assert (eqv? (string-find "12abab" "ab" 0) 2))
+      (assert (eqv? (string-find "12abab" "ab" 1) 2))
+      (assert (eqv? (string-find "12abab" "ab" 2) 2))
+      (assert (eqv? (string-find "12abab" "ab" 3) 4))
+      (assert (eqv? (string-find "12abab" "ab" 4) 4))
+      (assert (null? (string-find "12abab" "ab" 5)))
+      (assert (eqv? (string-find "12abab" "ab" 0 4) 2))
+      (assert (null? (string-find "12abab" "ab" 0 3)))
+      (assert (null? (string-find "12abab" "ab" 0 2)))
+      (assert (eqv? (string-find "12abc45" "abc" 0 6) 2))
+      (assert (eqv? (string-find "12abc45" "abc" 0 5) 2))
+      (assert (null? (string-find "12abc45" "abc" 0 4)))
+      (assert (eqv? (string-find "12abc45" "abc") 2))
+      (assert (eqv? (string-find "12abc45" "12abc45") 0))
+      (assert (null? (string-find "12abc45" "12abc45z")))
+      (assert (null? (string-find "12abc45" "xyz")))
+      (assert (null? (string-find "12abc45" "5z")))
+      
   
-  (assert (equal? (string-length s1) 3))
-  (assert (equal? (string-append s1 s2) "abcabc"))
-  (assert (equal? (string-ref s1 0) #\a))
-  
-  (assert (equal? (substring s1 0 1) "a"))
-  (assert (equal? (substring s1 1 0) ""))
-  (assert (equal? (substring s1 1 1) ""))
-  (assert (equal? (substring s1 1 2) "b"))
-  (assert (equal? (substring s1 1 3) "bc"))
-  (assert (equal? (substring s1 0 (string-length s1)) s1))
-  
-  ;;
-  ;; string comparison -- case senstive
-  ;;
-  
-  (assert (string=? s1 s1))
-  (assert (string=? s1 s2))
-  (assert (not (string=? s1 s3)))
-  
-  (assert (string<? "abc" "abx"))
-  (assert (string<? "abc" "ax"))
-  (assert (string<? "abc" "x"))
-  (assert (string<? "" "a"))
-  (assert (not (string<? "a" "a")))
-  (assert (not (string<? "a" "")))
-  
-  (assert (string<=? "abc" "abx"))
-  (assert (string<=? "abc" "ax"))
-  (assert (string<=? "abc" "x"))
-  (assert (string<=? "" "a"))
-  (assert (string<=? "a" "a"))
-  (assert (not (string<=? "a" "")))
-  
-  (assert (string>? "abx" "abc"))
-  (assert (string>? "ax" "abc"))
-  (assert (string>? "x" "abc"))
-  (assert (string>? "a" ""))
-  (assert (not (string>? "a" "a")))
-  (assert (not (string>? "" "a")))
-  
-  (assert (string>=? "abx" "abc"))
-  (assert (string>=? "ax" "abc"))
-  (assert (string>=? "x" "abc"))
-  (assert (string>=? "a" "a"))
-  (assert (not (string>=? "" "a")))
-  
-  ;;
-  ;; string comparison -- case insenstive
-  ;;
-  
-  (assert (string-ci=? "abc" "abc"))
-  (assert (string-ci=? "abc" "ABC"))
-  (assert (not (string-ci=? "AbC" "AxY")))
-  
-  (assert (string-ci<? "abc" "ABX"))
-  (assert (string-ci<? "abc" "AX"))
-  (assert (string-ci<? "abc" "X"))
-  (assert (string-ci<? "" "A"))
-  (assert (not (string-ci<? "a" "A")))
-  (assert (not (string-ci<? "a" "")))
-  
-  (assert (string-ci<=? "abc" "ABX"))
-  (assert (string-ci<=? "abc" "AX"))
-  (assert (string-ci<=? "abc" "X"))
-  (assert (string-ci<=? "" "A"))
-  (assert (string-ci<=? "a" "A"))
-  (assert (not (string-ci<=? "a" "")))
-  
-  (assert (string-ci>? "abx" "ABC"))
-  (assert (string-ci>? "ax" "ABC"))
-  (assert (string-ci>? "x" "ABC"))
-  (assert (string-ci>? "a" ""))
-  (assert (not (string-ci>? "a" "A")))
-  (assert (not (string-ci>? "" "A")))
-  
-  (assert (string-ci>=? "abx" "ABC"))
-  (assert (string-ci>=? "ax" "ABC"))
-  (assert (string-ci>=? "x" "ABC"))
-  (assert (string-ci>=? "a" "A"))
-  (assert (not (string-ci>=? "" "A")))
-  
-  ;; swap case of 1st and 2nd arguments
-  
-  (assert (string-ci=? "ABC" "abc"))
-  (assert (not (string-ci=? "ABC" "axy")))
-  
-  (assert (string-ci<? "ABC" "abx"))
-  (assert (string-ci<? "ABC" "ax"))
-  (assert (string-ci<? "ABC" "x"))
-  (assert (string-ci<? "" "A"))
-  (assert (not (string-ci<? "A" "a")))
-  (assert (not (string-ci<? "A" "")))
-  
-  (assert (string-ci<=? "ABC" "abx"))
-  (assert (string-ci<=? "ABC" "ax"))
-  (assert (string-ci<=? "ABC" "x"))
-  (assert (string-ci<=? "" "a"))
-  (assert (string-ci<=? "A" "a"))
-  (assert (not (string-ci<=? "A" "")))
-  
-  (assert (string-ci>? "ABX" "abc"))
-  (assert (string-ci>? "AX" "abc"))
-  (assert (string-ci>? "X" "abc"))
-  (assert (string-ci>? "A" ""))
-  (assert (not (string-ci>? "A" "a")))
-  (assert (not (string-ci>? "" "a")))
-  
-  (assert (string-ci>=? "ABX" "abc"))
-  (assert (string-ci>=? "AX" "abc"))
-  (assert (string-ci>=? "X" "abc"))
-  (assert (string-ci>=? "A" "a"))
-  (assert (not (string-ci>=? "" "a")))
-
-  (assert (eqv? (substring "abc" 0 3) "abc"))
-  (assert (eqv? (substring "abc" 0 2) "ab"))
-  (assert (eqv? (substring "abc" 0 1) "a"))
-  (assert (eqv? (substring "abc" 0 0) ""))
-  (assert (eqv? (substring "abc" 1 2) "b"))
-  (assert (eqv? (substring "abc" 2 3) "c"))
-
-  (begin
-  (assert (eqv? (string-find "12abab" "ab" 0) 2))
-  (assert (eqv? (string-find "12abab" "ab" 1) 2))
-  (assert (eqv? (string-find "12abab" "ab" 2) 2))
-  (assert (eqv? (string-find "12abab" "ab" 3) 4))
-  (assert (eqv? (string-find "12abab" "ab" 4) 4))
-  (assert (null? (string-find "12abab" "ab" 5)))
-  (assert (eqv? (string-find "12abab" "ab" 0 4) 2))
-  (assert (null? (string-find "12abab" "ab" 0 3)))
-  (assert (null? (string-find "12abab" "ab" 0 2)))
-  (assert (eqv? (string-find "12abc45" "abc" 0 6) 2))
-  (assert (eqv? (string-find "12abc45" "abc" 0 5) 2))
-  (assert (null? (string-find "12abc45" "abc" 0 4)))
-  (assert (eqv? (string-find "12abc45" "abc") 2))
-  (assert (eqv? (string-find "12abc45" "12abc45") 0))
-  (assert (null? (string-find "12abc45" "12abc45z")))
-  (assert (null? (string-find "12abc45" "xyz")))
-  (assert (null? (string-find "12abc45" "5z")))
-
-  
-  (set! s1 "abc")
-  (set! s2 "abc")
-  (set! s3 "ABC")
-  (assert (string=? (string-upcase! s1) "ABC"))
-  (assert (string=? (string-downcase! s1) "abc"))
-  (assert (string=? (string-upcase! (string-dup s2)) "ABC"))
-  (assert (string=? s2 "abc"))
-  (assert (string=? (string-downcase! (string-dup s2)) "abc"))
-  (assert (string=? s3 "ABC"))
-
-  (assert (string=? (string-trim " a ") "a"))
-  (assert (string=? (string-trim-left " a ") "a "))
-  (assert (string=? (string-trim-right " a ") " a"))
-
-  (set! s1 (list->string (list #\tab #\a #\tab)))
-  (set! s2 (list->string (list #\tab #\a)))
-  (set! s3 (list->string (list #\a #\tab)))
-  (assert (string=? (string-trim s1) "a"))
-  (assert (string=? (string-trim-left s1) s3))
-  (assert (string=? (string-trim-right s1) s2))
-
-  (set! s1 "abc")
-  (assert (string=? (string-pad-left s1 6) "   abc"))
-  (assert (string=? (string-pad-left s1 5) "  abc"))
-  (assert (string=? (string-pad-left s1 4) " abc"))
-  (assert (string=? (string-pad-left s1 3) "abc"))
-  (assert (string=? (string-pad-left s1 2) "bc"))
-  (assert (string=? (string-pad-left s1 1) "c"))
-  (assert (string=? (string-pad-left s1 0) ""))
-
-  (assert (string=? (string-pad-right s1 6) "abc   "))
-  (assert (string=? (string-pad-right s1 5) "abc  "))
-  (assert (string=? (string-pad-right s1 4) "abc "))
-  (assert (string=? (string-pad-right s1 3) "abc"))
-  (assert (string=? (string-pad-right s1 2) "ab"))
-  (assert (string=? (string-pad-right s1 1) "a"))
-  (assert (string=? (string-pad-right s1 0) ""))
+      (set! s1 "abc")
+      (set! s2 "abc")
+      (set! s3 "ABC")
+      (assert (string=? (string-upcase! s1) "ABC"))
+      (assert (string=? (string-downcase! s1) "abc"))
+      (assert (string=? (string-upcase! (string-dup s2)) "ABC"))
+      (assert (string=? s2 "abc"))
+      (assert (string=? (string-downcase! (string-dup s2)) "abc"))
+      (assert (string=? s3 "ABC"))
+      
+      (assert (string=? (string-trim " a ") "a"))
+      (assert (string=? (string-trim-left " a ") "a "))
+      (assert (string=? (string-trim-right " a ") " a"))
+      
+      (set! s1 (list->string (list #\tab #\a #\tab)))
+      (set! s2 (list->string (list #\tab #\a)))
+      (set! s3 (list->string (list #\a #\tab)))
+      (assert (string=? (string-trim s1) "a"))
+      (assert (string=? (string-trim-left s1) s3))
+      (assert (string=? (string-trim-right s1) s2))
+      
+      (set! s1 "abc")
+      (assert (string=? (string-pad-left s1 6) "   abc"))
+      (assert (string=? (string-pad-left s1 5) "  abc"))
+      (assert (string=? (string-pad-left s1 4) " abc"))
+      (assert (string=? (string-pad-left s1 3) "abc"))
+      (assert (string=? (string-pad-left s1 2) "bc"))
+      (assert (string=? (string-pad-left s1 1) "c"))
+      (assert (string=? (string-pad-left s1 0) ""))
+      
+      (assert (string=? (string-pad-right s1 6) "abc   "))
+      (assert (string=? (string-pad-right s1 5) "abc  "))
+      (assert (string=? (string-pad-right s1 4) "abc "))
+      (assert (string=? (string-pad-right s1 3) "abc"))
+      (assert (string=? (string-pad-right s1 2) "ab"))
+      (assert (string=? (string-pad-right s1 1) "a"))
+      (assert (string=? (string-pad-right s1 0) ""))
+    )
   )
 )
 	
-
-
 
 (define (test-chars)
 

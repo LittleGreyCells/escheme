@@ -73,7 +73,7 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
    const SEXPR val = value(var);
 
    if ( val == symbol_unbound )
-      ERROR::severe("symbol is unbound", var);
+      ERROR::severe("symbol is undefined", var);
 
    return val;
 }
@@ -99,6 +99,9 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
    }
 
    // global var
+   if ( value(var) == symbol_unbound )
+      ERROR::severe("symbol is undefined", var);
+
    set( var, val );
 }
 
