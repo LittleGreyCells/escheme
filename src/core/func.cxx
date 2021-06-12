@@ -1519,7 +1519,7 @@ SEXPR FUNC::string_dup()
    // syntax: (string <str>) -> <str-duplicated>
    //
    ArgstackIterator iter;
-   auto s = guard(iter.getarg(), stringp);
+   auto s = guard(iter.getlast(), stringp);
 
    return MEMORY::string( getstringdata(s) );
 }
@@ -1563,7 +1563,7 @@ static const char* whitespace = " \t\n\v\f\r";
 SEXPR FUNC::string_trim_left()
 {
    //
-   // syntax: (string-trim-left <s1> <s2>) -> <string>
+   // syntax: (string-trim-left <s1> [<s2>]) -> <string>
    //
    // remove <s1>'s leading white space along with <s2>'s chars if given
    //
@@ -1584,7 +1584,7 @@ SEXPR FUNC::string_trim_left()
 SEXPR FUNC::string_trim_right()
 {
    //
-   // syntax: (string-trim-right <s1> <s2>) -> <string>
+   // syntax: (string-trim-right <s1> [<s2>]) -> <string>
    //
    // remove <s1>'s trailing white space along with <s2>'s chars if given
    //
@@ -1608,7 +1608,7 @@ SEXPR FUNC::string_trim_right()
 SEXPR FUNC::string_trim()
 {
    //
-   // syntax: (string-trim <s1> <s2>) -> <string>
+   // syntax: (string-trim <s1> [<s2>]) -> <string>
    //
    // remove <s1>'s leading and trailing white space along with <s2>'s chars if given
    //
