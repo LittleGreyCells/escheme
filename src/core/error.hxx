@@ -1,8 +1,6 @@
 #ifndef error_hxx
 #define error_hxx
 
-#include <string>
-
 #include "sexpr.hxx"
 
 namespace escheme
