@@ -738,7 +738,7 @@ SEXPR FUNC::rem_property()
 SEXPR FUNC::all_symbols()
 {
    //
-   // syntax: (symbols) -> <vector>
+   // syntax: (all-symbols) -> <vector>
    //
    argstack.noargs();
    return SYMTAB::all_symbols();
