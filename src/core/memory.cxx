@@ -197,6 +197,7 @@ void MEMORY::mark( SEXPR n )
 	       goto start_mark;
 	    }
 	    case n_vector:
+	    case n_dict:
 	    {
 	       const int length = getvectorlength(n);
 	       for ( int i = 0; i < length; ++i )
@@ -293,6 +294,7 @@ void MEMORY::mark( SEXPR n )
       }
   
       case n_vector:
+      case n_dict:
       {
 	 setmark(n);
 	 const int length = getvectorlength(n);
@@ -373,6 +375,7 @@ static void sweep()
 		  break;                  
                   
 	       case n_vector:
+	       case n_dict:
 		  delete[] getvectordata( p );
 		  break;
                   
@@ -606,6 +609,13 @@ SEXPR MEMORY::code( SEXPR bcodes, SEXPR sexprs )
    auto n = newnode(n_code);
    code_setbcodes( n, bcodes );
    code_setsexprs( n, sexprs );
+   return n;
+}
+
+SEXPR MEMORY::dict()
+{
+   auto n = vector( 64 );
+   setnodekind( n, n_dict );
    return n;
 }
 

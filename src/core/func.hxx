@@ -216,6 +216,13 @@ namespace FUNC
    SEXPR closure_code_set();
 #endif
 
+   // dict
+   SEXPR make_dict();
+   SEXPR has_key();
+   SEXPR dict_ref();
+   SEXPR dict_set();
+   SEXPR dict_items();
+
    // transcript
    SEXPR transcript_on();
    SEXPR transcript_off();

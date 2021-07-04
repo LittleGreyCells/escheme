@@ -5,6 +5,7 @@
 
 #include "memory.hxx"
 #include "regstack.hxx"
+#include "hash.hxx"
 
 namespace escheme
 {
@@ -35,19 +36,11 @@ SEXPR symbol_let;
 SEXPR symbol_letrec;
 SEXPR symbol_access;
 
-static std::array<SEXPR, 128> table;
-
-static unsigned hash( const char* s )
-{
-   unsigned i = 0;
-   while ( *s )
-      i = (i << 2) ^ *s++;
-   return i % table.size();
-}
+static std::array<SEXPR, 128> symtab;
 
 SEXPR SYMTAB::enter( const char* symbol_name )
 {
-   auto& element = table[ hash(symbol_name) ];
+   auto& element = symtab[ hash(symbol_name) % symtab.size() ];
 
    if ( anyp(element) )
    {
@@ -88,8 +81,8 @@ SEXPR SYMTAB::all_symbols()
 {
    regstack.push( null );
    
-   for ( auto i = 0; i < table.size(); ++i )
-      for ( auto n = table[i]; anyp(n); n = getcdr(n) )
+   for ( auto i = 0; i < symtab.size(); ++i )
+      for ( auto n = symtab[i]; anyp(n); n = getcdr(n) )
 	 regstack.top() = MEMORY::cons( getcar(n), regstack.top() );
    
    return regstack.pop();
@@ -97,13 +90,13 @@ SEXPR SYMTAB::all_symbols()
 
 static void symtab_marker()
 {
-   for ( auto element : table )
+   for ( auto element : symtab )
       MEMORY::mark( element );
 }
 
 void SYMTAB::initialize()
 {
-   for ( auto& element : table )
+   for ( auto& element : symtab )
       element = null;
 
    // initialize the unbound symbol first

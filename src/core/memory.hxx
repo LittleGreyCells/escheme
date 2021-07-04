@@ -48,6 +48,7 @@ namespace MEMORY
    SEXPR string_port( SEXPR str, short mode );
    SEXPR promise( SEXPR exp );
    SEXPR code( SEXPR bcodes, SEXPR sexprs );
+   SEXPR dict();
 
    // garbage collection
 

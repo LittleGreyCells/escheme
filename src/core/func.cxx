@@ -21,6 +21,7 @@
 #include "tio.hxx"
 #include "transcript.hxx"
 #include "format.hxx"
+#include "hash.hxx"
 
 #include "eval/eval.hxx"
 
@@ -2315,6 +2316,123 @@ SEXPR FUNC::integer_to_char()
    return MEMORY::character( static_cast<CHAR>(getfixnum(num)) );
 }
 
+//
+// dict functions
+//
+
+SEXPR FUNC::make_dict()
+{
+   //
+   // syntax: (make-dict) -> <dict>
+   //
+   return MEMORY::dict();
+}
+
+SEXPR FUNC::has_key()
+{
+   //
+   // syntax: (has-key? <dict> <key>) -> <boolean>
+   //
+   ArgstackIterator iter;
+   auto dict = guard(iter.getarg(), dictp);
+   auto key = iter.getlast();
+   
+   auto vlen = getvectorlength(dict);
+   auto data = getvectordata(dict);
+   auto index = hash( key ) % vlen;
+   
+   for ( auto items = data[index]; anyp(items); items = getcdr(items) )
+   {
+      auto item = getcar(items);
+      
+      if ( equal( getcar(item), key ) )
+	 return symbol_true;
+   }
+   
+   return symbol_false;
+}
+
+SEXPR FUNC::dict_ref()
+{
+   //
+   // syntax: (dict-ref <dict> <key>) -> <sexpr>
+   //
+   ArgstackIterator iter;
+   auto dict = guard(iter.getarg(), dictp);
+   auto key = iter.getlast();
+   
+   auto vlen = getvectorlength(dict);
+   auto data = getvectordata(dict);
+   auto index = hash( key ) % vlen;
+   
+   for ( auto items = data[index]; anyp(items); items = getcdr(items) )
+   {
+      auto item = getcar(items);
+      
+      if ( equal( getcar(item), key ) )
+	 return getcdr(item);      
+   }
+   
+   return null;
+}
+
+SEXPR FUNC::dict_set()
+{
+   //
+   // syntax: (dict-set! <dict> <key> <value>) -> <value>
+   //
+   ArgstackIterator iter;
+   auto dict = guard(iter.getarg(), dictp);
+   auto key = iter.getarg();
+   auto val = iter.getlast();
+   
+   auto vlen = getvectorlength(dict);
+   auto data = getvectordata(dict);
+   auto index = hash( key ) % vlen;
+   
+   for ( auto items = data[index]; anyp(items); items = getcdr(items) )
+   {
+      auto item = getcar(items);
+      
+      if ( equal( getcar(item), key ) )
+      {
+	 setcdr(item, val);
+	 return val;
+      }      
+   }
+
+   // key not found; add a new dict entry
+   regstack.push( MEMORY::cons( key, val ) );
+   data[index] = MEMORY::cons( regstack.top(), data[index] );
+   regstack.pop();
+   
+   return val;
+}
+
+SEXPR FUNC::dict_items()
+{
+   //
+   // syntax: (dict-items <dict>) -> ((<key1> . <value1>) ...)
+   //
+   ArgstackIterator iter;
+   auto dict = guard(iter.getlast(), dictp);
+   
+   auto vlen = getvectorlength(dict);
+   auto data = getvectordata(dict);
+
+   regstack.push( null );
+
+   for ( int i = 0; i < vlen; ++i )
+      for ( auto items = data[i]; anyp(items); items = getcdr(items) )
+	 regstack.top() = MEMORY::cons( getcar(items), regstack.top() );
+   
+   return regstack.pop();
+}
+
+//
+// general
+//
+
 SEXPR FUNC::objaddr()
 {
    //
@@ -2322,7 +2440,7 @@ SEXPR FUNC::objaddr()
    //
    ArgstackIterator iter;
    auto obj = iter.getlast();
-   return MEMORY::fixnum( reinterpret_cast<FIXNUM>(obj) );
+   return MEMORY::fixnum( reinterpret_cast<FIXNUM>( obj ) );
 }
 
    
