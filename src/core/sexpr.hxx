@@ -9,7 +9,7 @@ namespace escheme
 
 enum ConfigurationConstants
 {
-   NODE_BLOCK_SIZE    = 5000,
+   NODE_BLOCK_SIZE    = 10000,
    ARGSTACK_SIZE      = 500,
    REGSTACK_SIZE      = 1000,
    INTSTACK_SIZE      = 1000,

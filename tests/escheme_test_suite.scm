@@ -58,6 +58,7 @@
   (test-promises)
   (test-lets)
   (test-ports)
+  (test-dicts)
 
   (if #f (test-compiler))
 
@@ -90,6 +91,28 @@
       (begin
        (set! failures (1+ failures))
        )))
+
+(define (test-dicts)
+  (let ((d1 (make-dict))
+	(d2 (make-dict)))
+    (assert (not (null? d1)))
+    (assert (null? (dict-items d1)))
+    
+    (dict-set! d1 'foo 1)
+    (assert (equal? (dict-items d1) '((foo . 1))) )
+    
+    (dict-set! d1 "foo" 2)
+    (assert (equal? (dict-items d1) '((foo . 1) ("foo" . 2))) )
+    
+    (dict-set! d1 12345 3)
+    (assert (equal? (dict-items d1) '((12345 . 3) (foo . 1) ("foo" . 2))) )
+    
+    (dict-set! d1 123.45 4)
+    (assert (equal? (dict-items d1) '((123.45 . 4) (12345 . 3) (foo . 1) ("foo" . 2))) )
+    
+    (assert (equal? (map car (dict-items d1)) '(123.45 12345 foo "foo")) )
+    (assert (equal? (map cdr (dict-items d1)) '(4 3 1 2)) )
+  ))
 
 (define (test-structured-ops)  
   
@@ -655,7 +678,6 @@
 	  )
 	(set! x (read pin))))
     (close-port pin)))
-
 
 ;;
 ;; The following function classes have not been tested:
