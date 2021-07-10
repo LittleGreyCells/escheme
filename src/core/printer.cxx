@@ -211,6 +211,10 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	    PIO::put( outport, format( "{dict:%p}", n->id() ) );
 	    break;
 
+	 case n_module:
+	    PIO::put( outport, format( "{module:%p}", n->id() ) );
+	    break;
+
 	 case n_free:
 	    ERROR::severe( format( "{free-cell:%p}", n->id() ).c_str() );
 	    break;

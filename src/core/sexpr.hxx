@@ -44,6 +44,7 @@ enum NodeKind
    n_force,
    n_code,
    n_dict,
+   n_module,
    NUMKINDS
 };
 
@@ -177,6 +178,11 @@ struct PROMISE
    SEXPR val;
 };
 
+struct MODULE
+{
+   SEXPR dict;
+};
+
 //
 // Forematter
 //
@@ -209,6 +215,7 @@ struct Node
       CLOSURE closure;
       CODE code;
       PROMISE promise;
+      MODULE module;
    } u;
 
    Node() {}
@@ -280,6 +287,7 @@ bool vcp( const SEXPR n );
 bool primp( const SEXPR n );
 bool anyenvp( const SEXPR n );
 bool dictp( const SEXPR n );
+bool modulep( const SEXPR n );
 
 SEXPR guard( SEXPR s, PREDICATE predicate );
 
@@ -403,6 +411,10 @@ inline void promise_setval( SEXPR n, SEXPR x) { promise_getval(n) = x; }
 
 // dict
 //   use vector representation
+
+// module
+inline auto& module_getdict( SEXPR n ) { return n->u.module.dict; }
+inline void module_setdict( SEXPR n, SEXPR x ) { module_getdict(n) = x; }
 
 // inlinable predicates
 inline bool nullp( SEXPR n ) { return n == null; }

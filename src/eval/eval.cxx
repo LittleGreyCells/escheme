@@ -11,6 +11,7 @@
 #include "core/memory.hxx"
 #include "core/printer.hxx"
 #include "core/format.hxx"
+#include "core/dict.hxx"
 
 namespace escheme
 {
@@ -54,10 +55,7 @@ SEXPR EVAL::rte_code;
 
 SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 {
-   if ( anyp(env) )
-      guard(env, envp);
-
-   for ( ; anyp(env); env = getenvbase(env) )
+   for ( ; envp(env); env = getenvbase(env) )
    {
       FRAME frame = getenvframe(env);
       SEXPR vars = getframevars(frame);
@@ -67,6 +65,14 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
          if ( getcar(vars) == var ) 
             return frameref(frame, i);
       }
+   }
+
+   if ( modulep(env) )
+   {
+      auto dict = module_getdict(env);
+
+      if ( has_key( dict, var ) )
+	 return dict_ref( dict, var );
    }
 
    // global var
@@ -80,10 +86,7 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 
 void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 {
-   if ( anyp(env) )
-      guard(env, envp);
-
-   for ( ; anyp(env); env = getenvbase(env) )
+   for ( ; envp(env); env = getenvbase(env) )
    {
       FRAME frame = getenvframe(env);  
       SEXPR vars = getframevars(frame);
@@ -96,6 +99,14 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
             return;
          }
       }
+   }
+
+   if ( modulep(env) )
+   {
+      auto dict = module_getdict(env);
+
+      if ( has_key( dict, var ) )
+	 dict_set( dict, var, val );
    }
 
    // global var

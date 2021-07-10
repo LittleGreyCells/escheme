@@ -64,5 +64,19 @@ namespace escheme
       
       return val;
    }
+
+   SEXPR dict_items( SEXPR dict )
+   {
+      auto vlen = getvectorlength(dict);
+      auto data = getvectordata(dict);
+      
+      regstack.push( null );
+      
+      for ( int i = 0; i < vlen; ++i )
+	 for ( auto items = data[i]; anyp(items); items = getcdr(items) )
+	    regstack.top() = MEMORY::cons( getcar(items), regstack.top() );
+      
+      return regstack.pop();
+   }
 }
 

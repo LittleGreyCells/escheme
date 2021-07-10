@@ -217,6 +217,10 @@ void MEMORY::mark( SEXPR n )
 	       n = getpair(n);
 	       goto start_mark;
 	       
+	    case n_module:
+	       n = module_getdict(n);
+	       goto start_mark;
+	       
 	    case n_free:
 	    default:
 	       badnode(n);
@@ -315,6 +319,11 @@ void MEMORY::mark( SEXPR n )
       case n_symbol:
 	 setmark(n);
 	 mark( getpair(n) );
+	 break;
+         
+      case n_module:
+	 setmark(n);
+	 mark( module_getdict(n) );
 	 break;
          
       case n_free:
@@ -616,6 +625,14 @@ SEXPR MEMORY::dict()
 {
    auto n = vector( 64 );
    setnodekind( n, n_dict );
+   return n;
+}
+
+SEXPR MEMORY::module()
+{
+   regstack.push( dict() );
+   auto n = newnode(n_module);
+   module_setdict( n, regstack.pop() );
    return n;
 }
 

@@ -2305,17 +2305,24 @@ SEXPR FUNC::dict_items()
    //
    ArgstackIterator iter;
    auto dict = guard(iter.getlast(), dictp);
-   
-   auto vlen = getvectorlength(dict);
-   auto data = getvectordata(dict);
 
-   regstack.push( null );
+   return dict_items( dict );
+}
 
-   for ( int i = 0; i < vlen; ++i )
-      for ( auto items = data[i]; anyp(items); items = getcdr(items) )
-	 regstack.top() = MEMORY::cons( getcar(items), regstack.top() );
-   
-   return regstack.pop();
+//
+// module
+//
+SEXPR FUNC::make_module()
+{
+   argstack.noargs();
+   return MEMORY::module();
+}
+
+SEXPR FUNC::module_dict()
+{
+   ArgstackIterator iter;
+   auto mod = guard(iter.getlast(), modulep);
+   return module_getdict( mod );
 }
 
 //

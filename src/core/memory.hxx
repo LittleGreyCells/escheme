@@ -49,7 +49,8 @@ namespace MEMORY
    SEXPR promise( SEXPR exp );
    SEXPR code( SEXPR bcodes, SEXPR sexprs );
    SEXPR dict();
-
+   SEXPR module();
+   
    // garbage collection
 
    typedef void (*Marker)();

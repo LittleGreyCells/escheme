@@ -346,6 +346,9 @@ static const Function funtab[] =
    { "dict-set!",              FUNC::dict_set  },
    { "dict-items",             FUNC::dict_items  },
 
+   { "%make-module",           FUNC::make_module },
+   { "module-dict",            FUNC::module_dict },
+
    { "%object-address",        FUNC::objaddr },
 };
 

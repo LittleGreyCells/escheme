@@ -3,6 +3,7 @@
 #include "core/symtab.hxx"
 #include "core/memory.hxx"
 #include "core/printer.hxx"
+#include "core/dict.hxx"
 
 namespace escheme
 {
@@ -692,6 +693,11 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    {
 	       // set in the global environment [()]
 	       set( unev, val );
+	    }
+	    else if ( modulep(env) )
+	    {
+	       auto dict = module_getdict(env);
+	       dict_set( dict, unev, val );
 	    }
 	    else
 	    {

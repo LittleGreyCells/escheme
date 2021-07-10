@@ -223,6 +223,10 @@ namespace FUNC
    SEXPR dict_set();
    SEXPR dict_items();
 
+   // module
+   SEXPR make_module();
+   SEXPR module_dict();
+
    // transcript
    SEXPR transcript_on();
    SEXPR transcript_off();
