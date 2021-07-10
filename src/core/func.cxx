@@ -22,6 +22,8 @@
 #include "transcript.hxx"
 #include "format.hxx"
 #include "hash.hxx"
+#include "dict.hxx"
+#include "equality.hxx"
 
 #include "eval/eval.hxx"
 
@@ -447,75 +449,6 @@ SEXPR FUNC::vector_to_list()
 
 //
 // Equality precidates: eq?, eqv?, equal?
-//
-
-bool FUNC::eq( SEXPR e1, SEXPR e2 )
-{
-   return e1 == e2;
-}
-
-bool FUNC::eqv( SEXPR e1, SEXPR e2 )
-{
-   if ( eq(e1, e2) )
-      return true;
-
-   if ( anyp(e1) )
-   {
-      if ( fixnump(e1) )
-      {
-	 return fixnump(e2) && getfixnum(e1) == getfixnum(e2);
-      }
-      else if ( flonump(e1) )
-      {
-	 return flonump(e2) && getflonum(e1) == getflonum(e2);
-      }
-      else if ( charp(e1) )
-      {
-	 return charp(e2) && getcharacter(e1) == getcharacter(e2);
-      }
-      else if ( stringp(e1) )
-      {
-	 return stringp(e2) && ::strcmp(getstringdata(e1), getstringdata(e2)) == 0;
-      }
-   }
-
-   return false;
-}
-
-bool FUNC::equal( SEXPR e1, SEXPR e2 )
-{
-   if ( eqv(e1, e2) )
-      return true;
-
-   if ( anyp(e1) )
-   {
-      if ( vectorp(e1) )
-      {
-	 if ( vectorp(e2) )
-	 { 
-	    const int vlen = getvectorlength(e1);
-
-	    if ( vlen != getvectorlength(e2) )
-	       return false;
-
-	    for ( int i = 0; i < vlen; ++i )
-	       if ( !equal(vectorref(e1, i), vectorref(e2, i)) )
-		  return false;
-
-	    return true;
-	 }
-      }
-      else if ( consp(e1) )
-      {
-	 return consp(e2) && equal(car(e1), car(e2)) && equal(cdr(e1), cdr(e2));
-      }
-   }
-
-   return false;
-}
-
-//
-// equality
 //
 
 SEXPR FUNC::eq()
@@ -1878,7 +1811,7 @@ SEXPR FUNC::member()
    ArgstackIterator iter;
    auto exp = iter.getarg();
    auto list = guard(iter.getlast(), listp);
-   return member_search( equal, exp, list );
+   return member_search( escheme::equal, exp, list );
 }
 
 SEXPR FUNC::memv()
@@ -1889,7 +1822,7 @@ SEXPR FUNC::memv()
    ArgstackIterator iter;
    auto exp = iter.getarg();
    auto list = guard(iter.getlast(), listp);
-   return member_search( eqv, exp, list );
+   return member_search( escheme::eqv, exp, list );
 }
 
 SEXPR FUNC::memq()
@@ -1900,7 +1833,7 @@ SEXPR FUNC::memq()
    ArgstackIterator iter;
    auto exp = iter.getarg();
    auto list = guard(iter.getlast(), listp);
-   return member_search( eq, exp, list );
+   return member_search( escheme::eq, exp, list );
 }
 
 //
@@ -1939,7 +1872,7 @@ SEXPR FUNC::assoc()
    ArgstackIterator iter;
    auto exp = iter.getarg();
    auto list = guard(iter.getlast(), listp);
-   return assoc_search( equal, exp, list );
+   return assoc_search( escheme::equal, exp, list );
 }
 
 SEXPR FUNC::assv()
@@ -1950,7 +1883,7 @@ SEXPR FUNC::assv()
    ArgstackIterator iter;
    auto exp = iter.getarg();
    auto list = guard(iter.getlast(), listp);
-   return assoc_search( eqv, exp, list );
+   return assoc_search( escheme::eqv, exp, list );
 }
 
 SEXPR FUNC::assq()
@@ -1961,7 +1894,7 @@ SEXPR FUNC::assq()
    ArgstackIterator iter;
    auto exp = iter.getarg();
    auto list = guard(iter.getlast(), listp);
-   return assoc_search( eq, exp, list );
+   return assoc_search( escheme::eq, exp, list );
 }
 
 
@@ -2336,20 +2269,8 @@ SEXPR FUNC::has_key()
    ArgstackIterator iter;
    auto dict = guard(iter.getarg(), dictp);
    auto key = iter.getlast();
-   
-   auto vlen = getvectorlength(dict);
-   auto data = getvectordata(dict);
-   auto index = hash( key ) % vlen;
-   
-   for ( auto items = data[index]; anyp(items); items = getcdr(items) )
-   {
-      auto item = getcar(items);
-      
-      if ( equal( getcar(item), key ) )
-	 return symbol_true;
-   }
-   
-   return symbol_false;
+
+   return escheme::has_key( dict, key ) ? symbol_true : symbol_false;
 }
 
 SEXPR FUNC::dict_ref()
@@ -2360,20 +2281,8 @@ SEXPR FUNC::dict_ref()
    ArgstackIterator iter;
    auto dict = guard(iter.getarg(), dictp);
    auto key = iter.getlast();
-   
-   auto vlen = getvectorlength(dict);
-   auto data = getvectordata(dict);
-   auto index = hash( key ) % vlen;
-   
-   for ( auto items = data[index]; anyp(items); items = getcdr(items) )
-   {
-      auto item = getcar(items);
-      
-      if ( equal( getcar(item), key ) )
-	 return getcdr(item);      
-   }
-   
-   return null;
+
+   return escheme::dict_ref( dict, key );
 }
 
 SEXPR FUNC::dict_set()
@@ -2385,28 +2294,8 @@ SEXPR FUNC::dict_set()
    auto dict = guard(iter.getarg(), dictp);
    auto key = iter.getarg();
    auto val = iter.getlast();
-   
-   auto vlen = getvectorlength(dict);
-   auto data = getvectordata(dict);
-   auto index = hash( key ) % vlen;
-   
-   for ( auto items = data[index]; anyp(items); items = getcdr(items) )
-   {
-      auto item = getcar(items);
-      
-      if ( equal( getcar(item), key ) )
-      {
-	 setcdr(item, val);
-	 return val;
-      }      
-   }
 
-   // key not found; add a new dict entry
-   regstack.push( MEMORY::cons( key, val ) );
-   data[index] = MEMORY::cons( regstack.top(), data[index] );
-   regstack.pop();
-   
-   return val;
+   return dict_set( dict, key, val );
 }
 
 SEXPR FUNC::dict_items()

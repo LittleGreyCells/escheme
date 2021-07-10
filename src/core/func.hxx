@@ -233,11 +233,6 @@ namespace FUNC
    SEXPR history_show();
    SEXPR set_prompt();
 
-   // equality
-   bool eq( SEXPR e1, SEXPR e2 );
-   bool eqv( SEXPR e1, SEXPR e2 );
-   bool equal( SEXPR e1, SEXPR e2 );
-
    // object address
    SEXPR objaddr();
 
