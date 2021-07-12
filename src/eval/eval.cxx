@@ -430,6 +430,7 @@ void EVAL::initialize()
    setform( symbol_and,      EV_AND );
    setform( symbol_or,       EV_OR );
    setform( symbol_access,   EV_ACCESS );
+   setform( symbol_module,   EV_MODULE );
    setform( null,            EV_APPLICATION );
 #endif
 

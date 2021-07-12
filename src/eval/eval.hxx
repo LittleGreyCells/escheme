@@ -69,6 +69,9 @@ enum EVSTATE
    EVAL_CODE,
    EVAL_RETURN,
 #endif
+   EV_MODULE,
+   EVAL_MODULE,
+   EVAL_MODULE_BODY,
    EV_DONE,
    EV_SIZE
 };

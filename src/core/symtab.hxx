@@ -25,6 +25,7 @@ namespace escheme
    extern SEXPR symbol_let;
    extern SEXPR symbol_letrec;
    extern SEXPR symbol_access;
+   extern SEXPR symbol_module;
    extern SEXPR symbol_unbound;
    extern SEXPR symbol_quasiquote;
    extern SEXPR symbol_unquote;
