@@ -318,7 +318,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       case n_foreach:
 	       {
 		  if ( argstack.argc < 2 )
-		     ERROR::severe("foreach requires two or more arguments");
+		     ERROR::severe( "foreach requires two or more arguments" );
 		  save( argstack.argc );
 		  save( null );              // no accume == ()
 		  next = EV_FOR_APPLY;
@@ -350,7 +350,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 
 	       default:
 	       {
-		  ERROR::severe("[ece] not a callable", val);
+		  ERROR::severe( "[ece] not a callable", val );
 		  break;
 	       }
 	    }
@@ -619,7 +619,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       next = EVAL_DISPATCH;             // evaluate <env2>
 	    }
 	    else
-	       ERROR::severe("not a valid target for set!");  
+	       ERROR::severe( "not a valid target for set!" );  
 	    break;
 	 }
 	 
@@ -722,7 +722,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
                 next = EV_DEFINE_VALUE;
             }
             else
-                ERROR::severe("ill-formed define", exp);
+                ERROR::severe( "ill-formed define", exp );
             break;
 	 }
   
@@ -738,12 +738,12 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    }
 	    else if ( modulep(env) )
 	    {
-	       auto dict = module_getdict(env);
-	       dict_set( dict, unev, val );
+	       // set in the module
+	       dict_set( module_getdict(env), unev, val );
 	    }
 	    else
 	    {
-	       ERROR::severe("internal defines are not supported", unev);
+	       ERROR::severe( "internal defines are not supported", unev );
 	    }
 	    val = unev;
 	    next = cont;
