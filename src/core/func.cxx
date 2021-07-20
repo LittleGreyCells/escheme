@@ -905,7 +905,7 @@ SEXPR FUNC::make_environment()
    auto pairs = guard(iter.getarg(), listp);
    const auto benv = iter.getlast();
 
-   if ( !(nullp(benv) || envp(benv)) )
+   if ( !anyenvp(benv) )
       ERROR::severe( "expected a base environment", benv );
   
    // convert a list of bindings into a frame
