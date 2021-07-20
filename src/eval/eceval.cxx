@@ -502,48 +502,6 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 }
 	    
 	 //
-	 // syntax: (module <sequence>)
-	 //
-	 case EV_MODULE:
-	 {
-	    save( cont );
-	    save( env );
-	    unev = cdr(exp);                  // (<sequence>)
-	    env = MEMORY::module();           // new module
-	    next = EVAL_MODULE;
-	    break;
-	 }
-
-	 case EVAL_MODULE:
-	 {
-	    if ( nullp(unev) )
-	    {
-	       val = env;
-	       restore( env );                // restore current env
-	       restore( cont );
-	       next = cont;
-	    }
-	    else
-	    {
-	       exp = car(unev);
-	       save( unev );
-	       save( env );
-	       cont = EVAL_MODULE_BODY;
-	       next = EVAL_DISPATCH;
-	    }
-	    break;
-	 }
-
-	 case EVAL_MODULE_BODY:
-	 {
-	    restore( env );
-	    restore( unev );
-	    unev = cdr(unev);
-	    next = EVAL_MODULE;
-	    break;
-	 }
-
-	 //
 	 // syntax: (while <cond> <sequence>)
 	 //
 	 case EV_WHILE:

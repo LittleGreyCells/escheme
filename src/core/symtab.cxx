@@ -35,7 +35,6 @@ SEXPR symbol_sequence;
 SEXPR symbol_let;
 SEXPR symbol_letrec;
 SEXPR symbol_access;
-SEXPR symbol_module;
 
 static std::array<SEXPR, 128> symtab;
 
@@ -131,7 +130,6 @@ void SYMTAB::initialize()
    symbol_let		 = enter("let");
    symbol_letrec   	 = enter("letrec");
    symbol_access  	 = enter("access");
-   symbol_module  	 = enter("module");
 
    enter("t", symbol_true);
    enter("nil", null);
