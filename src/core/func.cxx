@@ -2270,7 +2270,7 @@ SEXPR FUNC::has_key()
    auto dict = guard(iter.getarg(), dictp);
    auto key = iter.getlast();
 
-   return escheme::has_key( dict, key ) ? symbol_true : symbol_false;
+   return has_key( dict, key ) ? symbol_true : symbol_false;
 }
 
 SEXPR FUNC::dict_ref()
@@ -2282,7 +2282,7 @@ SEXPR FUNC::dict_ref()
    auto dict = guard(iter.getarg(), dictp);
    auto key = iter.getlast();
 
-   return escheme::dict_ref( dict, key );
+   return dict_ref( dict, key );
 }
 
 SEXPR FUNC::dict_set()
