@@ -289,8 +289,6 @@ escheme additions
     %closure-vars
     %closure-numv
     %closure-rest
-    %make-closure
-    %parse-formals
     %make-code
     %get-bcodes
     %get-sexprs

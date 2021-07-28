@@ -19,7 +19,7 @@ linenoise prompt is displayed:
 
 Files to load before the REP can be added to the command line:
 
-   $ ./escheme tests/run_tests1.scm tests/run_tests2.scm
+   $ ./escheme file1.scm file2.scm ...
    
 
 To exit escheme, type ^D, ^C or exit function at the prompt:

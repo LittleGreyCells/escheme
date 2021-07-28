@@ -84,7 +84,7 @@
 (define (random-count factor base)
   (* (+ (random factor) 1) base))
 
-(define (driver n)
+(define (run n)
   (let ()
     (while (> n 0)
            (display "================================> ")
@@ -101,7 +101,7 @@
            (set! n (dec n))
            )))
 
-;;(driver 1000)
+(run 10)
 
 ;;(exit)
 
