@@ -163,6 +163,7 @@ std::vector<PredMap> predicate_map =
    { promisep, "promise" },
    { primp, "func or special" },
    { anyenvp, "any environment or module" },
+   { codep, "compiled code" },
    { dictp, "dictionary" },
    { modulep, "module" },
 };
