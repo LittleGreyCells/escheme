@@ -959,7 +959,7 @@ SEXPR FUNC::make_closure()
    auto params = guard(iter.getarg(), listp);
    const auto env = iter.getlast();
 
-   if ( !(nullp(env) || envp(env)) )
+   if ( !anyenvp(env) )
       ERROR::severe( "expected an environment", env );
 
    const auto closure = MEMORY::closure( code, env );
