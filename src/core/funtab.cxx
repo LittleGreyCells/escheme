@@ -164,8 +164,6 @@ static const Function funtab[] =
    { "environment-parent",     FUNC::env_parent	       },
    { "%make-environment",      FUNC::make_environment  },
 
-   { "%make-closure",          FUNC::make_closure      },
-   { "%parse-formals",         FUNC::parse_formals     },
 #ifdef BYTE_CODE_EVALUATOR
    { "%make-code",             FUNC::make_code         },
    { "%get-bcodes",            FUNC::get_bcodes        },

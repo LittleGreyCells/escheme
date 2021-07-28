@@ -100,10 +100,6 @@ namespace FUNC
    SEXPR env_parent();
    SEXPR make_environment();
 
-   // closure
-   SEXPR make_closure();
-   SEXPR parse_formals();
-
 #ifdef BYTE_CODE_EVALUATOR
    // code
    SEXPR make_code();

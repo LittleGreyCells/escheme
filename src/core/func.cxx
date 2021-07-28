@@ -945,55 +945,6 @@ SEXPR FUNC::make_environment()
    return regstack.pop();
 }
 
-//
-// closure
-//
-
-SEXPR FUNC::make_closure()
-{
-   //
-   // syntax: (%make-closure <code> <params> <env>)
-   //
-   ArgstackIterator iter;
-   auto code = guard(iter.getarg(), listp);
-   auto params = guard(iter.getarg(), listp);
-   const auto env = iter.getlast();
-
-   if ( !anyenvp(env) )
-      ERROR::severe( "expected an environment", env );
-
-   const auto closure = MEMORY::closure( code, env );
-   regstack.push( closure );
-   EVAL::parse_formals( params, 
-                        getclosurevars(closure),
-                        getclosurenumv(closure),
-                        getclosurerargs(closure) );
-   return regstack.pop();
-}
-
-SEXPR FUNC::parse_formals()
-{
-   //
-   // syntax: (%parse-formals <params>)
-   //
-   ArgstackIterator iter;
-   auto params = iter.getlast();
-
-   auto v = MEMORY::vector( 3 );
-   regstack.push( v );
-
-   SEXPR vars;
-   INT32 numv;
-   bool rargs;
-   EVAL::parse_formals( params, vars, numv, rargs );
-
-   vset( v, 0, vars );
-   vset( v, 1, MEMORY::fixnum(numv) );
-   vset( v, 2, rargs ? symbol_true : symbol_false );
-   
-   return regstack.pop();
-}
-
 #ifdef BYTE_CODE_EVALUATOR
 
 SEXPR FUNC::make_code()
