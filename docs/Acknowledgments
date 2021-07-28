@@ -29,9 +29,8 @@ approaches to implementing interpreters and a compiler for scheme. I have
 used the explicit control evaluator described in Chapter 5 as a starting
 point for escheme. It has been expanded to handle many more special forms.
 
-Addendum for extensible-scheme-compiled
+Addendum for escheme-compiled
 
 Although I started with SICP model compiler in Chapter 5, I have modified it 
-to make it almost unrecognizable. The virtual machine I designed for byte code
-evaluation is far different from that described in SICP. The resulting compiler
-keeps pace.
+considerably. The virtual machine I designed for byte code evaluation is far
+different from that described in SICP. The resulting compiler keeps pace.
