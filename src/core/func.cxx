@@ -671,7 +671,7 @@ SEXPR FUNC::rem_property()
 SEXPR FUNC::all_symbols()
 {
    //
-   // syntax: (all-symbols) -> <vector>
+   // syntax: (all-symbols) -> <list>
    //
    argstack.noargs();
    return SYMTAB::all_symbols();
@@ -950,7 +950,7 @@ SEXPR FUNC::make_environment()
 SEXPR FUNC::make_code()
 {
    //
-   // syntax: (%make-code <bvec> <vec>)
+   // syntax: (%make-code <bvec> <vec>) -> <code>
    //
    ArgstackIterator iter;
    auto bcodes = guard(iter.getarg(), bvecp);
@@ -1271,7 +1271,7 @@ SEXPR FUNC::string_length()
 SEXPR FUNC::string_append()
 {
    //
-   // syntax: (string-append <s1> <s2> ... <sn>) -> <string>
+   // syntax: (string-append <str1> <str2> ... <sn>) -> <string>
    //
    ArgstackIterator iter;
    std::string ss;
@@ -1288,7 +1288,7 @@ SEXPR FUNC::string_append()
 SEXPR FUNC::string_ref()
 {
    //
-   // syntax: (string-ref <s> <index>) -> <char>
+   // syntax: (string-ref <str> <index>) -> <char>
    //
    ArgstackIterator iter;
    auto s = guard(iter.getarg(), stringp);
@@ -1303,7 +1303,7 @@ SEXPR FUNC::string_ref()
 SEXPR FUNC::string_set()
 {
    //
-   // syntax: (string-set! <s> <index> <ch>) -> <string>
+   // syntax: (string-set! <str> <index> <ch>) -> <string>
    //
    ArgstackIterator iter;
    SEXPR s = guard(iter.getarg(), stringp);
@@ -1320,7 +1320,7 @@ SEXPR FUNC::string_set()
 SEXPR FUNC::string_substring()
 {
    //
-   // syntax: (substring <s> <s-start> <s-end>) -> <string>
+   // syntax: (substring <str> <s-start> <s-end>) -> <string>
    //
    //    inclusive of <s-start>
    //    exclusive of <s-end>
@@ -1345,7 +1345,7 @@ SEXPR FUNC::string_substring()
 SEXPR FUNC::string_fill()
 {
    //
-   // syntax: (string-fill! <s> <ch>) -> <string>
+   // syntax: (string-fill! <str> <ch>) -> <string>
    //
    ArgstackIterator iter;
    auto s = guard(iter.getarg(), stringp);
@@ -1412,7 +1412,7 @@ SEXPR FUNC::string_dup()
 SEXPR FUNC::string_find()
 {
    //
-   // syntax: (string-find <s1> <s2> [<start> [<end>]]) -> <fixnum> or null
+   // syntax: (string-find <str1> <str2> [<start> [<end>]]) -> <fixnum> or null
    //
    ArgstackIterator iter;
    auto s1 = guard(iter.getarg(), stringp);
@@ -1448,9 +1448,9 @@ static const char* whitespace = " \t\n\v\f\r";
 SEXPR FUNC::string_trim_left()
 {
    //
-   // syntax: (string-trim-left <s1> [<s2>]) -> <string>
+   // syntax: (string-trim-left <str1> [<str2>]) -> <string>
    //
-   // remove <s1>'s leading white space along with <s2>'s chars if given
+   // remove <str1>'s leading white space along with <str2>'s chars if given
    //
    ArgstackIterator iter;
    auto s1 = guard(iter.getarg(), stringp);
@@ -1469,9 +1469,9 @@ SEXPR FUNC::string_trim_left()
 SEXPR FUNC::string_trim_right()
 {
    //
-   // syntax: (string-trim-right <s1> [<s2>]) -> <string>
+   // syntax: (string-trim-right <str1> [<str2>]) -> <string>
    //
-   // remove <s1>'s trailing white space along with <s2>'s chars if given
+   // remove <str1>'s trailing white space along with <str2>'s chars if given
    //
    ArgstackIterator iter;
    auto s1 = guard(iter.getarg(), stringp);
@@ -1493,9 +1493,9 @@ SEXPR FUNC::string_trim_right()
 SEXPR FUNC::string_trim()
 {
    //
-   // syntax: (string-trim <s1> [<s2>]) -> <string>
+   // syntax: (string-trim <str1> [<str2>]) -> <string>
    //
-   // remove <s1>'s leading and trailing white space along with <s2>'s chars if given
+   // remove <str1>'s leading and trailing white space along with <str2>'s chars if given
    //
    ArgstackIterator iter;
    auto s1 = guard(iter.getarg(), stringp);
@@ -1518,7 +1518,7 @@ SEXPR FUNC::string_trim()
 SEXPR FUNC::string_upcase()
 {
    //
-   // syntax: (string-upcase! <s>) -> <string>
+   // syntax: (string-upcase! <str>) -> <string>
    //
    ArgstackIterator iter;
    auto s = guard(iter.getlast(), stringp);
@@ -1535,7 +1535,7 @@ SEXPR FUNC::string_upcase()
 SEXPR FUNC::string_downcase()
 {
    //
-   // syntax: (string-downcase! <s>) -> <string>
+   // syntax: (string-downcase! <str>) -> <string>
    //
    ArgstackIterator iter;
    auto s = guard(iter.getlast(), stringp);
@@ -1552,7 +1552,7 @@ SEXPR FUNC::string_downcase()
 SEXPR FUNC::string_pad_left()
 {
    //
-   // syntax: (string-pad-left <s> <k> [<char>]) -> <string>
+   // syntax: (string-pad-left <str> <k> [<char>]) -> <string>
    //
    ArgstackIterator iter;
    auto s = guard(iter.getarg(), stringp);
@@ -1577,7 +1577,7 @@ SEXPR FUNC::string_pad_left()
 SEXPR FUNC::string_pad_right()
 {
    //
-   // syntax: (string-pad-right <s> <k> [<char>]) -> <string>
+   // syntax: (string-pad-right <str> <k> [<char>]) -> <string>
    //
    ArgstackIterator iter;
    auto s = guard(iter.getarg(), stringp);
@@ -2265,6 +2265,9 @@ SEXPR FUNC::dict_items()
 //
 SEXPR FUNC::make_module()
 {
+   //
+   // syntax: (%make-module) -> <module>)
+   //
    argstack.noargs();
    return MEMORY::module();
 }
