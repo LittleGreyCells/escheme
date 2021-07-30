@@ -899,7 +899,7 @@ SEXPR FUNC::env_bindings()
 SEXPR FUNC::make_environment()
 {
    //
-   // syntax: (%make-environment <pairs> <baseenv>)
+   // syntax: (%make-environment <pairs> <benv>)
    //
    ArgstackIterator iter;
    auto pairs = guard(iter.getarg(), listp);
@@ -2266,10 +2266,11 @@ SEXPR FUNC::dict_items()
 SEXPR FUNC::make_module()
 {
    //
-   // syntax: (%make-module) -> <module>)
+   // syntax: (%make-module [<benv>]) -> <module>)
    //
-   argstack.noargs();
-   return MEMORY::module();
+   ArgstackIterator iter;
+   auto base = iter.more() ? guard(iter.getlast(), anyenvp) : null;
+   return MEMORY::module( base );
 }
 
 SEXPR FUNC::module_dict()

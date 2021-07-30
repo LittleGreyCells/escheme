@@ -55,68 +55,81 @@ SEXPR EVAL::rte_code;
 
 SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 {
-   for ( ; envp(env); env = getenvbase(env) )
+   guard( env, anyenvp );
+   
+   for ( ; ; env = getenvbase(env) )
    {
-      FRAME frame = getenvframe(env);
-      SEXPR vars = getframevars(frame);
-      
-      for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
+      if ( envp(env) )
       {
-         if ( getcar(vars) == var ) 
-            return frameref(frame, i);
+	 FRAME frame = getenvframe(env);
+	 SEXPR vars = getframevars(frame);
+	 
+	 for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
+	 {
+	    if ( getcar(vars) == var ) 
+	       return frameref(frame, i);
+	 }
+      }
+      else if ( modulep(env) )
+      {
+	 auto dict = module_getdict(env);
+	 
+	 if ( has_key( dict, var ) )
+	    return dict_ref( dict, var );
+      }
+      else
+      {
+	 // global var
+	 const SEXPR val = value(var);
+	 
+	 if ( val == symbol_unbound )
+	    ERROR::severe( "symbol is undefined", var );
+	 
+	 return val;
       }
    }
-
-   if ( modulep(env) )
-   {
-      auto dict = module_getdict(env);
-
-      if ( has_key( dict, var ) )
-	 return dict_ref( dict, var );
-   }
-
-   // global var
-   const SEXPR val = value(var);
-
-   if ( val == symbol_unbound )
-      ERROR::severe( "symbol is undefined", var );
-
-   return val;
 }
 
 void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 {
-   for ( ; envp(env); env = getenvbase(env) )
+   guard( env, anyenvp );
+   
+   for ( ; ; env = getenvbase(env) )
    {
-      FRAME frame = getenvframe(env);  
-      SEXPR vars = getframevars(frame);
-
-      for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
+      if ( envp(env) )
       {
-         if ( getcar(vars) == var )
-         {
-            frameset( frame, i, val );
-            return;
-         }
+	 FRAME frame = getenvframe(env);  
+	 SEXPR vars = getframevars(frame);
+	 
+	 for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
+	 {
+	    if ( getcar(vars) == var )
+	    {
+	       frameset( frame, i, val );
+	       return;
+	    }
+	 }
       }
-   }
-
-   if ( modulep(env) )
-   {
-      auto dict = module_getdict(env);
-
-      if ( has_key( dict, var ) )
+      else if ( modulep(env) )
       {
-	 dict_set( dict, var, val );
+	 auto dict = module_getdict(env);
+	 
+	 if ( has_key( dict, var ) )
+	 {
+	    dict_set( dict, var, val );
+	    return;
+	 }
+      }
+      else
+      {	 
+	 // global var
+	 if ( value(var) == symbol_unbound )
+	    ERROR::severe( "symbol is undefined", var );
+	 
+	 set( var, val );
 	 return;
       }
    }
-
-   // global var
-   if ( value(var) == symbol_unbound )
-      ERROR::severe( "symbol is undefined", var );
-
-   set( var, val );
 }
 
 //

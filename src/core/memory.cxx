@@ -218,7 +218,8 @@ void MEMORY::mark( SEXPR n )
 	       goto start_mark;
 	       
 	    case n_module:
-	       n = module_getdict(n);
+	       sexprs.push( module_getdict(n) );
+	       n = module_getbase(n);
 	       goto start_mark;
 	       
 	    case n_free:
@@ -324,6 +325,7 @@ void MEMORY::mark( SEXPR n )
       case n_module:
 	 setmark(n);
 	 mark( module_getdict(n) );
+	 mark( module_getbase(n) );
 	 break;
          
       case n_free:
@@ -628,11 +630,12 @@ SEXPR MEMORY::dict()
    return n;
 }
 
-SEXPR MEMORY::module()
+SEXPR MEMORY::module( SEXPR env )
 {
    regstack.push( dict() );
    auto n = newnode(n_module);
    module_setdict( n, regstack.pop() );
+   module_setbase( n, env );
    return n;
 }
 

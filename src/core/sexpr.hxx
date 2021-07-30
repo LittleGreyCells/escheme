@@ -114,7 +114,7 @@ struct PRIMITIVE
 struct ENVIRON
 {
    FRAME frame;
-   SEXPR baseenv;
+   SEXPR base;
 };
 
 struct CONSCELL
@@ -181,6 +181,7 @@ struct PROMISE
 struct MODULE
 {
    SEXPR dict;
+   SEXPR base;
 };
 
 //
@@ -373,7 +374,7 @@ inline void setclosurerargs( SEXPR n, bool x ) { getclosurerargs(n) = x; }
 
 // environment
 inline auto& getenvframe( SEXPR n ) { return n->u.environ.frame; }
-inline auto& getenvbase( SEXPR n ) { return n->u.environ.baseenv; }
+inline auto& getenvbase( SEXPR n ) { return n->u.environ.base; }
 inline void setenvframe( SEXPR n, FRAME x ) { getenvframe(n) = x; }
 inline void setenvbase( SEXPR n, SEXPR x ) { getenvbase(n) = x; }
 
@@ -414,7 +415,9 @@ inline void promise_setval( SEXPR n, SEXPR x) { promise_getval(n) = x; }
 
 // module
 inline auto& module_getdict( SEXPR n ) { return n->u.module.dict; }
+inline auto& module_getbase( SEXPR n ) { return n->u.module.base; }
 inline void module_setdict( SEXPR n, SEXPR x ) { module_getdict(n) = x; }
+inline void module_setbase( SEXPR n, SEXPR x ) { module_getbase(n) = x; }
 
 // inlinable predicates
 inline bool nullp( SEXPR n ) { return n == null; }
