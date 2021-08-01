@@ -37,19 +37,19 @@ namespace escheme
 //   from the garbage collector.  DO NOT USE argstack!
 //
 
-bool booleanp(const SEXPR s) { return s == symbol_true || s == symbol_false; }
-bool notp(const SEXPR s) { return falsep(s); }
-bool boundp(const SEXPR s) { return getvalue(guard(s, symbolp)) != symbol_unbound; }
-bool eof_objectp(const SEXPR s) { return s == PIO::eof_object; }
-bool zerop(const SEXPR s) { return getfixnum(guard(s, fixnump)) == 0; }
-bool positivep(const SEXPR s) { return getfixnum(guard(s, fixnump)) > 0; }
-bool negativep(const SEXPR s) { return getfixnum(guard(s, fixnump)) < 0; }
-bool oddp(const SEXPR s) { return (abs(getfixnum(guard(s, fixnump))) % 2) == 1; }
-bool evenp(const SEXPR s) { return (getfixnum(guard(s, fixnump)) % 2) == 0; }
-bool exactp(const SEXPR) { return false; }
-bool inexactp(const SEXPR) { return true; }
-bool string_nullp(const SEXPR s) { return getstringlength(guard(s, stringp)) == 0; }
-bool procedurep(const SEXPR s) { return primp(s) || closurep(s); }
+bool booleanp( const SEXPR s ) { return s == symbol_true || s == symbol_false; }
+bool notp( const SEXPR s ) { return falsep(s); }
+bool boundp( const SEXPR s ) { return getvalue(guard(s, symbolp)) != symbol_unbound; }
+bool eof_objectp( const SEXPR s ) { return s == PIO::eof_object; }
+bool zerop( const SEXPR s ) { return getfixnum(guard(s, fixnump)) == 0; }
+bool positivep( const SEXPR s ) { return getfixnum(guard(s, fixnump)) > 0; }
+bool negativep( const SEXPR s ) { return getfixnum(guard(s, fixnump)) < 0; }
+bool oddp( const SEXPR s ) { return (abs(getfixnum(guard(s, fixnump))) % 2) == 1; }
+bool evenp( const SEXPR s ) { return (getfixnum(guard(s, fixnump)) % 2) == 0; }
+bool exactp( const SEXPR ) { return false; }
+bool inexactp( const SEXPR ) { return true; }
+bool string_nullp( const SEXPR s ) { return getstringlength(guard(s, stringp)) == 0; }
+bool procedurep( const SEXPR s ) { return primp(s) || closurep(s); }
 
 SEXPR FUNC::predicate( PREDICATE pred )
 {
