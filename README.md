@@ -8,7 +8,7 @@ A scheme interpreter utilizing an explicit control evaluator
 _escheme_ is an aspiring implementation of the algorithmic language scheme, 
 supporting approximately 90% of the R3RS standard. Granted, the R3RS standard is dated,
 a scheme report from the late 1980s.
-This is due both to the time of its inception as well as from a desire to
+This is due both to the time frame of escheme's inception as well as from a desire to
 constrain the design target. As such it has been principally an experimental
 testbed for exploring models of evaluation, interpreter design and construction.
 
