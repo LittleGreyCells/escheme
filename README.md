@@ -6,10 +6,10 @@ A scheme interpreter utilizing an explicit control evaluator
 ## Introduction
 
 _escheme_ is an aspiring implementation of the algorithmic language scheme, 
-supporting approximately 90% of the R3RS standard. Granted, it is a bit dated,
-conforming to a scheme report from the late 1980s.
+supporting approximately 90% of the R3RS standard. Granted, the R3RS standard is dated,
+a scheme report from the late 1980s.
 This is due both to the time of its inception as well as from a desire to
-contrain the design target. As such it has been principally an experimental
+constrain the design target. As such it has been principally an experimental
 testbed for exploring models of evaluation, interpreter design and construction.
 
 Abelson and Sussman's _Structure and Interpretation of Computer Programs_
