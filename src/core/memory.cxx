@@ -422,7 +422,7 @@ static void sweep()
 
 void MEMORY::gc()
 {
-   if (suspensions > 0)
+   if ( suspensions > 0 )
       return;
 
    CollectionCount += 1;
@@ -473,9 +473,9 @@ static char* duplicate( const char* s, int length )
 
 static SEXPR new_symbol( const char* s, int length )
 {
-   regstack.push( MEMORY::cons(null, null) );
+   regstack.push( MEMORY::cons( null, null ) );
    auto n = newnode(n_symbol);
-   setname( n, duplicate(s, length) );
+   setname( n, duplicate( s, length ) );
    setpair( n, regstack.pop() );
    return n;
 }
@@ -664,7 +664,7 @@ void MEMORY::initialize()
    FreeNodeList = null;
    NewNodeBlock();
    string_null = make_string_null();
-   listhead = cons(null, null);
+   listhead = cons( null, null );
 }
 
 //
@@ -684,7 +684,7 @@ ListBuilder::~ListBuilder()
 
 void ListBuilder::add( SEXPR item )
 {
-   auto cell = MEMORY::cons(item, null);
+   auto cell = MEMORY::cons( item, null );
    setcdr( tail, cell );
    tail = cell;
 }

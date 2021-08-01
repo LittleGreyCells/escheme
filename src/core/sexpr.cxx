@@ -162,7 +162,7 @@ std::vector<PredMap> predicate_map =
    { lastp, "last argument" },
    { promisep, "promise" },
    { primp, "func or special" },
-   { anyenvp, "any environment or module" },
+   { anyenvp, "any environment" },
    { codep, "compiled code" },
    { dictp, "dictionary" },
    { modulep, "module" },

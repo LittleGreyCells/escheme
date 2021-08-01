@@ -861,8 +861,13 @@ SEXPR FUNC::env_parent()
    // syntax: (environment-parent <env>)
    //
    ArgstackIterator iter;
-   auto env = guard(iter.getlast(), envp);
-   return getenvbase(env);
+   auto env = guard(iter.getlast(), anyenvp);
+   if ( nullp(env) )
+      return null;
+   else if ( modulep(env) )
+      return module_getbase(env);
+   else
+     return getenvbase(env);
 }
 
 SEXPR FUNC::env_bindings()
@@ -871,29 +876,35 @@ SEXPR FUNC::env_bindings()
    // syntax: (environment-bindings <env>) -> (<pair1> <pair2> ...)
    //
    ArgstackIterator iter;
-   const auto arg = iter.getlast();
+   const auto env = guard(iter.getlast(), anyenvp);
 
    // treat the empty list of bindings as a null env
-   if ( nullp(arg) )
-      return null;
-
-   const auto env = guard(arg, envp);
-
-   // convert a frame into a list of bindings
-   const auto frame = getenvframe(env);
-   auto vars = getframevars(frame);
-   
-   ListBuilder bindings;
-
-   for ( int i = 0; anyp(vars); ++i )
+   if ( nullp(env) )
    {
-      regstack.push( MEMORY::cons( getcar(vars), frameref(frame, i)) );
-      bindings.add( regstack.top() );
-      regstack.pop();
-      vars = getcdr(vars);
+      return null;
    }
-   
-   return bindings.get();
+   else if ( modulep(env) )
+   {
+      return dict_items( module_getdict(env) );
+   }
+   else
+   {
+      // convert a frame into a list of bindings
+      const auto frame = getenvframe(env);
+      auto vars = getframevars(frame);
+      
+      ListBuilder bindings;
+      
+      for ( int i = 0; anyp(vars); ++i )
+      {
+	 regstack.push( MEMORY::cons( getcar(vars), frameref(frame, i)) );
+	 bindings.add( regstack.top() );
+	 regstack.pop();
+	 vars = getcdr(vars);
+      }
+      
+      return bindings.get();
+   }
 }
 
 SEXPR FUNC::make_environment()
