@@ -95,6 +95,7 @@ namespace FUNC
 
    // environment
    SEXPR the_environment();
+   SEXPR the_global_environment();
    SEXPR proc_environment();
    SEXPR env_bindings();
    SEXPR env_parent();

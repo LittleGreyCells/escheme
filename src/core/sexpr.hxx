@@ -419,23 +419,10 @@ inline auto& module_getbase( SEXPR n ) { return n->u.module.base; }
 inline void module_setdict( SEXPR n, SEXPR x ) { module_getdict(n) = x; }
 inline void module_setbase( SEXPR n, SEXPR x ) { module_getbase(n) = x; }
 
-// inlinable predicates
+// other inlinable predicates
 inline bool nullp( SEXPR n ) { return n == null; }
 inline bool anyp( SEXPR n ) { return n != null; }
-inline bool _symbolp( SEXPR n ) { return n->kind == n_symbol; }
-inline bool _fixnump( SEXPR n ) { return n->kind == n_fixnum; }
-inline bool _flonump( SEXPR n ) { return n->kind == n_flonum; }
-inline bool _stringp( SEXPR n ) { return n->kind == n_string; }
-inline bool _charp( SEXPR n ) { return n->kind == n_char; }
-inline bool _consp( SEXPR n ) { return n->kind == n_cons; }
-inline bool _envp( SEXPR n ) { return n->kind == n_environment; }
-inline bool _funcp( SEXPR n ) { return n->kind == n_func; }
-inline bool _closurep( SEXPR n ) { return n->kind == n_closure; }
-inline bool _codep( SEXPR n ) { return n->kind == n_code; }
-inline bool _compiledp( SEXPR n ) { return _codep(getclosurecode(n)); }
-inline bool _compiled_closurep( SEXPR n ) { return _closurep(n) && _compiledp(n); }
-
-inline bool _lastp( SEXPR n ) { return nullp(cdr(n)); }
+inline bool lastp( SEXPR n ) { return nullp(cdr(n)); }
 
 }
 

@@ -40,6 +40,9 @@ SEXPR EVAL::rte_code;
 #endif
 #endif
 
+SEXPR EVAL::the_environment() { return env; }
+SEXPR EVAL::the_global_environment() { return null; }
+
 //
 // New: A frame-based representation
 //
@@ -153,7 +156,7 @@ void EVAL::parse_formals( SEXPR formals, SEXPR& vars, INT32& numv, bool& rargs )
    {
       numv++;
 
-      if ( _symbolp(formals) )
+      if ( symbolp(formals) )
       {
 	 rargs = true;      
 	 varlist.add( formals );

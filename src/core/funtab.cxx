@@ -163,6 +163,7 @@ static const Function funtab[] =
    { "environment-bindings",   FUNC::env_bindings      },
    { "environment-parent",     FUNC::env_parent	       },
    { "%make-environment",      FUNC::make_environment  },
+   { "the-global-environment", FUNC::the_global_environment   },
 
 #ifdef BYTE_CODE_EVALUATOR
    { "%make-code",             FUNC::make_code         },

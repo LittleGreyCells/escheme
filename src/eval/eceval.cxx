@@ -149,7 +149,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 case EVAL_ARG_LOOP:
 	 {
 	    exp = car(unev);
-	    if ( _lastp(unev) )
+	    if ( lastp(unev) )
 	    {
 	       save( argstack.argc );
 	       cont = ACCUMULATE_LAST_ARG;
@@ -224,7 +224,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  env = extend_env_fun(val);
 		  unev = getclosurecode(val);
 #ifdef BYTE_CODE_EVALUATOR
-		  if ( _codep(unev) )
+		  if ( codep(unev) )
 		  {
 		     pc = 0;
 		     next = EVAL_CODE;
@@ -289,7 +289,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  val = ccresult;
 #ifdef BYTE_CODE_EVALUATOR
 		  // determine if the continuation should resume here or in the BCE
-		  if ( _codep( regstack.top() ) )
+		  if ( codep( regstack.top() ) )
 		  {
 		     next = EVAL_RETURN;
 		  }
@@ -477,7 +477,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 case EVAL_SEQUENCE:
 	 {
 	    exp = car(unev);
-	    if ( nullp(unev) || _lastp(unev) )
+	    if ( nullp(unev) || lastp(unev) )
 	    {
 	       restore( cont );
 	       next = EVAL_DISPATCH;
@@ -555,7 +555,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    unev = cdr(exp);                     // (<var> <exp>) | ((access <var> <env2>) <exp>)
 	    const auto var_exp = car(unev);
 	    
-	    if ( _symbolp(var_exp) )
+	    if ( symbolp(var_exp) )
 	    {
 	       // (<var> <exp>)
 	       exp = car(cdr(unev));             // <exp>
@@ -566,7 +566,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       cont = EV_SET_VALUE;
 	       next = EVAL_DISPATCH;
 	    }
-	    else if ( _consp(var_exp) && getcar(var_exp) == symbol_access )
+	    else if ( consp(var_exp) && getcar(var_exp) == symbol_access )
 	    {
 	       // ((access <var> <env2>) <exp>)
 	       exp = car(cdr(cdr(var_exp)));     // exp = <env2>
@@ -823,7 +823,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 case EVAL_ANDSEQ:
 	 {
 	    exp = car(unev);
-	    if ( nullp(unev) || _lastp(unev) )
+	    if ( nullp(unev) || lastp(unev) )
 	    {
 	       restore( cont );
 	       next = EVAL_DISPATCH;
@@ -869,7 +869,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	 case EVAL_ORSEQ:
 	 {
 	    exp = car(unev);
-	    if ( nullp(unev) || _lastp(unev) )
+	    if ( nullp(unev) || lastp(unev) )
 	    {
 	       restore( cont );
 	       next = EVAL_DISPATCH;
@@ -939,7 +939,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       // exp == v
 	       exp = null;                 // ()
 	    }
-	    if ( _lastp(unev) )
+	    if ( lastp(unev) )
 	    {
 	       save( frameindex );
 	       cont = EV_LET_ACCUM_LAST_ARG;

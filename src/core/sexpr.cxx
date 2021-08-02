@@ -123,7 +123,6 @@ bool outstringportp( const SEXPR n ) { return stringportp(n) && (getmode(n) & pm
 bool anyinportp( const SEXPR n ) { return inportp(n) || instringportp(n); }
 bool anyoutportp( const SEXPR n ) { return outportp(n) || outstringportp(n); }
 
-bool lastp( SEXPR n )  { return nullp(cdr(n)); }
 bool promisep( SEXPR n )  { return n->kind == n_promise; }
 bool codep( const SEXPR n ) { return n->kind == n_code; }
 bool dictp( const SEXPR n ) { return n->kind == n_dict; }

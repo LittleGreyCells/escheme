@@ -108,7 +108,8 @@ namespace EVAL
    void bceval( SEXPR sexpr );
 #endif
 
-   inline SEXPR the_environment() { return env; }
+   SEXPR the_environment();
+   SEXPR the_global_environment();
 
    void statistics();
    SEXPR get_evaluator_state();

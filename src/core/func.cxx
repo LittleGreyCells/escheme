@@ -845,6 +845,15 @@ SEXPR FUNC::the_environment()
    return EVAL::the_environment();
 }
 
+SEXPR FUNC::the_global_environment()
+{
+   //
+   // syntax: (the-global-environment)
+   //
+   argstack.noargs();
+   return EVAL::the_global_environment();
+}
+
 SEXPR FUNC::proc_environment()
 {
    //
