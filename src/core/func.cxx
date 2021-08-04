@@ -871,12 +871,10 @@ SEXPR FUNC::env_parent()
    //
    ArgstackIterator iter;
    auto env = guard(iter.getlast(), anyenvp);
-   if ( nullp(env) )
-      return null;
-   else if ( modulep(env) )
+   if ( modulep(env) )
       return module_getbase(env);
    else
-     return getenvbase(env);
+      return getenvbase(env);
 }
 
 SEXPR FUNC::env_bindings()
@@ -887,12 +885,7 @@ SEXPR FUNC::env_bindings()
    ArgstackIterator iter;
    const auto env = guard(iter.getlast(), anyenvp);
 
-   // treat the empty list of bindings as a null env
-   if ( nullp(env) )
-   {
-      return null;
-   }
-   else if ( modulep(env) )
+   if ( modulep(env) )
    {
       return dict_items( module_getdict(env) );
    }

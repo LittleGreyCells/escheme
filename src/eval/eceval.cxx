@@ -14,7 +14,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 {
    // sexpr valued
    exp = sexpr;
-   env = null;
+   env = the_global_env;
    val = null;
    aux = null;
    unev = null;
@@ -262,7 +262,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 		  }
 		  else
 		  {
-		     env = null;
+		     env = the_global_env;
 		  }
 		  argstack.removeargc();
 		  restore( cont );
@@ -689,7 +689,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    restore( cont );
 	    restore( env );
 	    restore( unev );
-	    if ( nullp(env) )
+	    if ( globalenvp(env) )
 	    {
 	       // set in the global environment [()]
 	       set( unev, val );

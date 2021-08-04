@@ -25,6 +25,7 @@ SEXPR EVAL::env;
 SEXPR EVAL::val;
 SEXPR EVAL::aux;
 SEXPR EVAL::unev;
+SEXPR EVAL::the_global_env;
 #ifndef NO_INTERP
 EVSTATE EVAL::cont;
 EVSTATE EVAL::next;
@@ -41,7 +42,7 @@ SEXPR EVAL::rte_code;
 #endif
 
 SEXPR EVAL::the_environment() { return env; }
-SEXPR EVAL::the_global_environment() { return null; }
+SEXPR EVAL::the_global_environment() { return the_global_env; }
 
 //
 // New: A frame-based representation
@@ -418,6 +419,11 @@ static void eval_marker()
 
 void EVAL::initialize()
 {
+   // create the global env object
+   the_global_env = new Node( n_global_env );
+   setenvframe( the_global_env, new Frame(0, null) );
+   setenvbase( the_global_env, the_global_env );
+   
    // evaluator registers
    exp = null;
    env = null;

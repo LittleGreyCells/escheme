@@ -163,6 +163,7 @@ void MEMORY::mark( SEXPR n )
 	    case n_map:
 	    case n_foreach:
 	    case n_force:
+	    case n_global_env:
 	       break;
 	       
 	    case n_cons:
@@ -258,6 +259,7 @@ void MEMORY::mark( SEXPR n )
       case n_map:
       case n_foreach:
       case n_force:
+      case n_global_env:
 	 setmark(n);
 	 break;
 

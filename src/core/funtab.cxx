@@ -216,6 +216,7 @@ static const Function funtab[] =
    { "closure?"  ,             []{ return FUNC::predicate(closurep); } },
    { "procedure?",             []{ return FUNC::predicate(procedurep); } },
    { "environment?",	       []{ return FUNC::predicate(envp); } },
+   { "global-env?",	       []{ return FUNC::predicate(globalenvp); } },
    { "continuation?",	       []{ return FUNC::predicate(contp); } },
    { "port?",                  []{ return FUNC::predicate(portp); } },
    { "input-port?",            []{ return FUNC::predicate(inportp); } },
