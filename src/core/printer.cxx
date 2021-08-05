@@ -215,8 +215,8 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	    PIO::put( outport, format( "{dict:%p}", n->id() ) );
 	    break;
 
-	 case n_module:
-	    PIO::put( outport, format( "{module:%p}", n->id() ) );
+	 case n_assoc_env:
+	    PIO::put( outport, format( "{assoc-env:%p}", n->id() ) );
 	    break;
 
 	 case n_free:

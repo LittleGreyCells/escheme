@@ -6,7 +6,7 @@
   (let ((nm (assoc <name> *all-modules*)))
     (if nm
 	(cdr nm)
-	(let ((m (%make-module)))
+	(let ((m (%make-assoc-env)))
 	  (set! *all-modules* (cons (cons <name> m) *all-modules*))
 	  m))))
 

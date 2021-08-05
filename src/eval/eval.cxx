@@ -74,9 +74,9 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 	       return frameref(frame, i);
 	 }
       }
-      else if ( modulep(env) )
+      else if ( assocenvp(env) )
       {
-	 auto dict = module_getdict(env);
+	 auto dict = assocenv_getdict(env);
 	 
 	 if ( has_key( dict, var ) )
 	    return dict_ref( dict, var );
@@ -114,9 +114,9 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 	    }
 	 }
       }
-      else if ( modulep(env) )
+      else if ( assocenvp(env) )
       {
-	 auto dict = module_getdict(env);
+	 auto dict = assocenv_getdict(env);
 	 
 	 if ( has_key( dict, var ) )
 	 {

@@ -694,10 +694,10 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       // set in the global environment [()]
 	       set( unev, val );
 	    }
-	    else if ( modulep(env) )
+	    else if ( assocenvp(env) )
 	    {
-	       // set in the module
-	       dict_set( module_getdict(env), unev, val );
+	       // set in the associate environment
+	       dict_set( assocenv_getdict(env), unev, val );
 	    }
 	    else
 	    {

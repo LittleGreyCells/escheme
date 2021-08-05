@@ -871,8 +871,8 @@ SEXPR FUNC::env_parent()
    //
    ArgstackIterator iter;
    auto env = guard(iter.getlast(), anyenvp);
-   if ( modulep(env) )
-      return module_getbase(env);
+   if ( assocenvp(env) )
+      return assocenv_getbase(env);
    else
       return getenvbase(env);
 }
@@ -885,9 +885,9 @@ SEXPR FUNC::env_bindings()
    ArgstackIterator iter;
    const auto env = guard(iter.getlast(), anyenvp);
 
-   if ( modulep(env) )
+   if ( assocenvp(env) )
    {
-      return dict_items( module_getdict(env) );
+      return dict_items( assocenv_getdict(env) );
    }
    else
    {
@@ -2274,23 +2274,26 @@ SEXPR FUNC::dict_items()
 }
 
 //
-// module
+// associative environment
 //
-SEXPR FUNC::make_module()
+SEXPR FUNC::make_assocenv()
 {
    //
-   // syntax: (%make-module [<benv>]) -> <module>)
+   // syntax: (%make-assoc-env [<benv>]) -> <assocenv>)
    //
    ArgstackIterator iter;
    auto base = iter.more() ? guard(iter.getlast(), anyenvp) : null;
-   return MEMORY::module( base );
+   return MEMORY::assocenv( base );
 }
 
-SEXPR FUNC::module_dict()
+SEXPR FUNC::assocenv_dict()
 {
+   //
+   // syntax: (%assoc-env-dict <assocenv>) -> <dict>)
+   //
    ArgstackIterator iter;
-   auto mod = guard(iter.getlast(), modulep);
-   return module_getdict( mod );
+   auto aenv = guard(iter.getlast(), assocenvp);
+   return assocenv_getdict( aenv );
 }
 
 //

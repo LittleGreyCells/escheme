@@ -127,9 +127,9 @@ bool anyoutportp( const SEXPR n ) { return outportp(n) || outstringportp(n); }
 bool promisep( SEXPR n )  { return n->kind == n_promise; }
 bool codep( const SEXPR n ) { return n->kind == n_code; }
 bool dictp( const SEXPR n ) { return n->kind == n_dict; }
-bool modulep( const SEXPR n ) { return n->kind == n_module; }
+bool assocenvp( const SEXPR n ) { return n->kind == n_assoc_env; }
    
-bool anyenvp( const SEXPR n ) { return globalenvp(n) || envp(n) || modulep(n); }
+bool anyenvp( const SEXPR n ) { return globalenvp(n) || envp(n) || assocenvp(n); }
 
 struct PredMap { PREDICATE pred; const char* name; };
 
@@ -166,7 +166,7 @@ std::vector<PredMap> predicate_map =
    { anyenvp, "any environment" },
    { codep, "compiled code" },
    { dictp, "dictionary" },
-   { modulep, "module" },
+   { assocenvp, "associative environment" },
 };
 
 SEXPR guard( SEXPR s, PREDICATE predicate )

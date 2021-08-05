@@ -239,7 +239,7 @@ static const Function funtab[] =
 #endif
    { "string-null?",           []{ return FUNC::predicate(string_nullp); } },
    { "dict?",                  []{ return FUNC::predicate(dictp); } },
-   { "module?",                []{ return FUNC::predicate(modulep); } },
+   { "assoc-env?",             []{ return FUNC::predicate(assocenvp); } },
    
    { "make-string",            FUNC::string_make },
    { "string-length",          FUNC::string_length },
@@ -347,8 +347,8 @@ static const Function funtab[] =
    { "dict-set!",              FUNC::dict_set  },
    { "dict-items",             FUNC::dict_items  },
 
-   { "%make-module",           FUNC::make_module },
-   { "module-dict",            FUNC::module_dict },
+   { "%make-assoc-env",        FUNC::make_assocenv },
+   { "%assoc-env-dict",        FUNC::assocenv_dict },
 
    { "%object-address",        FUNC::objaddr },
 };

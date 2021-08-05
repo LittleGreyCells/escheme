@@ -45,7 +45,7 @@ enum NodeKind
    n_force,
    n_code,
    n_dict,
-   n_module,
+   n_assoc_env,
    NUMKINDS
 };
 
@@ -179,7 +179,7 @@ struct PROMISE
    SEXPR val;
 };
 
-struct MODULE
+struct ASSOCENV
 {
    SEXPR dict;
    SEXPR base;
@@ -217,7 +217,7 @@ struct Node
       CLOSURE closure;
       CODE code;
       PROMISE promise;
-      MODULE module;
+      ASSOCENV assocenv;
    } u;
 
    Node() {}
@@ -290,7 +290,7 @@ bool vcp( const SEXPR n );
 bool primp( const SEXPR n );
 bool anyenvp( const SEXPR n );
 bool dictp( const SEXPR n );
-bool modulep( const SEXPR n );
+bool assocenvp( const SEXPR n );
 
 SEXPR guard( SEXPR s, PREDICATE predicate );
 
@@ -415,11 +415,11 @@ inline void promise_setval( SEXPR n, SEXPR x) { promise_getval(n) = x; }
 // dict
 //   use vector representation
 
-// module
-inline auto& module_getdict( SEXPR n ) { return n->u.module.dict; }
-inline auto& module_getbase( SEXPR n ) { return n->u.module.base; }
-inline void module_setdict( SEXPR n, SEXPR x ) { module_getdict(n) = x; }
-inline void module_setbase( SEXPR n, SEXPR x ) { module_getbase(n) = x; }
+// associative environment
+inline auto& assocenv_getdict( SEXPR n ) { return n->u.assocenv.dict; }
+inline auto& assocenv_getbase( SEXPR n ) { return n->u.assocenv.base; }
+inline void assocenv_setdict( SEXPR n, SEXPR x ) { assocenv_getdict(n) = x; }
+inline void assocenv_setbase( SEXPR n, SEXPR x ) { assocenv_getbase(n) = x; }
 
 // other inlinable predicates
 inline bool nullp( SEXPR n ) { return n == null; }

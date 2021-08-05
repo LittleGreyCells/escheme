@@ -220,9 +220,9 @@ namespace FUNC
    SEXPR dict_set();
    SEXPR dict_items();
 
-   // module
-   SEXPR make_module();
-   SEXPR module_dict();
+   // associative environment
+   SEXPR make_assocenv();
+   SEXPR assocenv_dict();
 
    // transcript
    SEXPR transcript_on();

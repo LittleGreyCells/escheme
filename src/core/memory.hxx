@@ -49,7 +49,7 @@ namespace MEMORY
    SEXPR promise( SEXPR exp );
    SEXPR code( SEXPR bcodes, SEXPR sexprs );
    SEXPR dict();
-   SEXPR module( SEXPR env );
+   SEXPR assocenv( SEXPR env );
    
    // garbage collection
 
