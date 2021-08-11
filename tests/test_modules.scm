@@ -31,5 +31,24 @@
 
       (assert (= ((twice square) 5) 625))
       (assert (= (double ((twice square) 5)) (* 2 625)))
-      
+
+      (define (f1)
+	(define foo (module foo (define z 30)))
+	(define x 10)
+	(define y 20)
+	(define bar (module bar (define zz 40)))
+	(let ()
+	  (define sam (module sam (define xx 50)))
+	  (print (+ x y (access xx sam)))
+	  (print (+ x y (access z foo)))
+	  (print (+ x y (access zz bar))))
+	)
+
+      (macro declare
+	(lambda (exp)
+	  (set! exp (cdr exp))
+	  (let ((name (car exp)))
+	    `(define ,name ,(cadr exp))
+	    )))
+
       ))

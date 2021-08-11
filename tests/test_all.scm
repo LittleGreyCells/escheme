@@ -98,6 +98,9 @@
            (print (gc))
            (display "fs: ")
            (print (fs))
+	   (display "total failures: ")
+	   (print failures)
+	   (set! failures 0)
            (set! n (dec n))
            )))
 

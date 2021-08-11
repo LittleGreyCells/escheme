@@ -4,6 +4,7 @@
 ;; escheme extensions regression test suite
 ;;
 ;;   exercise all extended functionality introduced by escheme.scm
+;    and other modules.
 ;;
 
 (if #f
@@ -61,6 +62,15 @@
 ;;
 
 (define (test-driver)
+
+  (test-list-functions)
+  (test-array-functions)
+  (test-modules)
+  (test-local-defines)
+  
+  )
+
+(define (test-list-functions)
 
   (let (x alist a1 a2)
     
@@ -185,10 +195,19 @@
     (assert (not (assv '(larry . PN) '(((larry . PN) . 10) ((loves . VB) . 1) ((fran . PN) . 10)))) )
     (assert (not (assq '(larry . PN) '(((larry . PN) . 10) ((loves . VB) . 1) ((fran . PN) . 10)))) )
     
-    ;;
-    ;; arrays
-    ;;
+    )
+  nil
+)
+
+(define (test-array-functions)
+
+  (let (x alist a1 a2)
     
+    (set! x nil)
+    (set! alist nil)
+    (set! a1 nil)
+    (set! a2 nil)
+
     ;; single deminsional array
     
     (set! a1 (make-array 2))
@@ -208,10 +227,39 @@
     (array-set! a2 0 0 10)
     (array-set! a2 1 0 20)
     (assert (equal? a2 '#( #(10 ()) #(20 ()) )))
-    
     )
   nil
-)
+  )
+
+(define (test-modules)
+  (module foo
+	  (define (double n) (* n 2))
+	  (define (square n) (* n n))
+	  )
+  (module bar
+	  (define (twice f) (lambda (n) (f (f n))))
+	  )
+  (let ((foo (find-module 'foo))
+	(bar (find-module 'bar)))
+    (let ((double (access double foo))
+	  (square (access square foo))
+	  (twice (access twice bar)))
+      (assert (= (double 100) 200))
+      (assert (= (square 5) 25))
+      (assert (= (square (square 5)) 625))
+      (assert (= ((twice square) 5) 625))
+      (assert (= (double ((twice square) 5)) (* 2 625)))
+      nil
+      )))
+
+(define (test-local-defines)
+  (define x 10)
+  (define y 20)
+  (define z 30)
+  (define bob (module bob (define x 50)))
+  (assert (equal? (list x y z (access x bob)) '(10 20 30 50)))
+  nil
+  )
 
 ;;
 ;; Done
