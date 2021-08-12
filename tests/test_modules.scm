@@ -51,4 +51,17 @@
 	    `(define ,name ,(cadr exp))
 	    )))
 
+      (define (gen-dict n)
+	(let ((d (make-dict)))
+	  (while (> n 0)
+		 (dict-set! d n n)
+		 (set! n (- n 1)))
+	  d))
+
+      (define (rem-dict d n)
+	(while (> n 0)
+	       (dict-rem! d n)
+	       (set! n (- n 1)))
+	d)
+
       ))

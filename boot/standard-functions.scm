@@ -62,6 +62,14 @@
       (apply array-set! (list* (vector-ref a i) v r))
       (vector-set! a i v)))
 
+;;
+;; dictionaries
+;;
+
+(define (map-over-dict-entries d f)
+  (let ((items (dict-items d)))
+    (map (lambda (x) (f (cdr x))) items)))
+
 ;; terminal/history
 
 (define history show-history)

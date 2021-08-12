@@ -625,16 +625,16 @@ SEXPR MEMORY::code( SEXPR bcodes, SEXPR sexprs )
    return n;
 }
 
-SEXPR MEMORY::dict()
+SEXPR MEMORY::dict( UINT32 size )
 {
-   auto n = vector( 64 );
+   auto n = vector( size );
    setnodekind( n, n_dict );
    return n;
 }
 
 SEXPR MEMORY::assocenv( SEXPR env )
 {
-   regstack.push( dict() );
+   regstack.push( dict( 64 ) );
    auto n = newnode(n_assoc_env);
    assocenv_setdict( n, regstack.pop() );
    assocenv_setbase( n, env );
@@ -647,10 +647,8 @@ SEXPR MEMORY::assocenv( SEXPR env )
 //   ()  -- null
 //   ""  -- null string
 //
-//   note: the null object is not allocated from node space.
-//
 
-// note: the null object is not allocated from node space
+// the null object is not allocated from node space
 SEXPR null = new Node( n_null );
 
 static SEXPR make_string_null()

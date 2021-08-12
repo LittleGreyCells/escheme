@@ -346,6 +346,8 @@ static const Function funtab[] =
    { "dict-ref",               FUNC::dict_ref  },
    { "dict-set!",              FUNC::dict_set  },
    { "dict-items",             FUNC::dict_items  },
+   { "dict-rem!",              FUNC::dict_rem  },
+   { "dict-empty!",            FUNC::dict_empty  },
 
    { "%make-assoc-env",        FUNC::make_assocenv },
    { "%assoc-env-dict",        FUNC::assocenv_dict },

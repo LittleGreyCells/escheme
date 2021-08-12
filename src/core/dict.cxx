@@ -78,5 +78,46 @@ namespace escheme
       
       return regstack.pop();
    }
+   
+   SEXPR dict_rem( SEXPR dict, SEXPR key )
+   {
+      auto vlen = getvectorlength(dict);
+      auto data = getvectordata(dict);
+      auto index = hash( key ) % vlen;
+      
+      auto items = data[index];
+      auto prev = null;
+
+      while ( anyp(items) )
+      {
+	 auto item = getcar(items);
+	 
+	 if ( equal( getcar(item), key ) )
+	 {
+	    if ( nullp(prev) )
+	       data[index] = getcdr(items);
+	    else
+	       setcdr( prev, getcdr(items) );
+	    
+	    return key;
+	 }
+	 
+	 prev = items;
+	 items = getcdr(items);
+      }
+      
+      return null;
+   }
+   
+   SEXPR dict_empty( SEXPR dict )
+   {
+      auto vlen = getvectorlength(dict);
+      auto data = getvectordata(dict);
+
+      for ( int i = 0; i < vlen; ++i )
+	 data[i] = null;
+      
+      return dict;
+   }
 }
 

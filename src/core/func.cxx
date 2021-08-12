@@ -2220,9 +2220,12 @@ SEXPR FUNC::integer_to_char()
 SEXPR FUNC::make_dict()
 {
    //
-   // syntax: (make-dict) -> <dict>
+   // syntax: (make-dict [<size>]) -> <dict>
    //
-   return MEMORY::dict();
+   ArgstackIterator iter;
+   auto size = iter.more() ? getfixnum( guard(iter.getlast(), fixnump) ) : 32;
+
+   return MEMORY::dict( size );
 }
 
 SEXPR FUNC::has_key()
@@ -2271,6 +2274,29 @@ SEXPR FUNC::dict_items()
    auto dict = guard(iter.getlast(), dictp);
 
    return dict_items( dict );
+}
+
+SEXPR FUNC::dict_rem()
+{
+   //
+   // syntax: (dict-rem! <dict> <key>) -> <dict>
+   //
+   ArgstackIterator iter;
+   auto dict = guard(iter.getarg(), dictp);
+   auto key = iter.getlast();
+
+   return dict_rem( dict, key );
+}
+
+SEXPR FUNC::dict_empty()
+{
+   //
+   // syntax: (dict-empty! <dict>) -> <dict>
+   //
+   ArgstackIterator iter;
+   auto dict = guard(iter.getlast(), dictp);
+
+   return dict_empty( dict );
 }
 
 //

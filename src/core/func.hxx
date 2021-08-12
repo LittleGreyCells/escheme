@@ -219,6 +219,8 @@ namespace FUNC
    SEXPR dict_ref();
    SEXPR dict_set();
    SEXPR dict_items();
+   SEXPR dict_rem();
+   SEXPR dict_empty();
 
    // associative environment
    SEXPR make_assocenv();
