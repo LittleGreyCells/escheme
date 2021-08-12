@@ -93,25 +93,34 @@
        )))
 
 (define (test-dicts)
-  (let ((d1 (make-dict))
-	(d2 (make-dict)))
+  (let ((d1 (make-dict 10))
+	(d2 (make-dict 10)))
     (assert (not (null? d1)))
     (assert (null? (dict-items d1)))
     
     (dict-set! d1 'foo 1)
-    (assert (equal? (dict-items d1) '((foo . 1))) )
+    (assert (has-key? d1 'foo))
     
     (dict-set! d1 "foo" 2)
-    (assert (equal? (dict-items d1) '((foo . 1) ("foo" . 2))) )
+    (assert (has-key? d1 "foo"))
     
     (dict-set! d1 12345 3)
-    (assert (equal? (dict-items d1) '((12345 . 3) (foo . 1) ("foo" . 2))) )
+    (assert (has-key? d1 12345))
     
     (dict-set! d1 123.45 4)
-    (assert (equal? (dict-items d1) '((123.45 . 4) (12345 . 3) (foo . 1) ("foo" . 2))) )
+    (assert (has-key? d1 123.45))
     
-    (assert (equal? (map car (dict-items d1)) '(123.45 12345 foo "foo")) )
-    (assert (equal? (map cdr (dict-items d1)) '(4 3 1 2)) )
+    (assert (member 123.45 (map car (dict-items d1))))
+    (assert (member 4 (map cdr (dict-items d1))))
+
+    (dict-rem! d1 123.45)
+    (assert (not (has-key? d1 123.45)))
+
+    (dict-rem! d1 12345)
+    (assert (not (has-key? d1 12345)))
+
+    (dict-empty! d1)
+    (assert (equal? (dict-items d1) nil))
   ))
 
 (define (test-structured-ops)  
