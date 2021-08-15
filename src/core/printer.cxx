@@ -199,10 +199,6 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	    PIO::put( outport, format( "{environment:%p}", n->id() ) );
 	    break;
 
-	 case n_global_env:
-	    PIO::put( outport, format( "{global-env:%p}", n->id() ) );
-	    break;
-
 	 case n_promise:
 	    PIO::put( outport, format( "{promise:%p}", n->id() ) );
 	    break;

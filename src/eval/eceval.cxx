@@ -14,7 +14,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 {
    // sexpr valued
    exp = sexpr;
-   env = the_global_env;
+   env = null;
    val = null;
    aux = null;
    unev = null;
@@ -256,14 +256,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	       {
 		  ArgstackIterator iter;
 		  exp = iter.getarg();
-		  if ( iter.more() )
-		  {
-		     env = guard(iter.getlast(), anyenvp);
-		  }
-		  else
-		  {
-		     env = the_global_env;
-		  }
+		  env = iter.more() ? guard(iter.getlast(), anyenvp) : null;
 		  argstack.removeargc();
 		  restore( cont );
 		  next = EVAL_DISPATCH;
@@ -689,7 +682,7 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    restore( cont );
 	    restore( env );
 	    restore( unev );
-	    if ( globalenvp(env) )
+	    if ( nullp(env) )
 	    {
 	       // set in the global environment [()]
 	       set( unev, val );

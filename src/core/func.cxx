@@ -885,7 +885,11 @@ SEXPR FUNC::env_bindings()
    ArgstackIterator iter;
    const auto env = guard(iter.getlast(), anyenvp);
 
-   if ( assocenvp(env) )
+   if ( nullp(env) )
+   {
+      return null;
+   }
+   else if ( assocenvp(env) )
    {
       return dict_items( assocenv_getdict(env) );
    }

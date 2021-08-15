@@ -30,7 +30,6 @@ enum NodeKind
    n_vector,
    n_bvec,
    n_environment,
-   n_global_env,
    n_promise,
    n_closure,
    n_continuation,
@@ -273,7 +272,6 @@ bool stringportp( const SEXPR n );
 bool closurep( const SEXPR n );
 bool contp( const SEXPR n );
 bool envp( const SEXPR n );
-bool globalenvp( const SEXPR n );
 bool bvecp( const SEXPR n );
 bool listp( const SEXPR n );
 bool atomp( const SEXPR n );

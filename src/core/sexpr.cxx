@@ -112,7 +112,6 @@ bool primp( const SEXPR n ) { return funcp(n) || specialp(n); }
 
 bool contp( const SEXPR n ) { return n->kind == n_continuation; }
 bool envp( const SEXPR n ) { return n->kind == n_environment; }
-bool globalenvp( const SEXPR n ) { return n->kind == n_global_env; }
 bool bvecp( const SEXPR n ) { return n->kind == n_bvec; }
 bool listp( const SEXPR n ) { return nullp(n) || n->kind == n_cons; }
 bool atomp( const SEXPR n ) { return nullp(n) || n->kind != n_cons; }
@@ -129,7 +128,7 @@ bool codep( const SEXPR n ) { return n->kind == n_code; }
 bool dictp( const SEXPR n ) { return n->kind == n_dict; }
 bool assocenvp( const SEXPR n ) { return n->kind == n_assoc_env; }
    
-bool anyenvp( const SEXPR n ) { return globalenvp(n) || envp(n) || assocenvp(n); }
+bool anyenvp( const SEXPR n ) { return nullp(n) || envp(n) || assocenvp(n); }
 
 struct PredMap { PREDICATE pred; const char* name; };
 
@@ -150,7 +149,6 @@ std::vector<PredMap> predicate_map =
    { specialp, "special" },
    { contp, "continuation" },
    { envp, "environment" },
-   { globalenvp, "global environment" },
    { bvecp, "byte vector" },
    { listp, "list" },
    { atomp, "atom" },
