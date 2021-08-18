@@ -76,9 +76,10 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
       else if ( assocenvp(env) )
       {
 	 auto dict = assocenv_getdict(env);
+	 SEXPR binding;
 	 
-	 if ( has_key( dict, var ) )
-	    return dict_ref( dict, var );
+	 if ( has_key( dict, var, binding ) )
+	    return getcdr( binding );
       }
       else
       {
@@ -116,10 +117,11 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
       else if ( assocenvp(env) )
       {
 	 auto dict = assocenv_getdict(env);
+	 SEXPR binding;
 	 
-	 if ( has_key( dict, var ) )
+	 if ( has_key( dict, var, binding ) )
 	 {
-	    dict_set( dict, var, val );
+	    setcdr( binding, val );
 	    return;
 	 }
       }

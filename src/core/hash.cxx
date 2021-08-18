@@ -17,14 +17,14 @@ namespace escheme
       else
 	 switch ( nodekind(val) )
 	 {
-	    case n_symbol:
-	       return hash( getname(val) );
 	    case n_string:
 	       return hash( getstringdata(val) );
 	    case n_fixnum:
 	       return static_cast<size_t>( getfixnum(val) );
 	    case n_flonum:
 	       return static_cast<size_t>( getflonum(val) );
+	    case n_char :
+	       return static_cast<size_t>( getcharacter(val) );
 	    default:
 	       return reinterpret_cast<size_t>( val );
 	 }

@@ -23,6 +23,26 @@ namespace escheme
       return false;
    }
    
+   bool has_key( SEXPR dict, SEXPR key, SEXPR& binding )
+   {
+      auto vlen = getvectorlength(dict);
+      auto data = getvectordata(dict);
+      auto index = hash( key ) % vlen;
+      
+      for ( auto items = data[index]; anyp(items); items = getcdr(items) )
+      {
+	 auto item = getcar(items);
+	 
+	 if ( equal( getcar(item), key ) )
+	 {
+	    binding = item;
+	    return true;
+	 }
+      }
+      
+      return false;
+   }
+   
    SEXPR dict_ref( SEXPR dict, SEXPR key )
    {
       auto vlen = getvectorlength(dict);

@@ -6,6 +6,7 @@
 namespace escheme
 {
    bool has_key( SEXPR dict, SEXPR key );
+   bool has_key( SEXPR dict, SEXPR key, SEXPR& binding );
    
    SEXPR dict_ref( SEXPR dict, SEXPR key );
    SEXPR dict_set( SEXPR dict, SEXPR key, SEXPR val );
