@@ -121,6 +121,18 @@
 
     (dict-empty! d1)
     (assert (equal? (dict-items d1) nil))
+
+    (let ((iter 100))
+      (let ((n iter))
+	(while (> n 0)
+	       (dict-set! d2 n n)
+	       (set! n (- n 1)))
+	(set! n iter)
+	(while (> n 0)
+	       (if (has-key? d2 n)
+		   (dict-ref d2 n))
+	       (set! n (- n 1)))
+      ))
   ))
 
 (define (test-structured-ops)  
