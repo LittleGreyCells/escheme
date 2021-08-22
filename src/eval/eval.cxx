@@ -11,7 +11,7 @@
 #include "core/memory.hxx"
 #include "core/printer.hxx"
 #include "core/format.hxx"
-#include "core/dict.hxx"
+#include "core/symdict.hxx"
 
 namespace escheme
 {
@@ -76,10 +76,9 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
       else if ( assocenvp(env) )
       {
 	 auto dict = assocenv_getdict(env);
-	 SEXPR binding;
 	 
-	 if ( has_key( dict, var, binding ) )
-	    return getcdr( binding );
+	 if ( dict->has( var ) )
+	    return dict->get( var );
       }
       else
       {
@@ -117,11 +116,10 @@ void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
       else if ( assocenvp(env) )
       {
 	 auto dict = assocenv_getdict(env);
-	 SEXPR binding;
 	 
-	 if ( has_key( dict, var, binding ) )
+	 if ( dict->has( var ) )
 	 {
-	    setcdr( binding, val );
+	    dict->set( var, val );
 	    return;
 	 }
       }

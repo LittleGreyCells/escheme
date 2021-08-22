@@ -82,6 +82,9 @@ using SEXPR = Node*;
 struct Frame;
 using FRAME = Frame*;
 
+struct SymDict;
+using SYMDICT = SymDict*;
+
 using FUNCTION = SEXPR (*)();
 using PREDICATE = bool (*)( const SEXPR );
 
@@ -180,7 +183,7 @@ struct PROMISE
 
 struct ASSOCENV
 {
-   SEXPR dict;
+   SYMDICT dict;
    SEXPR base;
 };
 
@@ -416,7 +419,7 @@ inline void promise_setval( SEXPR n, SEXPR x) { promise_getval(n) = x; }
 // associative environment
 inline auto& assocenv_getdict( SEXPR n ) { return n->u.assocenv.dict; }
 inline auto& assocenv_getbase( SEXPR n ) { return n->u.assocenv.base; }
-inline void assocenv_setdict( SEXPR n, SEXPR x ) { assocenv_getdict(n) = x; }
+inline void assocenv_setdict( SEXPR n, SYMDICT x ) { assocenv_getdict(n) = x; }
 inline void assocenv_setbase( SEXPR n, SEXPR x ) { assocenv_getbase(n) = x; }
 
 // other inlinable predicates

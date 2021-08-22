@@ -10,6 +10,7 @@
 #include "regstack.hxx"
 #include "framestore.hxx"
 #include "format.hxx"
+#include "symdict.hxx"
 
 namespace escheme
 {
@@ -218,7 +219,11 @@ void MEMORY::mark( SEXPR n )
 	       goto start_mark;
 	       
 	    case n_assoc_env:
-	       sexprs.push( assocenv_getdict(n) );
+	       for ( auto& x : assocenv_getdict(n)->umap )
+	       {
+		  sexprs.push( x.first );
+		  sexprs.push( x.second );
+	       }
 	       n = assocenv_getbase(n);
 	       goto start_mark;
 	       
@@ -324,7 +329,11 @@ void MEMORY::mark( SEXPR n )
          
       case n_assoc_env:
 	 setmark(n);
-	 mark( assocenv_getdict(n) );
+	 for ( auto& x : assocenv_getdict(n)->umap )
+	 {
+	    mark( x.first );
+	    mark( x.second );
+	 }
 	 mark( assocenv_getbase(n) );
 	 break;
          
@@ -403,6 +412,10 @@ static void sweep()
 		  delete getstringportstring( p );
 		  break;
                   
+	       case n_assoc_env:
+		  delete assocenv_getdict( p );
+		  break;
+
 	       default:
 		  break;
 	    }
@@ -632,9 +645,8 @@ SEXPR MEMORY::dict( UINT32 size )
 
 SEXPR MEMORY::assocenv( SEXPR env )
 {
-   regstack.push( dict( 64 ) );
    auto n = newnode(n_assoc_env);
-   assocenv_setdict( n, regstack.pop() );
+   assocenv_setdict( n, new SymDict() );
    assocenv_setbase( n, env );
    return n;
 }

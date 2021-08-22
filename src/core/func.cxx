@@ -24,6 +24,7 @@
 #include "hash.hxx"
 #include "dict.hxx"
 #include "equality.hxx"
+#include "symdict.hxx"
 
 #include "eval/eval.hxx"
 
@@ -891,7 +892,17 @@ SEXPR FUNC::env_bindings()
    }
    else if ( assocenvp(env) )
    {
-      return dict_items( assocenv_getdict(env) );
+      // convert a symdict into a list of bindings      
+      ListBuilder bindings;
+      
+      for ( auto& x : assocenv_getdict(env)->umap )
+      {
+	 regstack.push( MEMORY::cons( x.first, x.second ) );
+	 bindings.add( regstack.top() );
+	 regstack.pop();
+      }
+      
+      return bindings.get();
    }
    else
    {
@@ -2324,7 +2335,7 @@ SEXPR FUNC::assocenv_has()
    ArgstackIterator iter;
    auto aenv = guard(iter.getarg(), assocenvp);
    auto sym = guard(iter.getlast(), symbolp);
-   return has_key( assocenv_getdict( aenv ), sym ) ? symbol_true : symbol_false;
+   return assocenv_getdict( aenv )->has( sym ) ? symbol_true : symbol_false;
 }
 
 SEXPR FUNC::assocenv_ref()
@@ -2335,7 +2346,7 @@ SEXPR FUNC::assocenv_ref()
    ArgstackIterator iter;
    auto aenv = guard(iter.getarg(), assocenvp);
    auto sym = guard(iter.getlast(), symbolp);
-   return dict_ref( assocenv_getdict( aenv ), sym );
+   return assocenv_getdict( aenv )->get( sym );
 }
 
 SEXPR FUNC::assocenv_set()
@@ -2347,7 +2358,8 @@ SEXPR FUNC::assocenv_set()
    auto aenv = guard(iter.getarg(), assocenvp);
    auto sym = guard(iter.getarg(), symbolp);
    auto val = iter.getlast();
-   return dict_set( assocenv_getdict( aenv ), sym, val );
+   assocenv_getdict( aenv )->set( sym, val );
+   return val;
 }
 
 //

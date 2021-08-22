@@ -3,7 +3,7 @@
 #include "core/symtab.hxx"
 #include "core/memory.hxx"
 #include "core/printer.hxx"
-#include "core/dict.hxx"
+#include "core/symdict.hxx"
 
 namespace escheme
 {
@@ -689,8 +689,8 @@ SEXPR EVAL::eceval( SEXPR sexpr )
 	    }
 	    else if ( assocenvp(env) )
 	    {
-	       // set in the associate environment
-	       dict_set( assocenv_getdict(env), unev, val );
+	       // set in the associative environment
+	       assocenv_getdict(env)->set( unev, val );
 	    }
 	    else
 	    {
