@@ -2316,14 +2316,38 @@ SEXPR FUNC::make_assocenv()
    return MEMORY::assocenv( base );
 }
 
-SEXPR FUNC::assocenv_dict()
+SEXPR FUNC::assocenv_has()
 {
    //
-   // syntax: (%assoc-env-dict <assocenv>) -> <dict>)
+   // syntax: (%assoc-env-has <assocenv> <sym>) -> <boolean>)
    //
    ArgstackIterator iter;
-   auto aenv = guard(iter.getlast(), assocenvp);
-   return assocenv_getdict( aenv );
+   auto aenv = guard(iter.getarg(), assocenvp);
+   auto sym = guard(iter.getlast(), symbolp);
+   return has_key( assocenv_getdict( aenv ), sym ) ? symbol_true : symbol_false;
+}
+
+SEXPR FUNC::assocenv_ref()
+{
+   //
+   // syntax: (%assoc-env-ref <assocenv> <sym>) -> <value>)
+   //
+   ArgstackIterator iter;
+   auto aenv = guard(iter.getarg(), assocenvp);
+   auto sym = guard(iter.getlast(), symbolp);
+   return dict_ref( assocenv_getdict( aenv ), sym );
+}
+
+SEXPR FUNC::assocenv_set()
+{
+   //
+   // syntax: (%assoc-env-set <assocenv> <sym> <value>) -> <value>)
+   //
+   ArgstackIterator iter;
+   auto aenv = guard(iter.getarg(), assocenvp);
+   auto sym = guard(iter.getarg(), symbolp);
+   auto val = iter.getlast();
+   return dict_set( assocenv_getdict( aenv ), sym, val );
 }
 
 //

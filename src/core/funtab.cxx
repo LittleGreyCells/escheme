@@ -349,7 +349,9 @@ static const Function funtab[] =
    { "dict-empty!",            FUNC::dict_empty  },
 
    { "%make-assoc-env",        FUNC::make_assocenv },
-   { "%assoc-env-dict",        FUNC::assocenv_dict },
+   { "%assoc-env-has?",        FUNC::assocenv_has },
+   { "%assoc-env-ref",         FUNC::assocenv_ref },
+   { "%assoc-env-set!",        FUNC::assocenv_set },
 
    { "%object-address",        FUNC::objaddr },
 };

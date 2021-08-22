@@ -224,7 +224,9 @@ namespace FUNC
 
    // associative environment
    SEXPR make_assocenv();
-   SEXPR assocenv_dict();
+   SEXPR assocenv_has();
+   SEXPR assocenv_ref();
+   SEXPR assocenv_set();
 
    // transcript
    SEXPR transcript_on();
