@@ -120,7 +120,6 @@ static void badnode( SEXPR n )
    ERROR::fatal( format( "bad node (%p, %d) during gc", n->id(), (int)nodekind(n) ).c_str() );
 }
 
-#ifdef ITERATIVE_MARK
 //
 // iterative marking function
 //
@@ -235,116 +234,6 @@ void MEMORY::mark( SEXPR n )
       }
    }
 }
-
-#else
-   
-//
-// recursive marking function
-//
-void MEMORY::mark( SEXPR n )
-{
-   if ( markedp(n) )
-      return;
-
-   switch ( nodekind(n) )
-   {
-      case n_null:
-      case n_bvec:
-      case n_string:
-      case n_string_port:
-      case n_fixnum:
-      case n_flonum:
-      case n_port:
-      case n_char:
-      case n_func:
-      case n_eval:
-      case n_apply:
-      case n_callcc:
-      case n_map:
-      case n_foreach:
-      case n_force:
-	 setmark(n);
-	 break;
-
-      case n_cons:
-	 setmark(n);
-	 mark( getcar(n) );
-	 mark( getcdr(n) );
-	 break;
-    
-      case n_promise:
-	 setmark(n);
-	 mark( promise_getexp(n) );
-	 mark( promise_getval(n) );
-	 break;
-    
-      case n_code:
-	 setmark(n);
-	 mark( code_getbcodes(n) );
-	 mark( code_getsexprs(n) );
-	 break;
-    
-      case n_continuation:
-	 setmark(n);
-	 mark( cont_getstate(n) );
-	 break;
-
-      case n_environment:
-      {
-	 setmark(n);
-         // frame
-         auto frame = getenvframe(n);
-         mark( getframevars(frame) );
-         const int nslots = getframenslots(frame);
-         for ( int i = 0; i < nslots; ++i )
-            mark( frameref(frame, i) );
-         // benv
-	 mark( getenvbase(n) );
-	 break;
-      }
-  
-      case n_vector:
-      case n_dict:
-      {
-	 setmark(n);
-	 const int length = getvectorlength(n);
-	 for ( int i = 0; i < length; ++i )
-	    mark( vectorref(n, i) );
-	 break;
-      }
-  
-      case n_closure:
-      {
-	 setmark(n);
-	 mark( getclosurecode(n) );
-	 mark( getclosurebenv(n) );
-	 mark( getclosurevars(n) );
-	 break;
-      }
-
-      case n_symbol:
-	 setmark(n);
-	 mark( getpair(n) );
-	 break;
-         
-      case n_assoc_env:
-	 setmark(n);
-	 for ( auto& x : assocenv_getdict(n)->umap )
-	 {
-	    mark( x.first );
-	    mark( x.second );
-	 }
-	 mark( assocenv_getbase(n) );
-	 break;
-         
-      case n_free:
-      default:
-	 badnode(n);
-	 break;
-   }
-}
-
-#endif
 
 void MEMORY::mark( TSTACK<SEXPR>& stack )
 {
