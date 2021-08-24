@@ -71,6 +71,7 @@ namespace FUNC
    SEXPR get_property();
    SEXPR put_property();
    SEXPR rem_property();
+   SEXPR boundp();
    SEXPR all_symbols();
 
    // other conversion

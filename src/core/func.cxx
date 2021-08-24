@@ -40,7 +40,6 @@ namespace escheme
 
 bool booleanp( const SEXPR s ) { return s == symbol_true || s == symbol_false; }
 bool notp( const SEXPR s ) { return falsep(s); }
-bool boundp( const SEXPR s ) { return getvalue(guard(s, symbolp)) != symbol_unbound; }
 bool eof_objectp( const SEXPR s ) { return s == PIO::eof_object; }
 bool zerop( const SEXPR s ) { return getfixnum(guard(s, fixnump)) == 0; }
 bool positivep( const SEXPR s ) { return getfixnum(guard(s, fixnump)) > 0; }
@@ -667,6 +666,18 @@ SEXPR FUNC::rem_property()
    }
   
    return null;
+}
+
+SEXPR FUNC::boundp()
+{
+   //
+   // syntax: (bound? <sym> [<env>])
+   //
+   ArgstackIterator iter;
+   auto s = guard(iter.getarg(), symbolp);
+   auto e = iter.more() ? guard(iter.getlast(), anyenvp) : EVAL::env;
+
+   return EVAL::is_bound( s, e );
 }
 
 SEXPR FUNC::all_symbols()

@@ -115,6 +115,7 @@ namespace EVAL
    SEXPR get_evaluator_state();
 
    SEXPR lookup( SEXPR var, SEXPR env );
+   SEXPR is_bound( SEXPR var, SEXPR env );
 
    void set_variable_value( SEXPR var, SEXPR val, SEXPR env );
    void parse_formals( SEXPR formals, SEXPR& vars, INT32& numv, bool& rargs );

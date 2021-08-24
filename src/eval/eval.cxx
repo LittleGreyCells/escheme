@@ -93,6 +93,40 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
    }
 }
 
+SEXPR EVAL::is_bound( SEXPR var, SEXPR env )
+{
+   guard( env, anyenvp );
+   
+   for ( ; ; env = getenvbase(env) )
+   {
+      if ( envp(env) )
+      {
+	 FRAME frame = getenvframe(env);
+	 SEXPR vars = getframevars(frame);
+	 
+	 for ( int i = 0; i < getframenslots(frame); ++i, vars = getcdr(vars) )
+	 {
+	    if ( getcar(vars) == var ) 
+	       return symbol_true;
+	 }
+      }
+      else if ( assocenvp(env) )
+      {
+	 auto dict = assocenv_getdict(env);
+	 
+	 if ( dict->has( var ) )
+	    return symbol_true;
+      }
+      else
+      {
+	 // global var
+	 const SEXPR val = value(var);
+	 
+	 return ( val == symbol_unbound ) ? symbol_false : symbol_true;
+      }
+   }
+}
+
 void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 {
    guard( env, anyenvp );

@@ -113,6 +113,7 @@ static const Function funtab[] =
    { "get",                    FUNC::get_property     },
    { "put",                    FUNC::put_property     },
    { "remprop",                FUNC::rem_property     },
+   { "bound?",                 FUNC::boundp           },
    { "all-symbols",            FUNC::all_symbols      },
 
    { "read",		       FUNC::read	},
@@ -197,7 +198,6 @@ static const Function funtab[] =
    { "get-output-string",      FUNC::get_output_string  },
 
    { "not",                    []{ return FUNC::predicate(notp); } },
-   { "bound?",                 []{ return FUNC::predicate(boundp); } },
    { "null?",                  []{ return FUNC::predicate(nullp); } },
    { "atom?",                  []{ return FUNC::predicate(atomp); } },
    { "list?",                  []{ return FUNC::predicate(listp); } },
