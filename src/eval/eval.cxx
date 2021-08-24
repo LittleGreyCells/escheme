@@ -43,23 +43,8 @@ SEXPR EVAL::rte_code;
 SEXPR EVAL::the_environment() { return env; }
 SEXPR EVAL::the_global_environment() { return null; }
 
-//
-// New: A frame-based representation
-//
-//   <env> = ( <frame> . <env> )
-//
-// The following functions are dependent upon the representation:
-//
-//   lookup
-//   set_variable_value
-//   create_bindings
-//   extend_environment
-//
-
 SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 {
-   guard( env, anyenvp );
-   
    for ( ; ; env = getenvbase(env) )
    {
       if ( envp(env) )
@@ -95,8 +80,6 @@ SEXPR EVAL::lookup( SEXPR var, SEXPR env )
 
 SEXPR EVAL::is_bound( SEXPR var, SEXPR env )
 {
-   guard( env, anyenvp );
-   
    for ( ; ; env = getenvbase(env) )
    {
       if ( envp(env) )
@@ -129,8 +112,6 @@ SEXPR EVAL::is_bound( SEXPR var, SEXPR env )
 
 void EVAL::set_variable_value( SEXPR var, SEXPR val, SEXPR env )
 {
-   guard( env, anyenvp );
-   
    for ( ; ; env = getenvbase(env) )
    {
       if ( envp(env) )
