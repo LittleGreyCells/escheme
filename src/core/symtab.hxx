@@ -34,9 +34,6 @@ namespace SYMTAB
 {
    void initialize();
 
-   SEXPR enter( const char* name );
-   SEXPR enter( const char* name, SEXPR value );
-   
    SEXPR enter( const std::string& name );
    SEXPR enter( const std::string& name, SEXPR value );
 

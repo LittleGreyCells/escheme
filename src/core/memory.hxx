@@ -32,13 +32,12 @@ namespace MEMORY
    SEXPR character( CHAR ch );
    SEXPR fixnum( FIXNUM fixnum );
    SEXPR flonum( FLONUM flonum );
-   SEXPR symbol( const char* name );
    SEXPR symbol( const std::string& name );
-   SEXPR string( const char* string );
    SEXPR string( const std::string& string );
    SEXPR string( UINT32 length, char ch );
    SEXPR cons( SEXPR car, SEXPR cdr );
-   SEXPR prim( const char* name, FUNCTION func, NodeKind kind = n_func );
+   //SEXPR prim( const char* name, FUNCTION func, NodeKind kind = n_func );
+   SEXPR prim( const std::string& name, FUNCTION func, NodeKind kind = n_func );
    SEXPR port( FILE* file, short mode );
    SEXPR closure( SEXPR code, SEXPR env );
    SEXPR environment( UINT32 nvars, SEXPR vars, SEXPR env );

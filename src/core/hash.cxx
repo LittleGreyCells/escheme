@@ -10,6 +10,14 @@ namespace escheme
       return hval;
    }
 
+   size_t hash( const std::string& s )
+   {
+      size_t hval = 0;
+      for ( auto ch : s )
+	 hval = (hval << 2) ^ ch;
+      return hval;
+   }
+
    size_t hash( SEXPR val )
    {
       switch ( nodekind(val) )

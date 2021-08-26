@@ -38,7 +38,7 @@ SEXPR symbol_access;
 
 static std::array<SEXPR, 128> symtab;
 
-SEXPR SYMTAB::enter( const char* symbol_name )
+SEXPR SYMTAB::enter( const std::string& symbol_name )
 {
    auto& element = symtab[ hash(symbol_name) % symtab.size() ];
 
@@ -47,7 +47,7 @@ SEXPR SYMTAB::enter( const char* symbol_name )
       for ( auto n = element; anyp(n); n = getcdr(n) )
       {
 	 auto s = getcar(n);
-	 if ( strcmp( name(s), symbol_name ) == 0 )
+	 if ( symbol_name == name(s) )
 	    return s;
       }
    }
@@ -60,21 +60,11 @@ SEXPR SYMTAB::enter( const char* symbol_name )
    return regstack.pop();
 }
 
-SEXPR SYMTAB::enter( const char* name, SEXPR value )
+SEXPR SYMTAB::enter( const std::string& symbol_name, SEXPR value )
 {
-   auto s = SYMTAB::enter(name);
+   auto s = SYMTAB::enter(symbol_name);
    setvalue( s, value );
    return s;
-}
-
-SEXPR SYMTAB::enter( const std::string& name, SEXPR value )
-{
-   return enter( name.c_str(), value );
-}
-
-SEXPR SYMTAB::enter( const std::string& symbol_name )
-{
-   return enter( symbol_name.c_str() );
 }
 
 SEXPR SYMTAB::all_symbols()

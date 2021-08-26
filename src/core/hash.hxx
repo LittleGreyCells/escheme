@@ -4,6 +4,7 @@
 namespace escheme
 {
    extern size_t hash( const char* s );
+   extern size_t hash( const std::string& s );
    extern size_t hash( SEXPR val );
 }
 

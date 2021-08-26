@@ -373,23 +373,13 @@ static char* duplicate( const char* s, int length )
    return dup;
 }
 
-static SEXPR new_symbol( const char* s, int length )
+SEXPR MEMORY::symbol( const std::string& s )
 {
    regstack.push( MEMORY::cons( null, null ) );
    auto n = newnode(n_symbol);
-   setname( n, duplicate( s, length ) );
+   setname( n, duplicate( s.c_str(), s.length() ) );
    setpair( n, regstack.pop() );
    return n;
-}
-
-SEXPR MEMORY::symbol( const char* s )
-{
-   return new_symbol( s, strlen(s) );
-}
-
-SEXPR MEMORY::symbol( const std::string& s )
-{
-   return new_symbol( s.c_str(), s.length() );
 }
 
 static SEXPR new_string( const char* s, int length )
@@ -405,11 +395,6 @@ static SEXPR new_string( const char* s, int length )
       setstringdata( n, duplicate(s, length) );
       return n;
    }
-}
-
-SEXPR MEMORY::string( const char* s )
-{
-   return new_string( s, strlen(s) );
 }
 
 SEXPR MEMORY::string( const std::string& s )
@@ -472,11 +457,11 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
    return n;
 }
 
-SEXPR MEMORY::prim( const char* name, FUNCTION func, NodeKind kind )     // (<prim>)
+SEXPR MEMORY::prim( const std::string& name, FUNCTION func, NodeKind kind )     // (<prim>)
 {
    // note: primitive functions are not allocated from node space
    auto n = new Node(kind);
-   setprimname( n, name );
+   setprimname( n, duplicate(name.c_str(), name.length()) );
    setprimfunc( n, func );
    return n;
 }
