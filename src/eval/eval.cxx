@@ -189,7 +189,7 @@ void EVAL::parse_formals( SEXPR formals, SEXPR& vars, INT32& numv, bool& rargs )
 
 static void arg_error( const char* text, unsigned n1, unsigned n2, SEXPR fun )
 {
-   ERROR::severe( format( "%s -- actual=%u, expect=%u", text, n1, n2 ).c_str(), fun );
+   ERROR::severe( format( "%s -- actual=%u, expect=%u", text, n1, n2 ), fun );
 }
 
 SEXPR EVAL::extend_env_fun( SEXPR closure )

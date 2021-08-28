@@ -182,7 +182,7 @@ SEXPR guard( SEXPR s, PREDICATE predicate )
 	 }
       }
 
-      ERROR::severe( format( "argument wrong type--expected %s, not", expected).c_str(), s );
+      ERROR::severe( format( "argument wrong type--expected %s, not", expected), s );
    }
 
    return s;

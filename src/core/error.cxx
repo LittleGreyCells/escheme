@@ -13,7 +13,7 @@ namespace escheme
    using PIO::stderr_port;
    using PRINTER::print;
       
-  SEXPR ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
+   SEXPR ERROR::severe( const char* s, SEXPR exp1, SEXPR exp2 )
    {
       put( stderr_port, "error: " );
       put( stderr_port, s );
@@ -37,6 +37,11 @@ namespace escheme
       throw SevereError();
    }
    
+   SEXPR ERROR::severe( const std::string& s, SEXPR exp1, SEXPR exp2 )
+   {
+      return severe( s.c_str(), exp1, exp2 );
+   }
+   
    void ERROR::warning( const char* s, SEXPR exp )
    {
       put( stderr_port, "warning: " );
@@ -52,6 +57,11 @@ namespace escheme
       put( stderr_port, "\n" );
    }
    
+   void ERROR::warning( const std::string& s, SEXPR exp )
+   {
+      return warning( s.c_str(), exp );
+   }
+   
    SEXPR ERROR::fatal( const char* s )
    {
       put( stderr_port, "fatal error: " );
@@ -59,6 +69,11 @@ namespace escheme
       put( stderr_port, "\n" );
       
       throw FatalError();
+   }
+   
+   SEXPR ERROR::fatal( const std::string& s )
+   {
+      return fatal( s.c_str() );
    }
    
    SEXPR ERROR::exit()

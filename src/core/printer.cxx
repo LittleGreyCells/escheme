@@ -216,12 +216,12 @@ void PRINTER::print_sexpr( SEXPR outport, const SEXPR n, QuoteStyle style )
 	    break;
 
 	 case n_free:
-	    ERROR::severe( format( "{free-cell:%p}", n->id() ).c_str() );
+	    ERROR::severe( format( "{free-cell:%p}", n->id() ) );
 	    break;
 
 	 default:
 	 {
-	    ERROR::severe( format("bad node (%p, %d) during printing", n->id(), (int)nodekind(n)).c_str() );
+	    ERROR::severe( format("bad node (%p, %d) during printing", n->id(), (int)nodekind(n)) );
 	 }
 	 break;
       }

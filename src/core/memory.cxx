@@ -117,7 +117,7 @@ int MEMORY::suspensions = 0;
 
 static void badnode( SEXPR n )
 {
-   ERROR::fatal( format( "bad node (%p, %d) during gc", n->id(), (int)nodekind(n) ).c_str() );
+   ERROR::fatal( format( "bad node (%p, %d) during gc", n->id(), (int)nodekind(n) ) );
 }
 
 //
