@@ -5,6 +5,7 @@
 #include <list>
 #include <stack>
 #include <algorithm>
+#include <string.h>
 
 #include "error.hxx"
 #include "regstack.hxx"
@@ -457,11 +458,11 @@ SEXPR MEMORY::byte_vector( UINT32 length )                // (<byte-vector>)
    return n;
 }
 
-SEXPR MEMORY::prim( const std::string& name, FUNCTION func, NodeKind kind )     // (<prim>)
+SEXPR MEMORY::prim( const char* name, FUNCTION func, NodeKind kind )     // (<prim>)
 {
    // note: primitive functions are not allocated from node space
    auto n = new Node(kind);
-   setprimname( n, duplicate(name.c_str(), name.length()) );
+   setprimname( n, duplicate(name, strlen(name) ) );
    setprimfunc( n, func );
    return n;
 }
