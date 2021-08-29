@@ -55,4 +55,8 @@
 	 (xform vars body)
 	 ))))
 
+(macro foreach
+  (lambda (exp)
+    `(for-each ,@(cdr exp))))  
+
 ;; [EOF]
