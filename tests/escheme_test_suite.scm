@@ -220,8 +220,8 @@
   (set-symbol-plist! 'foo ())
   (set-symbol-plist! 'bar ())
 
-  (assert (begin (set! x 10) (equal? (symbol-value 'x) 10)))
-  (assert (begin (set-symbol-value! 'x 20) (equal? (symbol-value 'x) 20)))
+  (assert (begin (set! x 10) (equal? (%symbol-value 'x) 10)))
+  (assert (begin (%set-symbol-value! 'x 20) (equal? (%symbol-value 'x) 20)))
   
   (assert (equal? (get 'foo 'x) ()))
   (assert (begin (put 'foo 'x 10) (equal? (get 'foo 'x) 10)))
