@@ -65,6 +65,7 @@
 (print (echo 10))
 (print (double 10))
 (print (square 10))
+(print (quad 10))
 
 (select-module foo)
 (define x 10)
