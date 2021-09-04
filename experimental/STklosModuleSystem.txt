@@ -1,0 +1,88 @@
+stklos module system
+--------------------
+
+STklos modules can be used to organize a program into separate environments
+(or name spaces). Modules provide a clean way to organize and enforce the
+barriers between the components of a program.
+
+STklos provides a simple module system which is largely inspired from the one
+describe by Tung and Dybvig. Similar to their modules system, STklos modules
+are defined to be easily used in an interactive environment. 
+
+Services
+
+(define-module <name> <expr1> <expr2> ...)
+
+  -- create (or extend) a module named <name>. Evaluate <expr1> ... in the
+     new module environment.
+
+(current-module)
+
+  -- returns the current module. All definitions and updates will occure
+     in this module
+
+(find-module name)
+(find-module name default)
+
+  -- find the module object that corresponds to symbol name.
+     if module not found raise an error or return the supplied default
+
+(module? object)
+
+  -- object predicate function
+
+(export <symbol1> <symbol2> ...)*   ;; unionize all exports
+
+  -- export <symbol1> ... from module
+
+(import <module1> <module2> ...)
+
+  -- makes symbols each module exports visible to the imporing module
+  -- if multiple modules export the same system, the first imported symbol sticks
+  -- for several import clauses, append the modules in order
+ 
+(select-module <name>)
+
+  -- makes this the current module
+  -- all expressions evaluated afterwards, will take effect on/in the new current module
+ 
+
+(symbol-value symbol module)
+(symbol-value symbol module default)
+
+  -- shallow search of value bound to symbol
+     if symbol not found raise an error or return the supplied default
+ 
+(symbol-value* symbol module)
+(symbol-value* symbol module default)
+
+  -- deep search for value bound to symbol
+     if symbol not found raise an error or return the supplied default
+
+(module-name module)
+
+  -- returns the name associated with the module
+
+(module-imports module)
+
+  -- returns the list of modules the module fully imports (fully?)
+
+(module-exports module)
+
+  -- returns the list of symbols exported by module
+
+(module-symbols module)
+
+  -- returns the list of symbols defined by module
+
+(all-modules)
+
+  -- return the list of all "living" modules
+
+(in-module mod s)
+(in-module mod s default)
+
+  -- return the value bound to symbol s in module named mod
+     (the value for s is searched in mod and modules it imports
+
+
