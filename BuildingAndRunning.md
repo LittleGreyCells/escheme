@@ -10,13 +10,12 @@ In the root directory type 'make' to build the executable:
 
 ## Running
 
-To run the interpreter in the build directory invoke escheme. The banner is printed and the
+To run the interpreter in the build directory invoke escheme and the
 linenoise prompt is displayed:
 ```
    $ ./escheme
-   escheme v1.0 (interpreter)
 
-   escheme>
+   ece>
 ```
 
 Files to load before the REP can be added to the command line:
@@ -26,7 +25,7 @@ Files to load before the REP can be added to the command line:
 
 To exit escheme, type ^D, ^C or exit function at the prompt:
 ```
-   escheme> (exit)
+   ece> (exit)
 ```
 
 ## Installation and Removal
