@@ -1,5 +1,5 @@
-escheme "bindings" -- A User's Guide
-====================================
+escheme "bindings" -- A Deveoper's Guide
+========================================
 
 What follows are guidelines for extending escheme with ones own primitive
 functions written in C++.
@@ -210,7 +210,7 @@ See file funtab.cxx and the function table funtab.
 
 ## 2 Advanced Example
 
-The set of socket bindings for escheme is a classic example of writing a 
+The set of socket bindings for escheme is an advanced example of writing a 
 non-trivial extension to escheme. See
 
 * src/core/ipcsoc.hxx
