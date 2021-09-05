@@ -4,9 +4,9 @@ Building and Running
 ## Building
 
 In the root directory type 'make' to build the executable:
-
+```
    $ make
-
+```
 
 ## Running
 
