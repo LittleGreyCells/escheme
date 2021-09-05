@@ -17,202 +17,202 @@ For a complete description of the R3RS see:
 
 ## R3RS Features
 
-R3RS features supported(<s>) and not supported(<o>) by escheme:
+R3RS features supported (Y) and not supported (N) by escheme:
 ```
   Expressions
-    quote               <s>
-    lambda              <s>
-    if                  <s>
-    set!                <s>
-    cond                <s>
-    case                <s> (macro)
-    and                 <s>
-    or                  <s>
-    let                 <s>
-    let*                <s> (macro)
-    letrec              <s>
-    begin               <s>
-    do                  <s> (macro)
-    delay               <s>
-    quasiquote          <s>
+    quote               Y
+    lambda              Y
+    if                  Y
+    set!                Y
+    cond                Y
+    case                Y (macro)
+    and                 Y
+    or                  Y
+    let                 Y
+    let*                Y (macro)
+    letrec              Y
+    begin               Y
+    do                  Y (macro)
+    delay               Y
+    quasiquote          Y
 
   Programe Structure
-    define              <s>
+    define              Y
 
   Booleans
-    not                 <s>
-    boolean?            <s>
-    nil                 <s>
-    t                   <s>
+    not                 Y
+    boolean?            Y
+    nil                 Y
+    t                   Y
 
   Equivalence Predicates
-    eqv?                <s>
-    eq?                 <s>
-    equal?              <s>
+    eqv?                Y
+    eq?                 Y
+    equal?              Y
 
   Pairs and Lists
-    pair?               <s>
-    cons                <s>
-    car                 <s>
-    cdr                 <s>
-    set-car!            <s>
-    set-cdr!            <s>
-    null?               <s>
-    list                <s>
-    length              <s>
-    append              <s>
-    reverse             <s>
-    list-tail           <s>
-    list-ref            <s>
-    last-pair           <s>
-    memq                <s>
-    memv                <s>
-    member              <s>
-    assq                <s>
-    assv                <s>
-    assoc               <s>
+    pair?               Y
+    cons                Y
+    car                 Y
+    cdr                 Y
+    set-car!            Y
+    set-cdr!            Y
+    null?               Y
+    list                Y
+    length              Y
+    append              Y
+    reverse             Y
+    list-tail           Y
+    list-ref            Y
+    last-pair           Y
+    memq                Y
+    memv                Y
+    member              Y
+    assq                Y
+    assv                Y
+    assoc               Y
 
   Symbols
-    symbol?             <s>
-    string->symbol      <s>
-    symbol->string      <s>
+    symbol?             Y
+    string->symbol      Y
+    symbol->string      Y
 
   Numbers
-    number?             <s>
-    complex?                    <o>
-    real?               <s>
-    rational?                   <o>
-    integer?            <s>
-    zero?               <s>
-    positive?           <s>
-    negative?           <s>
-    odd?                <s>
-    even?               <s>
-    exact?                      <o>
-    inexact?                    <o>
-    =                   <s>
-    <                   <s>
-    >                   <s>
-    <=                  <s>
-    >=                  <s>
-    max                 <s>
-    min                 <s>
-    +                   <s>
-    *                   <s>
-    -                   <s>
-    /                   <s>
-    abs                 <s>
-    quotient            <s>
-    remainder           <s>
-    modulo                      <o>
-    numerator                   <o>
-    denominator                 <o>
-    gcd                 <s>
-    lcm                         <o>
-    floor               <s>
-    ceiling             <s>
-    truncate            <s>
-    round               <s>
-    rationalize                 <o>
-    exp                 <s>
-    log                 <s>
-    sin                 <s>
-    cos                 <s>
-    tan                 <s>
-    asin                <s>
-    acos                <s>
-    atan                <s>
-    sqrt                <s>
-    expt                <s>
-    make-rectangular            <o>
-    make-polar                  <o>
+    number?             Y
+    complex?                    N
+    real?               Y
+    rational?                   N
+    integer?            Y
+    zero?               Y
+    positive?           Y
+    negative?           Y
+    odd?                Y
+    even?               Y
+    exact?                      N
+    inexact?                    N
+    =                   Y
+    <                   Y
+    >                   Y
+    <=                  Y
+    >=                  Y
+    max                 Y
+    min                 Y
+    +                   Y
+    *                   Y
+    -                   Y
+    /                   Y
+    abs                 Y
+    quotient            Y
+    remainder           Y
+    modulo                      N
+    numerator                   N
+    denominator                 N
+    gcd                 Y
+    lcm                         N
+    floor               Y
+    ceiling             Y
+    truncate            Y
+    round               Y
+    rationalize                 N
+    exp                 Y
+    log                 Y
+    sin                 Y
+    cos                 Y
+    tan                 Y
+    asin                Y
+    acos                Y
+    atan                Y
+    sqrt                Y
+    expt                Y
+    make-rectangular            N
+    make-polar                  N
 
   Characters
-    char?               <s>
-    char=?              <s>
-    char<?              <s>
-    char>?              <s>
-    char>=?             <s>
-    char<=?             <s>
-    char-ci=?           <s>
-    char-ci<?           <s>
-    char-ci>?           <s>
-    char-ci<=?          <s>
-    char-ci>=?          <s>
-    char-alphabetic?    <s>
-    char-numeric?       <s>
-    char-whitespace?    <s>
-    char-upper-case?    <s>
-    char-lower-case?    <s>
-    char->integer       <s>
-    integer->char       <s>
-    char-upcase         <s>
-    char-downcase       <s>
+    char?               Y
+    char=?              Y
+    char<?              Y
+    char>?              Y
+    char>=?             Y
+    char<=?             Y
+    char-ci=?           Y
+    char-ci<?           Y
+    char-ci>?           Y
+    char-ci<=?          Y
+    char-ci>=?          Y
+    char-alphabetic?    Y
+    char-numeric?       Y
+    char-whitespace?    Y
+    char-upper-case?    Y
+    char-lower-case?    Y
+    char->integer       Y
+    integer->char       Y
+    char-upcase         Y
+    char-downcase       Y
 
   Strings
-    string?             <s>
-    make-string         <s>
-    string-length       <s>
-    string-ref          <s>
-    string-set!         <s>
-    string=?            <s>
-    string<?            <s>
-    string>?            <s>
-    string<=?           <s>
-    string>=?           <s>
-    string-ci=?         <s>
-    string-ci<?         <s>
-    string-ci>?         <s>
-    string-ci<=?        <s>
-    string-ci>=?        <s>
-    substring           <s>
-    string-append       <s>
-    string->list        <s>
-    list->string        <s>
-    string-copy         <s>
-    string-fill!        <s>
+    string?             Y
+    make-string         Y
+    string-length       Y
+    string-ref          Y
+    string-set!         Y
+    string=?            Y
+    string<?            Y
+    string>?            Y
+    string<=?           Y
+    string>=?           Y
+    string-ci=?         Y
+    string-ci<?         Y
+    string-ci>?         Y
+    string-ci<=?        Y
+    string-ci>=?        Y
+    substring           Y
+    string-append       Y
+    string->list        Y
+    list->string        Y
+    string-copy         Y
+    string-fill!        Y
 
   Vector
-    vector?             <s>
-    make-vector         <s>
-    vector              <s>
-    vector-length       <s>
-    vector-ref          <s>
-    vector-set!         <s>
-    vector->list        <s>
-    list->vector        <s>
-    vector-fill!        <s>
+    vector?             Y
+    make-vector         Y
+    vector              Y
+    vector-length       Y
+    vector-ref          Y
+    vector-set!         Y
+    vector->list        Y
+    list->vector        Y
+    vector-fill!        Y
 
   Control Features
-    procedure?          <s>
-    apply               <s>
-    map                 <s>
-    for-each            <s>
-    force               <s>
-    call/cc             <s>
-    call-with-input-file        <o>
-    call-with-output-file       <o>
-    input-port?         <s>
-    output-port?        <s>
-    current-input-port          <o>
-    current-output-port         <o>
-    with-input-from-file        <o>
-    with-output-to-file         <o>
-    open-input-file     <s>
-    open-output-file    <s>
-    close-input-port    <s>
-    close-output-port   <s>
-    read                <s>
-    read-char           <s>
-    char-ready?                 <o>
-    eof-object?         <s>
-    write               <s>
-    display             <s>
-    newline             <s>
-    write-char          <s>
-    load                <s>
-    transcript-on       <s>
-    transcript-off      <s>
+    procedure?          Y
+    apply               Y
+    map                 Y
+    for-each            Y
+    force               Y
+    call/cc             Y
+    call-with-input-file        N
+    call-with-output-file       N
+    input-port?         Y
+    output-port?        Y
+    current-input-port          N
+    current-output-port         N
+    with-input-from-file        N
+    with-output-to-file         N
+    open-input-file     Y
+    open-output-file    Y
+    close-input-port    Y
+    close-output-port   Y
+    read                Y
+    read-char           Y
+    char-ready?                 N
+    eof-object?         Y
+    write               Y
+    display             Y
+    newline             Y
+    write-char          Y
+    load                Y
+    transcript-on       Y
+    transcript-off      Y
 
 escheme additions
 
@@ -234,10 +234,17 @@ escheme additions
     system
     getargs
     gettime
+    getenv
+    setenv
+    unsetenv
+    chdir
+    getcwd
+    getenv
 
   Environments
     %make-environment
     the-environment
+    the-global-environment
     procedure-environment
     environment-bindings
     environment-parent
@@ -255,6 +262,35 @@ escheme additions
     gensym
     get
     put
+
+  Dictionaries
+    make-dict
+    dict?
+    dict-items
+    has-key?
+    dict-ref
+    dict-set!
+    dict-rem!
+    dict-empty!
+
+  Associative Environments
+    %make-assoc-env
+    assoc-env?
+    %assoc-env-has?
+    %assoc-env-ref
+    %assoc-env-set!
+
+  Strings
+    string-null?
+    string-find
+    string-dup
+    string-trim
+    string-trim-left
+    string-trim-right
+    string-downcase!
+    string-upcase!
+    string-pad-left
+    string-pad-right
 
   Sockets
     socket-read
@@ -284,6 +320,9 @@ escheme additions
     byte-vector-set!
     byte-vector-length
 
+  Promises
+    promise?
+
   Internals
     %closure-code
     %closure-benv
@@ -298,6 +337,7 @@ escheme additions
     gc
     gc-enable
     gc-disable
+    %object-address
 
   Command History (linenoise integration)
     add-history
