@@ -1,4 +1,5 @@
 Acknowledgments
+===============
 
 escheme would not be possible without the prior work of notable scheme
 engineering and educational efforts.
@@ -29,7 +30,9 @@ approaches to implementing interpreters and a compiler for scheme. I have
 used the explicit control evaluator described in Chapter 5 as a starting
 point for escheme. It has been expanded to handle many more special forms.
 
-Addendum for escheme-compiled
+## Addendum
+
+### escheme-compiled
 
 Although I started with SICP model compiler in Chapter 5, I have modified it 
 considerably. The virtual machine I designed for byte code evaluation is far
