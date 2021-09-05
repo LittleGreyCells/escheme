@@ -15,7 +15,9 @@ For a complete description of the R3RS see:
 
    https://practical-scheme.net/wiliki/schemexref.cgi?R3RS
 
-## R3RS Features
+## Conformance
+
+### R3RS Features
 
 R3RS features supported (Y) and not supported (N) by escheme:
 ```
@@ -212,10 +214,11 @@ R3RS features supported (Y) and not supported (N) by escheme:
     write-char          Y
     load                Y
     transcript-on       Y
-    transcript-off      Y
+    transcript-off      &
+```
 
-escheme additions
-
+### Additions
+```
   Special Forms
     access
     cond
