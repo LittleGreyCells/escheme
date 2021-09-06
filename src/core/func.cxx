@@ -773,7 +773,7 @@ SEXPR FUNC::write_char()
    //
    ArgstackIterator iter;
    const char ch = getcharacter(guard(iter.getarg(), charp));
-   auto port = (iter.more()) ? guard(iter.getlast(), anyinportp) : PIO::stdout_port;
+   auto port = (iter.more()) ? guard(iter.getlast(), anyoutportp) : PIO::stdout_port;
 
    PIO::put( port, ch );
    return symbol_true;
